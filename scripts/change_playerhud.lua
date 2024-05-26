@@ -1,6 +1,7 @@
 local PlayerHud = require "screens/playerhud"
 local PauseScreen = require "screens/redux/pausescreen"
 local ChatInputScreen = require "screens/chatinputscreen"
+local ContainerWidget = require("widgets/containerwidget")
 
 AddClassPostConstruct("screens/playerhud", function(self)
     local OnControl_Old = self.OnControl
@@ -203,4 +204,58 @@ AddClassPostConstruct("screens/playerhud", function(self)
         end
         return OnControl_Old(self, control, down, ...)
     end
+
+    -- Not Changed
+    local function OpenContainerWidget(self, container, side)
+        local containerwidget = ContainerWidget(self.owner)
+        local parent = side and self.controls.containerroot_side
+                        or (container.replica.container ~= nil and container.replica.container.type == "hand_inv") and self.controls.inv.hand_inv
+                        or (container.replica.container ~= nil and container.replica.container.type == "side_inv") and self.controls.secondary_status.side_inv
+                        or (container.replica.container ~= nil and container.replica.container.type == "side_inv_behind") and self.controls.containerroot_side_behind
+                        or self.controls.containerroot
+
+        parent:AddChild(containerwidget)
+
+        --self.controls[side and "containerroot_side" or "containerroot"]:AddChild(containerwidget)
+        --self.controls.bottom_root:AddChild(containerwidget)
+        --self.controls.inv.hand_inv:AddChild(containerwidget)
+
+        containerwidget:MoveToBack()
+        containerwidget:Open(container, self.owner)
+        self.controls.containers[container] = containerwidget
+
+        if parent == self.controls.containerroot then
+            self:CloseSpellWheel()
+        end
+    end
+	local OpenContainer_Old = self.OpenContainer
+	self.OpenContainer = function (self, container, side, ...)
+        if container == nil then
+            return
+        elseif TheInput:ControllerAttached() and side and container.replica.container.inst:HasTag("backpack") and 
+                CHANGE_ADD_EXTRAL_BACKPACK_INTEGRATE_SETTING and not CHANGE_INTEGRATE_BACKPACK then
+            OpenContainerWidget(self, container, side)
+        end
+		OpenContainer_Old(self, container, side, ...)
+	end
+
+    -- Not Changed
+    local function CloseContainerWidget(self, container, side)
+        for k, v in pairs(self.controls.containers) do
+            if v.container == container then
+                v:Close()
+            end
+        end
+    end
+
+	local CloseContainer_Old = self.CloseContainer
+	self.CloseContainer = function (self, container, side, ...)
+        if container == nil then
+            return
+        elseif TheInput:ControllerAttached() and side and container.replica.container.inst:HasTag("backpack") and
+                CHANGE_ADD_EXTRAL_BACKPACK_INTEGRATE_SETTING and not CHANGE_INTEGRATE_BACKPACK then
+            CloseContainerWidget(self, container, side)
+        end
+		CloseContainer_Old(self, container, side, ...)
+	end
 end)

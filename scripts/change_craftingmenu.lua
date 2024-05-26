@@ -1,4 +1,3 @@
-
 AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
     local OnControl_Old = self.OnControl;
     self.OnControl = function(self, control, down, ...)
@@ -28,6 +27,19 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
         return result
     end
 
+    -- remove openhint Method one : A Little bit slow 
+    -- local RefreshControllers_OLd = self.RefreshControllers
+    -- self.RefreshControllers = function (self, controller_mode, ...)
+    --     RefreshControllers_OLd(self, controller_mode, ...)
+    --     self.openhint:Hide()
+    -- end
+
+    -- remove openhint Method two : Fast but Additional consumption
+    local OnUpdate_Old = self.OnUpdate
+    self.OnUpdate = function (self, dt)
+        OnUpdate_Old(self, dt)
+        self.openhint:Hide()
+    end
 end)
 
 
@@ -208,6 +220,21 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
         else
             self.unpin_controllerhint:SetString((self.recipe_name ~= nil and STRINGS.UI.CRAFTING_MENU.UNPIN or STRINGS.UI.CRAFTING_MENU.PIN) .. " " .. TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_EXAMINE))
         end
+    end
+
+
+    local RefreshControllers_Old = self.RefreshControllers
+    self.RefreshControllers = function (self, controller_mode, for_open_crafting_menu, ...)
+        local result = RefreshControllers_Old(self, controller_mode, for_open_crafting_menu, ...)
+        if controller_mode and not for_open_crafting_menu and not self.craftingmenu:IsCraftingOpen() then
+            self.recipe_popup.openhint:SetString("        " .. TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_DROP) .. " " .. self.craft_button.help_message)
+        end
+        return result
+    end
+
+    -- remove pinslot black help message on the bottom of screen
+    self.craft_button.GetHelpText = function (_self, ...)
+        return ""
     end
 end)
 

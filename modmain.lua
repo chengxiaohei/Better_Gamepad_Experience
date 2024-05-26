@@ -12,7 +12,7 @@ CHANGE_CONTROL_CAMERA = CONTROL_ROTATE_LEFT
 CHANGE_ADD_EXTRAL_BACKPACK_INTEGRATE_SETTING = true
 CHANGE_INTEGRATE_BACKPACK = false
 
-CHNAGE_CHANGE_INVENTORY_BAR = true
+CHNAGE_IS_CHANGE_INVENTORY_BAR = true
 
 modimport("scripts/change_profile")
 modimport("scripts/change_playercontroller")

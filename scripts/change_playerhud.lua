@@ -156,16 +156,16 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     return true
                 end
             end
-        elseif control == CONTROL_OPEN_INVENTORY then
-            if self:IsControllerInventoryOpen() then
-                self:CloseControllerInventory()
-                return true
-            end
-            local inventory = self.owner.replica.inventory
-            if inventory ~= nil and inventory:IsVisible() and inventory:GetNumSlots() > 0 then
-                self:OpenControllerInventory()
-                return true
-            end
+        -- elseif control == CONTROL_OPEN_INVENTORY then
+            -- if self:IsControllerInventoryOpen() then
+            --     self:CloseControllerInventory()
+            --     return true
+            -- end
+            -- local inventory = self.owner.replica.inventory
+            -- if inventory ~= nil and inventory:IsVisible() and inventory:GetNumSlots() > 0 then
+            --     self:OpenControllerInventory()
+            --     return true
+            -- end
         elseif control >= CONTROL_INV_1 and control <= CONTROL_INV_10 then
             --inventory hotkeys
             local inventory = self.owner.replica.inventory

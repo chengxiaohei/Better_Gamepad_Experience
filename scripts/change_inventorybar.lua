@@ -335,7 +335,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 	local Rebuild_Old = self.Rebuild
 	self.Rebuild = function(self, ...)
-		if CHNAGE_CHANGE_INVENTORY_BAR then
+		if CHNAGE_IS_CHANGE_INVENTORY_BAR then
 			if self.cursor ~= nil then
 				self.cursor:Kill()
 				self.cursor = nil

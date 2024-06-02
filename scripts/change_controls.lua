@@ -20,11 +20,14 @@ AddClassPostConstruct("widgets/controls", function(self)
         local controller_mode = TheInput:ControllerAttached()
         local controller_id = TheInput:GetControllerID()
 
-        if controller_mode then
-            self.mapcontrols:Hide()
-        else
-            self.mapcontrols:Show()
-        end
+        -- ======================================================================= --
+        -- if controller_mode then
+        --     self.mapcontrols:Hide()
+        -- else
+        --     self.mapcontrols:Show()
+        -- end
+        self.mapcontrols:Show()
+        -- ======================================================================= --
 
         for k,v in pairs(self.containers) do
             if v.should_close_widget then

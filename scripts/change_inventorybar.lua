@@ -45,46 +45,75 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				self.current_list = self.equip
 			end
 		end
-
+		local active_item = self.owner.replica.inventory:GetActiveItem()
 		if self:CursorNav(Vector3(-1,0,0), true) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-		elseif not self.open and not self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, -1, 0)) then
+		elseif not self.open and not active_item and not self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned and 
+			TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, -1, 0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		end
 	end
 
 	self.CursorRight = function (self, ...)
+		print("Cursor Right")
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
 		if self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned then
 			local k, slot = next(self.current_list or {})
-			if slot == nil or not slot.inst:IsValid() then
+			if (slot == nil or not slot.inst:IsValid()) then
 				self.current_list = self.inv
+				print("Do Cursor Right")
 			end
 		end
 
 		if self:CursorNav(Vector3(1,0,0), true) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-		elseif not self.open and not self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 1, 0)) then
+		elseif not self.open and not self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned and 
+			TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 1, 0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		end
 	end
 
-	local CursorUp_Old = self.CursorUp
 	self.CursorUp = function (self, ...)
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
-		CursorUp_Old(self, ...)
+		if self.pin_nav then
+			self:PinBarNav(self.active_slot:FindPinUp())
+		else
+			-- local active_item = self.owner.replica.inventory:GetActiveItem()
+			if self:CursorNav(Vector3(0,1,0), not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
+				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+			-- elseif not self.open and not active_item and (self.current_list == self.inv or self.current_list == self.equip) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+			-- 	-- go into the pin bar if there are no other open containers above the inventory bar
+			-- 	self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1))
+			end
+		end
 	end
 
-	local CursorDown_Old = self.CursorDown
+
 	self.CursorDown = function (self, ...)
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
-		CursorDown_Old(self, ...)
+		local pin_nav = self.pin_nav
+		if pin_nav then
+			local next_pin = self.active_slot:FindPinDown()
+			if next_pin then
+				self:PinBarNav(next_pin)
+			else
+				pin_nav = false
+				local k, slot = next(self.current_list or {})
+				if slot == nil or not slot.inst:IsValid() then
+					self.current_list = self.owner.HUD.controls.craftingmenu.is_left_aligned and self.inv or self.equip
+				end
+			end
+		end
+		
+		if not pin_nav and self:CursorNav(Vector3(0,-1,0), not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
+			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+		end
 	end
 
 	-- Not Changed
@@ -334,62 +363,66 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	end
 
 	local Rebuild_Old = self.Rebuild
+	local Rebuild_New = function (self, ...)
+		if self.cursor ~= nil then
+			self.cursor:Kill()
+			self.cursor = nil
+		end
+
+		if self.toprow ~= nil then
+			self.toprow:Kill()
+			self.inspectcontrol = nil
+		end
+
+		if self.bottomrow ~= nil then
+			self.bottomrow:Kill()
+		end
+
+		self.toprow = self.root:AddChild(Widget("toprow"))
+		self.bottomrow = self.root:AddChild(Widget("toprow"))
+
+		self.inv = {}
+		self.equip = {}
+		self.backpackinv = {}
+
+		local controller_attached = TheInput:ControllerAttached()
+		self.controller_build = controller_attached
+		self.integrated_backpack = controller_attached or Profile:GetIntegratedBackpack()
+
+		local inventory = self.owner.replica.inventory
+
+		local overflow = inventory:GetOverflowContainer()
+		overflow = (overflow ~= nil and overflow:IsOpenedBy(self.owner)) and overflow or nil
+
+		local do_integrated_backpack = overflow ~= nil and self.integrated_backpack
+		local do_self_inspect = not (self.controller_build or GetGameModeProperty("no_avatar_popup"))
+
+		-- Only Add This Two Line
+		do_integrated_backpack = false
+		do_self_inspect = true
+
+		if TheNet:GetServerGameMode() == "quagmire" then
+			RebuildLayout_Quagmire(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
+		else
+			RebuildLayout(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
+		end
+
+		self.actionstring:MoveToFront()
+
+		self:SelectDefaultSlot()
+		self:UpdateCursor()
+
+		if self.cursor ~= nil then
+			self.cursor:MoveToFront()
+		end
+
+		self.rebuild_pending = nil
+		self.rebuild_snapping = nil
+	end
+
 	self.Rebuild = function(self, ...)
 		if CHNAGE_IS_CHANGE_INVENTORY_BAR then
-			if self.cursor ~= nil then
-				self.cursor:Kill()
-				self.cursor = nil
-			end
-
-			if self.toprow ~= nil then
-				self.toprow:Kill()
-				self.inspectcontrol = nil
-			end
-
-			if self.bottomrow ~= nil then
-				self.bottomrow:Kill()
-			end
-
-			self.toprow = self.root:AddChild(Widget("toprow"))
-			self.bottomrow = self.root:AddChild(Widget("toprow"))
-
-			self.inv = {}
-			self.equip = {}
-			self.backpackinv = {}
-
-			local controller_attached = TheInput:ControllerAttached()
-			self.controller_build = controller_attached
-			self.integrated_backpack = controller_attached or Profile:GetIntegratedBackpack()
-
-			local inventory = self.owner.replica.inventory
-
-			local overflow = inventory:GetOverflowContainer()
-			overflow = (overflow ~= nil and overflow:IsOpenedBy(self.owner)) and overflow or nil
-
-			local do_integrated_backpack = overflow ~= nil and self.integrated_backpack
-			local do_self_inspect = not (self.controller_build or GetGameModeProperty("no_avatar_popup"))
-
-			-- Only Add This Two Line
-			do_integrated_backpack = false
-			do_self_inspect = true
-
-			if TheNet:GetServerGameMode() == "quagmire" then
-				RebuildLayout_Quagmire(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
-			else
-				RebuildLayout(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
-			end
-
-			self.actionstring:MoveToFront()
-
-			self:SelectDefaultSlot()
-			self:UpdateCursor()
-
-			if self.cursor ~= nil then
-				self.cursor:MoveToFront()
-			end
-
-			self.rebuild_pending = nil
-			self.rebuild_snapping = nil
+			Rebuild_New(self, ...)
 		else
 			Rebuild_Old(self, ...)
 		end

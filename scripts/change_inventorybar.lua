@@ -45,32 +45,43 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				self.current_list = self.equip
 			end
 		end
+
 		local active_item = self.owner.replica.inventory:GetActiveItem()
-		if self:CursorNav(Vector3(-1,0,0), true) then
+		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
+		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
+			pressed = not pressed 
+		end
+
+		if self:CursorNav(Vector3(-1,0,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-		elseif not self.open and not active_item and not self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned and 
-			TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, -1, 0)) then
+		elseif not self.open and not active_item and not self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned and
+			(not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed) and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, -1, 0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		end
 	end
 
 	self.CursorRight = function (self, ...)
-		print("Cursor Right")
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
+
+		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
+		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
+			pressed = not pressed 
+		end
+
 		if self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned then
+			if CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed then return end
 			local k, slot = next(self.current_list or {})
-			if (slot == nil or not slot.inst:IsValid()) then
+			if slot == nil or not slot.inst:IsValid() then
 				self.current_list = self.inv
-				print("Do Cursor Right")
 			end
 		end
 
-		if self:CursorNav(Vector3(1,0,0), true) then
+		if self:CursorNav(Vector3(1,0,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-		elseif not self.open and not self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned and 
-			TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 1, 0)) then
+		elseif not self.open and not self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned and
+			(not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed) and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 1, 0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		end
 	end
@@ -79,15 +90,21 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
+
+		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
+		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
+			pressed = not pressed 
+		end
+
 		if self.pin_nav then
 			self:PinBarNav(self.active_slot:FindPinUp())
 		else
-			-- local active_item = self.owner.replica.inventory:GetActiveItem()
-			if self:CursorNav(Vector3(0,1,0), not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
+			local active_item = self.owner.replica.inventory:GetActiveItem()
+			if self:CursorNav(Vector3(0,1,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
 				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-			-- elseif not self.open and not active_item and (self.current_list == self.inv or self.current_list == self.equip) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-			-- 	-- go into the pin bar if there are no other open containers above the inventory bar
-			-- 	self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1))
+			elseif not self.open and not active_item and (self.current_list == self.inv or self.current_list == self.equip) and (not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed) then
+				-- go into the pin bar if there are no other open containers above the inventory bar
+				self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1))
 			end
 		end
 	end
@@ -97,12 +114,18 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
+
+		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
+		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
+			pressed = not pressed 
+		end
+
 		local pin_nav = self.pin_nav
 		if pin_nav then
 			local next_pin = self.active_slot:FindPinDown()
 			if next_pin then
 				self:PinBarNav(next_pin)
-			else
+			elseif not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed then
 				pin_nav = false
 				local k, slot = next(self.current_list or {})
 				if slot == nil or not slot.inst:IsValid() then
@@ -111,9 +134,41 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			end
 		end
 		
-		if not pin_nav and self:CursorNav(Vector3(0,-1,0), not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
+		if not pin_nav and self:CursorNav(Vector3(0,-1,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		end
+	end
+
+	self.GetClosestWidget = function (self, lists, pos, dir, ...)
+		local closest = nil
+		local closest_score = nil
+		local closest_list = nil
+
+		local x, y = pos.x, pos.y
+		local dir_x, dir_y = dir.x, dir.y
+
+		for kk, vv in pairs(lists) do
+			for k,v in pairs(vv) do
+				if v ~= self.active_slot then
+					local vx, vy = v.inst.UITransform:GetWorldPosition()
+					-- =========================================================================================== --
+					-- local local_dir_x, local_dir_y = vx-x, vy-y
+					local local_dir_x, local_dir_y = (2-1.5*dir_x*dir_x)*(vx-x), (2-1.5*dir_y*dir_y) * (vy-y)
+					-- =========================================================================================== --
+					local dot = VecUtil_Dot(local_dir_x, local_dir_y, dir_x, dir_y)
+					if dot > 0 then
+						local score = local_dir_x * local_dir_x + local_dir_y * local_dir_y
+						if not closest or score < closest_score then
+							closest = v
+							closest_score = score
+							closest_list = vv
+						end
+					end
+				end
+			end
+		end
+
+		return closest, closest_list
 	end
 
 	-- Not Changed

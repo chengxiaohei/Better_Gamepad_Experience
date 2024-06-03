@@ -8,10 +8,10 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
             if control == CONTROL_ACCEPT or control == CONTROL_CONTROLLER_ACTION then return false end
             if control == CONTROL_CANCEL or control == CONTROL_CONTROLLER_ALTACTION then return false end
 
-            -- if control == CONTROL_INVENTORY_LEFT and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
-            -- if control == CONTROL_INVENTORY_RIGHT and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
-            -- if control == CONTROL_INVENTORY_UP and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
-            -- if control == CONTROL_INVENTORY_DOWN and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
+            if control == CONTROL_INVENTORY_LEFT and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
+            if control == CONTROL_INVENTORY_RIGHT and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
+            if control == CONTROL_INVENTORY_UP and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
+            if control == CONTROL_INVENTORY_DOWN and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
 
             -- change pin and uppin to d-pad up
             if control == CONTROL_INVENTORY_EXAMINE then control = CONTROL_MENU_MISC_1 end
@@ -39,6 +39,40 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
     self.OnUpdate = function (self, dt)
         OnUpdate_Old(self, dt)
         self.openhint:Hide()
+    end
+
+    -- Optimize Algorithm
+    local function GetClosestWidget(list, active_widget, dir_x, dir_y)
+        local closest = nil
+        local closest_score = nil
+
+        if active_widget ~= nil then
+            local x, y = active_widget.inst.UITransform:GetWorldPosition()
+            for k,v in pairs(list) do
+                if v ~= active_widget and v:IsVisible() then
+                    local vx, vy = v.inst.UITransform:GetWorldPosition()
+                    -- ============================================================================================== --
+                    -- local local_dir_x, local_dir_y = vx-x, vy-y
+                    local local_dir_x, local_dir_y = (2-1.5*dir_x*dir_x)*(vx-x), (2-1.5*dir_y*dir_y)*(vy-y)
+                    -- ============================================================================================== --
+                    if VecUtil_Dot(local_dir_x, local_dir_y, dir_x, dir_y) > 0 then
+                        local score = local_dir_x * local_dir_x + local_dir_y * local_dir_y
+                        if not closest or score < closest_score then
+                            closest = v
+                            closest_score = score
+                        end
+                    end
+                end
+            end
+        end
+
+        return closest, closest_score
+    end
+
+
+    -- Use Optimized Algorithm
+    self.InvNavToPin = function (self, inv_widget, dir_x, dir_y, ...)
+        return GetClosestWidget(self.pinbar.pin_slots, inv_widget, dir_x, dir_y) or self.pinbar.page_spinner
     end
 end)
 
@@ -98,34 +132,35 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
                 control = CONTROL_ACCEPT
             end
         end
-        local result = OnControl_Old(self, control, down, ...)
-        if result then
-            return result
-        else
-            if not down and TheInput:ControllerAttached() then
-                if control == CONTROL_SCROLLBACK then
-                    self:GoToPrevPage()
-                    return true
-                elseif control == CONTROL_SCROLLFWD then
-                    self:GoToNextPage()
-                    return true
-                end
-            end
-        end
-        return result
+        -- local result = OnControl_Old(self, control, down, ...)
+        -- if result then
+        --     return result
+        -- else
+        --     if not down and TheInput:ControllerAttached() then
+        --         if control == CONTROL_SCROLLBACK then
+        --             self:GoToPrevPage()
+        --             return true
+        --         elseif control == CONTROL_SCROLLFWD then
+        --             self:GoToNextPage()
+        --             return true
+        --         end
+        --     end
+        -- end
+        -- return result
+        return OnControl_Old(self, control, down, ...)
     end
 
     -- 令光标无法移动到pin_spinner上
-    for _, pin in ipairs(self.pin_slots) do
-        local FindPinUp_Old = pin.FindPinUp
-        pin.FindPinUp = function (_pin)
-            local result = FindPinUp_Old(_pin)
-            if result == self.page_spinner then
-                return pin
-            end
-            return result
-        end
-	end
+    -- for _, pin in ipairs(self.pin_slots) do
+    --     local FindPinUp_Old = pin.FindPinUp
+    --     pin.FindPinUp = function (_pin)
+    --         local result = FindPinUp_Old(_pin)
+    --         if result == self.page_spinner then
+    --             return pin
+    --         end
+    --         return result
+    --     end
+	-- end
 
 
     -- 令双箭头在page_spinner上始终显示

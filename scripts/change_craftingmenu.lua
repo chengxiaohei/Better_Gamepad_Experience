@@ -1,17 +1,11 @@
 AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
     local OnControl_Old = self.OnControl;
     self.OnControl = function(self, control, down, ...)
-        print("****** press", control, down)
         if TheInput:ControllerAttached() then
             if control == CONTROL_MENU_MISC_1 then return false end
             if control == CONTROL_MENU_MISC_2 then return false end
             if control == CONTROL_ACCEPT or control == CONTROL_CONTROLLER_ACTION then return false end
             if control == CONTROL_CANCEL or control == CONTROL_CONTROLLER_ALTACTION then return false end
-
-            if control == CONTROL_INVENTORY_LEFT and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
-            if control == CONTROL_INVENTORY_RIGHT and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
-            if control == CONTROL_INVENTORY_UP and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
-            if control == CONTROL_INVENTORY_DOWN and Input:IsControlPressed(CHANGE_CONTROL_CAMERA) then return false end
 
             -- change pin and uppin to d-pad up
             if control == CONTROL_INVENTORY_EXAMINE then control = CONTROL_MENU_MISC_1 end
@@ -27,14 +21,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
         return result
     end
 
-    -- remove openhint Method one : A Little bit slow 
-    -- local RefreshControllers_OLd = self.RefreshControllers
-    -- self.RefreshControllers = function (self, controller_mode, ...)
-    --     RefreshControllers_OLd(self, controller_mode, ...)
-    --     self.openhint:Hide()
-    -- end
-
-    -- remove openhint Method two : Fast but Additional consumption
+    -- remove openhint: Fast but Additional consumption
     local OnUpdate_Old = self.OnUpdate
     self.OnUpdate = function (self, dt)
         OnUpdate_Old(self, dt)
@@ -53,9 +40,12 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
                     local vx, vy = v.inst.UITransform:GetWorldPosition()
                     -- ============================================================================================== --
                     -- local local_dir_x, local_dir_y = vx-x, vy-y
-                    local local_dir_x, local_dir_y = (2-1.5*dir_x*dir_x)*(vx-x), (2-1.5*dir_y*dir_y)*(vy-y)
+					local local_dir_x, local_dir_y = (2-1.5*math.abs(dir_x))*(vx-x), (2-1.5*math.abs(dir_y)) * (vy-y)
+                    -- local dot = VecUtil_Dot(local_dir_x, local_dir_y, dir_x, dir_y)
+					local dot = VecUtil_Dot(local_dir_x, local_dir_y, dir_x, dir_y) / (VecUtil_Length(local_dir_x, local_dir_y) * VecUtil_Length(dir_x, dir_y))
+                    -- if dot > 0 then
+                    if dot > 0.2 then  -- 0.2 is a magic number
                     -- ============================================================================================== --
-                    if VecUtil_Dot(local_dir_x, local_dir_y, dir_x, dir_y) > 0 then
                         local score = local_dir_x * local_dir_x + local_dir_y * local_dir_y
                         if not closest or score < closest_score then
                             closest = v
@@ -132,62 +122,102 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
                 control = CONTROL_ACCEPT
             end
         end
-        -- local result = OnControl_Old(self, control, down, ...)
-        -- if result then
-        --     return result
-        -- else
-        --     if not down and TheInput:ControllerAttached() then
-        --         if control == CONTROL_SCROLLBACK then
-        --             self:GoToPrevPage()
-        --             return true
-        --         elseif control == CONTROL_SCROLLFWD then
-        --             self:GoToNextPage()
-        --             return true
-        --         end
-        --     end
-        -- end
-        -- return result
         return OnControl_Old(self, control, down, ...)
     end
 
-    -- 令光标无法移动到pin_spinner上
-    -- for _, pin in ipairs(self.pin_slots) do
-    --     local FindPinUp_Old = pin.FindPinUp
-    --     pin.FindPinUp = function (_pin)
-    --         local result = FindPinUp_Old(_pin)
-    --         if result == self.page_spinner then
-    --             return pin
-    --         end
-    --         return result
-    --     end
-	-- end
 
-
-    -- 令双箭头在page_spinner上始终显示
-    local OnGainFocus_Old = self.OnGainFocus
-    self.OnGainFocus = function (self, ...)
-        local result = OnGainFocus_Old(self, ...)
-        if self.page_spinner ~= nil then
-            self.page_spinner.page_left:Show()
-            self.page_spinner.page_right:Show()
-            self.page_spinner.page_left_control:Hide()
-            self.page_spinner.page_right_control:Hide()
+    -- Now you can foucs on page_spinner even if craftingmenu is not open
+    for _, pin in ipairs(self.pin_slots) do
+        local FindPinUp_Old = pin.FindPinUp
+        pin.FindPinUp = function (_pin)
+            local result = FindPinUp_Old(_pin)
+            if result == nil then
+                return self.page_spinner
+            end
+            return result
         end
-        return result
+	end
+
+    -- Do Not move focus down while GoToPrevPage or GoToNextPage
+    -- stupid but works
+     self.GoToNextPage = function (self, silent)
+        TheCraftingMenuProfile:NextPage()
+        self:RefreshPinnedRecipes()
+
+        if TheInput:ControllerAttached() then
+        -- ============================================================================== --
+        -- if self.page_spinner.focus then
+		-- 	self.owner.HUD.controls.inv:PinBarNav(self.page_spinner:FindPinDown())
+		-- else
+            if not self.page_spinner.focus then
+        -- ============================================================================== --
+                local cur_slot = self:GetFocusSlot()
+                if cur_slot ~= nil and not cur_slot:IsVisible() then
+                    self.owner.HUD.controls.inv:PinBarNav(cur_slot:FindPinDown() or cur_slot:FindPinUp() or self.page_spinner)
+                end
+            end
+        end
+
+        if not silent then
+            TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+        end
+
+        if not self.crafting_hud:IsCraftingOpen() then
+            TheCraftingMenuProfile:Save()
+        end
     end
 
-    -- maybe useless
-    local OnLoseFocus_Old = self.OnLoseFocus
-    self.OnLoseFocus = function (self, ...)
-        local result = OnLoseFocus_Old(self, ...)
-        if self.page_spinner ~= nil then
-            self.page_spinner.page_left:Show()
-            self.page_spinner.page_right:Show()
-            self.page_spinner.page_left_control:Hide()
-            self.page_spinner.page_right_control:Hide()
+    -- stupid but works
+    self.GoToPrevPage = function (self, silent)
+        TheCraftingMenuProfile:PrevPage()
+        self:RefreshPinnedRecipes()
+
+        if TheInput:ControllerAttached() then
+        -- ============================================================================== --
+        -- if self.page_spinner.focus then
+		-- 	self.owner.HUD.controls.inv:PinBarNav(self.page_spinner:FindPinDown())
+		-- else
+            if not self.page_spinner.focus then
+        -- ============================================================================== --
+                local cur_slot = self:GetFocusSlot()
+                if cur_slot ~= nil and not cur_slot:IsVisible() then
+                    self.owner.HUD.controls.inv:PinBarNav(cur_slot:FindPinDown() or cur_slot:FindPinUp() or self.page_spinner)
+                end
+            end
         end
-        return result
+
+        if not silent then
+            TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+        end
+
+        if not self.crafting_hud:IsCraftingOpen() then
+            TheCraftingMenuProfile:Save()
+        end
     end
+
+    -- forbid Pinbar change page_spinner icons while gain or lose focus
+    self.OnGainFocus = function (self, ...) end
+    self.OnLoseFocus = function (self, ...) end
+
+    -- make page_spinner change itself icons correctly
+    local page_spinner_ongainfocusfn_Old = self.page_spinner.ongainfocusfn
+    self.page_spinner.ongainfocusfn = function ()
+        page_spinner_ongainfocusfn_Old()
+        self.page_spinner.page_left:Hide()
+        self.page_spinner.page_right:Hide()
+        self.page_spinner.page_left_control:Show()
+        self.page_spinner.page_right_control:Show()
+    end
+
+    local page_spinner_onlosefocusfn_Old = self.page_spinner.onlosefocusfn
+    self.page_spinner.onlosefocusfn = function ()
+        page_spinner_onlosefocusfn_Old()
+        self.page_spinner.page_left_control:Hide()
+        self.page_spinner.page_right_control:Hide()
+        self.page_spinner.page_left:Show()
+        self.page_spinner.page_right:Show()
+    end
+
 end)
 
 AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)

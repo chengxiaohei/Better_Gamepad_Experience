@@ -153,10 +153,12 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					local vx, vy = v.inst.UITransform:GetWorldPosition()
 					-- =========================================================================================== --
 					-- local local_dir_x, local_dir_y = vx-x, vy-y
-					local local_dir_x, local_dir_y = (2-1.5*dir_x*dir_x)*(vx-x), (2-1.5*dir_y*dir_y) * (vy-y)
+					local local_dir_x, local_dir_y = (2-1.5*math.abs(dir_x))*(vx-x), (2-1.5*math.abs(dir_y)) * (vy-y)
+					-- local dot = VecUtil_Dot(local_dir_x, local_dir_y, dir_x, dir_y)
+					local dot = VecUtil_Dot(local_dir_x, local_dir_y, dir_x, dir_y) / (VecUtil_Length(local_dir_x, local_dir_y) * VecUtil_Length(dir_x, dir_y))
+					-- if dot > 0 then
+					if dot > 0.2 then  -- 0.2 is a magic number
 					-- =========================================================================================== --
-					local dot = VecUtil_Dot(local_dir_x, local_dir_y, dir_x, dir_y)
-					if dot > 0 then
 						local score = local_dir_x * local_dir_x + local_dir_y * local_dir_y
 						if not closest or score < closest_score then
 							closest = v

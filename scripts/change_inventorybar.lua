@@ -484,4 +484,248 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			Rebuild_Old(self, ...)
 		end
 	end
+
+	STRINGS.UI.HUD.TAKEHALF = STRINGS.UI.CONTROLSSCREEN.CONTROLS[36]
+	STRINGS.UI.HUD.CHANGEBOX = STRINGS.UI.CONTROLSSCREEN.CONTROLS[37]
+	STRINGS.UI.HUD.CHANGEBOXHALF = STRINGS.UI.CONTROLSSCREEN.CONTROLS[38]
+
+	-- Not Changed
+	local function GetDropActionString(doer, item)
+		return BufferedAction(doer, nil, ACTIONS.DROP, item, doer:GetPosition()):GetActionString()
+	end
+	self.UpdateCursorText = function (self, ...)
+		local inv_item = self:GetCursorItem()
+		local active_item = self.cursortile ~= nil and self.cursortile.item or nil
+		if inv_item ~= nil and inv_item.replica.inventoryitem == nil then
+			inv_item = nil
+		end
+		if active_item ~= nil and active_item.replica.inventoryitem == nil then
+			active_item = nil
+		end
+		if active_item ~= nil or inv_item ~= nil then
+			local controller_id = TheInput:GetControllerID()
+
+			if active_item ~= nil then
+				local itemname = self:GetDescriptionString(active_item)
+				self.actionstringtitle:SetString(itemname)
+				if active_item:GetIsWet() then
+					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
+				else
+					self:SetTooltipColour(unpack(NORMAL_TEXT_COLOUR))
+				end
+			elseif inv_item ~= nil then
+				local itemname = self:GetDescriptionString(inv_item)
+				self.actionstringtitle:SetString(itemname)
+				if inv_item:GetIsWet() then
+					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
+				else
+					self:SetTooltipColour(unpack(NORMAL_TEXT_COLOUR))
+				end
+			end
+
+
+			local is_equip_slot = self.active_slot and self.active_slot.equipslot
+			local str = {}
+
+			local left = TheInput:IsControlPressed(CHANGE_CONTROL_LEFT)
+			local right = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
+
+
+			if active_item ~= nil and inv_item ~= nil then
+				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
+				if not is_equip_slot then
+					local can_take_active_item = active_item ~= nil and self.active_slot.container ~= nil and self.active_slot.container:CanTakeItemInSlot(active_item, self.active_slot.num)
+					if active_item.replica.stackable ~= nil and inv_item.prefab == active_item.prefab and active_item.skinname == active_item.skinname then
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.ACTIONS.COMBINESTACK
+						if left and active_item.replica.stackable:IsStack() then
+							help_string = help_string .. " (One)"
+						end
+					elseif can_take_active_item then
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.SWAP
+					end
+				elseif active_item.replica.equippable ~= nil and active_item.replica.equippable:EquipSlot() == self.active_slot.equipslot and not active_item.replica.equippable:IsRestricted(self.owner) then
+					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.EQUIP
+				end
+				table.insert(str, help_string)
+
+				help_string = ""
+				local changebox_flag = false
+				local _, h, p, b, l, r = self.owner.components.playercontroller:GetAllTypeContainers()
+				if not is_equip_slot and right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) then
+					changebox_flag = true
+				else
+					local scene_action = self.owner.components.playercontroller:GetItemUseAction(active_item)
+					if scene_action ~= nil then
+						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. scene_action:GetActionString()
+					end
+					local use_action = self.owner.components.playercontroller:GetItemUseAction(active_item, inv_item)
+					local self_action = self.owner.components.playercontroller:GetItemSelfAction(active_item)
+					if use_action ~= nil then
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_USE_ITEM_ON_ITEM) .. " " .. use_action:GetActionString()
+						if left and inv_item.replica.container ~= nil and inv_item.replica.container:CanTakeItemInSlot(active_item) then
+							help_string = help_string .. " (One)"
+						end
+					elseif self_action ~= nil then
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. self_action:GetActionString()
+					end
+				end
+				if help_string ~= "" then
+					table.insert(str, help_string)
+				end
+
+				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
+				if right and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
+					help_string = help_string .. " (One)"
+				end
+				table.insert(str, help_string)
+
+				if changebox_flag then
+					help_string = self:GetDescriptionString(inv_item)
+					table.insert(str, help_string)
+					help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.CHANGEBOX
+					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.CHANGEBOX
+					table.insert(str, help_string)
+				end
+
+			elseif active_item ~= nil then
+				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
+				if not is_equip_slot then
+					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.PUT
+					help_string = help_string .. (left and active_item.replica.stackable and active_item.replica.stackable:IsStack() and " (One)" or "")
+				elseif active_item.replica.equippable ~= nil and active_item.replica.equippable:EquipSlot() == self.active_slot.equipslot and not active_item.replica.equippable:IsRestricted(self.owner) then
+					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.EQUIP
+				end
+				table.insert(str, help_string)
+
+				help_string = ""
+				local scene_action = self.owner.components.playercontroller:GetItemUseAction(active_item)
+				if scene_action ~= nil then
+					help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. scene_action:GetActionString()
+				end
+				local self_action = self.owner.components.playercontroller:GetItemSelfAction(active_item)
+				if self_action ~= nil then
+					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. self_action:GetActionString()
+				end
+				if help_string ~= "" then
+					table.insert(str, help_string)
+				end
+
+				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
+				if right and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
+					help_string = help_string .. " (One)"
+				end
+				table.insert(str, help_string)
+
+			elseif inv_item ~= nil then
+				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
+				help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.SELECT
+				help_string = help_string .. (left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() and " (Half)" or "")
+				table.insert(str, help_string)
+
+				help_string = ""
+				if not is_equip_slot then
+					local _, h, p, b, l, r = self.owner.components.playercontroller:GetAllTypeContainers()
+					if right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) then
+						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.CHANGEBOX
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.CHANGEBOX
+					else
+						if not inv_item.replica.inventoryitem:IsGrandOwner(self.owner) then
+							help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.TAKE
+						else
+							local scene_action = self.owner.components.playercontroller:GetItemUseAction(inv_item)
+							if scene_action ~= nil then
+								help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. scene_action:GetActionString()
+							end
+						end
+						local self_action = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
+						if self_action ~= nil then
+							if help_string ~= nil then help_string = help_string .. "  " end
+							help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. self_action:GetActionString()
+						end
+					end
+				else
+					local self_action = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
+					if self_action ~= nil and self_action.action ~= ACTIONS.UNEQUIP then
+						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. self_action:GetActionString()
+					end
+					if #self.inv > 0 and not (inv_item:HasTag("heavy") or GetGameModeProperty("non_item_equips")) then
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.UNEQUIP
+					end
+				end
+				if help_string ~= "" then
+					table.insert(str, help_string)
+				end
+				
+				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
+				if right and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
+					help_string = help_string .. " (One)"
+				end
+				table.insert(str, help_string)
+			end
+
+			local was_shown = self.actionstring.shown
+			local old_string = self.actionstringbody:GetString()
+			local new_string = table.concat(str, '\n')
+			if old_string ~= new_string then
+				self.actionstringbody:SetString(new_string)
+				self.actionstringtime = CURSOR_STRING_DELAY
+				self.actionstring:Show()
+			end
+
+			local w0, h0 = self.actionstringtitle:GetRegionSize()
+			local w1, h1 = self.actionstringbody:GetRegionSize()
+
+			local wmax = math.max(w0, w1)
+
+			local dest_pos = self.active_slot:GetWorldPosition()
+
+			local xscale, yscale, zscale = self.root:GetScale():Get()
+
+			if self.active_slot.side_align_tip then
+				-- in-game containers, chests, fridge
+				self.actionstringtitle:SetPosition(wmax/2, h0/2)
+				self.actionstringbody:SetPosition(wmax/2, -h1/2)
+
+				dest_pos.x = dest_pos.x + self.active_slot.side_align_tip * xscale
+			elseif self.active_slot.top_align_tip then
+				-- main inventory
+				self.actionstringtitle:SetPosition(0, h0/2 + h1)
+				self.actionstringbody:SetPosition(0, h1/2)
+
+				dest_pos.y = dest_pos.y + (self.active_slot.top_align_tip + TIP_YFUDGE) * yscale
+			elseif self.active_slot.bottom_align_tip then
+				
+				self.actionstringtitle:SetPosition(0, -h0/2)
+				self.actionstringbody:SetPosition(0, -(h1/2 + h0))
+
+				dest_pos.y = dest_pos.y + (self.active_slot.bottom_align_tip + TIP_YFUDGE) * yscale
+			else
+				-- old default as fallback ?
+				self.actionstringtitle:SetPosition(0, h0/2 + h1)
+				self.actionstringbody:SetPosition(0, h1/2)
+
+				dest_pos.y = dest_pos.y + (W/2 + TIP_YFUDGE) * yscale
+			end
+
+			-- print("self.active_slot:GetWorldPosition()", self.active_slot:GetWorldPosition())
+			-- print("h0", h0)
+			-- print("w0", w0)
+			-- print("h1", h1)
+			-- print("w1", h1)
+			-- print("dest_pos", dest_pos)
+
+			if dest_pos:DistSq(self.actionstring:GetPosition()) > 1 then
+				self.actionstringtime = CURSOR_STRING_DELAY
+				if was_shown then
+					self.actionstring:MoveTo(self.actionstring:GetPosition(), dest_pos, .1)
+				else
+					self.actionstring:SetPosition(dest_pos)
+					self.actionstring:Show()
+				end
+			end
+		else
+			self.actionstringbody:SetString("")
+			self.actionstring:Hide()
+		end
+	end
 end)

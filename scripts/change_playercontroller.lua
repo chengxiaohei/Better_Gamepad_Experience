@@ -17,19 +17,9 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 		return type
 	end
-
-	-- New Added
-	local GetContainerWithType = function (self, type)
-		local opened_containers = self.inst.replica.inventory:GetOpenContainers()
-		for c, _ in pairs(opened_containers) do 
-			if type == QueryContainerType(self, c) then
-				return c
-			end
-		end
-	end
 	
 	-- New Added
-	local GetAllTypeContainers = function (self)
+	self.GetAllTypeContainers = function (self)
 		local opened_containers = self.inst.replica.inventory:GetOpenContainers()
 		local h,p,b,l,r 
 		for c, _ in pairs(opened_containers) do 
@@ -73,7 +63,7 @@ AddComponentPostInit("playercontroller", function(self)
 						not iitem.replica.stackable:IsFull() then
 						--Add only one
 						container.replica.container:AddOneOfActiveItemToSlot(islot)
-					else -- must be right
+					else
 						--Add entire stack
 						container.replica.container:AddAllOfActiveItemToSlot(islot)
 					end
@@ -117,14 +107,14 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif control == CONTROL_INVENTORY_EXAMINE then
 			self:DoControllerInspectItemFromInvTile(active_item or inv_item)
 		elseif control == CONTROL_INVENTORY_USEONSELF then
-			if left and right then
+			if left and right and active_item ~= nil and inv_item ~= nil then
 				PutActiveItemInContainer(self, active_item, inv_item, true)
-			elseif left then
+			elseif left and active_item ~= nil and inv_item ~= nil then
 				PutActiveItemInContainer(self, active_item, inv_item, false)
 			elseif right then
 				if container ~= nil and slot ~= nil then
 					local cursor_container_type = QueryContainerType(self, container.inst)
-					local iv,hc,pc,bc,lc,rc = GetAllTypeContainers(self)
+					local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()
 					local container_list = {}
 					if cursor_container_type == "inv" then
 						--put into (rc or lc or bc or pc or hc or iv)
@@ -167,51 +157,40 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 
 		elseif control == CONTROL_INVENTORY_USEONSCENE then
-			if right then
-				if container ~= nil and slot ~= nil then
-					local cursor_container_type = QueryContainerType(self, container.inst)
-					local iv,hc,pc,bc,lc,rc = GetAllTypeContainers(self)
-					local container_list = {}
-					if cursor_container_type == "inv" then
-						--put into (lc or rc or bc or pc or hc or iv)
-						table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, bc)
-						table.insert(container_list, pc) table.insert(container_list, hc) table.insert(container_list, iv)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "hand" then
-						-- put into (lc or rc or iv or bc or pc or hc)
-						table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
-						table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, hc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "pack" then
-						-- put into (lc or rc or iv or hc or bc or pc)
-						table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
-						table.insert(container_list, hc) table.insert(container_list, bc) table.insert(container_list, pc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "beard" then
-						-- put into (lc or rc or iv or hc or pc or bc)
-						table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
-						table.insert(container_list, hc) table.insert(container_list, pc) table.insert(container_list, bc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "chest" then
-						-- put into (iv or hc or bc or pc or rc or lc)
-						table.insert(container_list, iv) table.insert(container_list, hc) table.insert(container_list, bc)
-						table.insert(container_list, pc) table.insert(container_list, rc) table.insert(container_list, lc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "cooker" then
-						-- put into (lc or iv or hc or bc or pc or rc)
-						table.insert(container_list, lc) table.insert(container_list, iv) table.insert(container_list, hc)
-						table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, rc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					end
-				end
-			elseif left then
-				if inv_item ~= nil and container ~= nil and slot ~= nil then
-					local cursor_container_type = QueryContainerType(self, container.inst)
-					if cursor_container_type == "chest" or cursor_container_type == "cooker" then
-						container:MoveItemFromHalfOfSlot(slot, GetContainerWithType(self, "beard") or self.inst)
-					else
-						container:MoveItemFromHalfOfSlot(slot, GetContainerWithType(self, "chest") or GetContainerWithType(self, "cooker"))
-					end
+			if right and container ~= nil and slot ~= nil then
+				local cursor_container_type = QueryContainerType(self, container.inst)
+				local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()
+				local container_list = {}
+				if cursor_container_type == "inv" then
+					--put into (lc or rc or bc or pc or hc or iv)
+					table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, bc)
+					table.insert(container_list, pc) table.insert(container_list, hc) table.insert(container_list, iv)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "hand" then
+					-- put into (lc or rc or iv or bc or pc or hc)
+					table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
+					table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, hc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "pack" then
+					-- put into (lc or rc or iv or hc or bc or pc)
+					table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
+					table.insert(container_list, hc) table.insert(container_list, bc) table.insert(container_list, pc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "beard" then
+					-- put into (lc or rc or iv or hc or pc or bc)
+					table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
+					table.insert(container_list, hc) table.insert(container_list, pc) table.insert(container_list, bc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "chest" then
+					-- put into (iv or hc or bc or pc or rc or lc)
+					table.insert(container_list, iv) table.insert(container_list, hc) table.insert(container_list, bc)
+					table.insert(container_list, pc) table.insert(container_list, rc) table.insert(container_list, lc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "cooker" then
+					-- put into (lc or iv or hc or bc or pc or rc)
+					table.insert(container_list, lc) table.insert(container_list, iv) table.insert(container_list, hc)
+					table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, rc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				end
 			else
 				self:DoControllerUseItemOnSceneFromInvTile(active_item or inv_item)

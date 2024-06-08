@@ -4,13 +4,13 @@ AddClassPostConstruct("screens/playerhud", function(self)
 
 	local OpenContainer_Old = self.OpenContainer
 	self.OpenContainer = function(self, container, side,...)
-        print("******OpenContainer")
+        -- print("******OpenContainer")
         OpenContainer_Old(self, container, side, ...)
 	end
 
 	local CloseContainer_Old = self.CloseContainer
 	self.CloseContainer = function(self, container, side,...)
-        print("******CloseContainer")
+        -- print("******CloseContainer")
         CloseContainer_Old(self, container, side, ...)
 	end
 end)

@@ -97,14 +97,18 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		end
 
 		if self.pin_nav then
-			self:PinBarNav(self.active_slot:FindPinUp())
+			if self:PinBarNav(self.active_slot:FindPinUp()) and self.active_slot:FindPinUp() ~= self.active_slot then
+				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+			end
 		else
 			local active_item = self.owner.replica.inventory:GetActiveItem()
 			if self:CursorNav(Vector3(0,1,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
 				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 			elseif not self.open and not active_item and (self.current_list == self.inv or self.current_list == self.equip) and (not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed) then
 				-- go into the pin bar if there are no other open containers above the inventory bar
-				self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1))
+				if self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1)) then
+					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+				end
 			end
 		end
 	end
@@ -124,7 +128,9 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		if pin_nav then
 			local next_pin = self.active_slot:FindPinDown()
 			if next_pin then
-				self:PinBarNav(next_pin)
+				if self:PinBarNav(next_pin) then
+					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+				end
 			elseif not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed then
 				pin_nav = false
 				local k, slot = next(self.current_list or {})
@@ -444,7 +450,10 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 		local controller_attached = TheInput:ControllerAttached()
 		self.controller_build = controller_attached
-		self.integrated_backpack = controller_attached or Profile:GetIntegratedBackpack()
+		-- =============================================================================== --
+		-- self.integrated_backpack = controller_attached or Profile:GetIntegratedBackpack()
+		self.integrated_backpack = Profile:GetIntegratedBackpack()
+		-- =============================================================================== --
 
 		local inventory = self.owner.replica.inventory
 
@@ -452,11 +461,10 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		overflow = (overflow ~= nil and overflow:IsOpenedBy(self.owner)) and overflow or nil
 
 		local do_integrated_backpack = overflow ~= nil and self.integrated_backpack
-		local do_self_inspect = not (self.controller_build or GetGameModeProperty("no_avatar_popup"))
-
-		-- Only Add This Two Line
-		do_integrated_backpack = false
-		do_self_inspect = true
+		-- =============================================================================== --
+		-- local do_self_inspect = not (self.controller_build or GetGameModeProperty("no_avatar_popup"))
+		local do_self_inspect = CHANGE_SHOW_SELF_INSPECT_BUTTON and not (GetGameModeProperty("no_avatar_popup"))
+		-- =============================================================================== --
 
 		if TheNet:GetServerGameMode() == "quagmire" then
 			RebuildLayout_Quagmire(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
@@ -478,7 +486,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	end
 
 	self.Rebuild = function(self, ...)
-		if CHNAGE_IS_CHANGE_INVENTORY_BAR then
+		if TheInput:ControllerAttached() then
 			Rebuild_New(self, ...)
 		else
 			Rebuild_Old(self, ...)
@@ -493,6 +501,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	local function GetDropActionString(doer, item)
 		return BufferedAction(doer, nil, ACTIONS.DROP, item, doer:GetPosition()):GetActionString()
 	end
+
+	-- Numerous changes
 	self.UpdateCursorText = function (self, ...)
 		local inv_item = self:GetCursorItem()
 		local active_item = self.cursortile ~= nil and self.cursortile.item or nil
@@ -523,13 +533,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 			end
 
-
 			local is_equip_slot = self.active_slot and self.active_slot.equipslot
 			local str = {}
 
 			local left = TheInput:IsControlPressed(CHANGE_CONTROL_LEFT)
 			local right = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
-
 
 			if active_item ~= nil and inv_item ~= nil then
 				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
@@ -551,7 +559,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				help_string = ""
 				local changebox_flag = false
 				local _, h, p, b, l, r = self.owner.components.playercontroller:GetAllTypeContainers()
-				if not is_equip_slot and right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) then
+				if not is_equip_slot and right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) and
+					not (left and inv_item.replica.container ~= nil) then
 					changebox_flag = true
 				else
 					local scene_action = self.owner.components.playercontroller:GetItemUseAction(active_item)
@@ -560,11 +569,13 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					end
 					local use_action = self.owner.components.playercontroller:GetItemUseAction(active_item, inv_item)
 					local self_action = self.owner.components.playercontroller:GetItemSelfAction(active_item)
-					if use_action ~= nil then
-						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_USE_ITEM_ON_ITEM) .. " " .. use_action:GetActionString()
-						if left and inv_item.replica.container ~= nil and inv_item.replica.container:CanTakeItemInSlot(active_item) then
+					if left and inv_item.replica.container ~= nil then
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.ACTIONS.STORE.GENERIC
+						if right and active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() then 
 							help_string = help_string .. " (One)"
 						end
+					elseif use_action ~= nil then
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. use_action:GetActionString()
 					elseif self_action ~= nil then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. self_action:GetActionString()
 					end
@@ -681,7 +692,20 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 			local xscale, yscale, zscale = self.root:GetScale():Get()
 
-			if self.active_slot.side_align_tip then
+			if self.active_slot.container ~= nil and self.active_slot.container.issidewidget and not Profile:GetIntegratedBackpack() then
+				-- backpack
+				self.actionstringtitle:SetPosition(-wmax/2, h0/2)
+				self.actionstringbody:SetPosition(-wmax/2, -h1/2)
+
+				dest_pos.x = dest_pos.x + ((-240) - self.active_slot.container.widget.slotpos[self.active_slot.num].x) * xscale
+			elseif self.active_slot.container ~= nil and self.active_slot.container.type == "side_inv_behind" and not Profile:GetIntegratedBackpack() then
+				-- beard
+				self.actionstringtitle:SetPosition(-wmax/2, h0/2)
+				self.actionstringbody:SetPosition(-wmax/2, -h1/2)
+
+				local degree_dist = (#self.active_slot.container.widget.slotpos - 1) * 20
+				dest_pos.x = dest_pos.x + ((-100) - degree_dist - self.active_slot.container.widget.slotpos[self.active_slot.num].x) * xscale
+			elseif self.active_slot.side_align_tip then
 				-- in-game containers, chests, fridge
 				self.actionstringtitle:SetPosition(wmax/2, h0/2)
 				self.actionstringbody:SetPosition(wmax/2, -h1/2)

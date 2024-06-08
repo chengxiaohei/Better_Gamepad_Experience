@@ -1,5 +1,5 @@
 AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
-    local OnControl_Old = self.OnControl;
+    local OnControl_Old = self.OnControl
     self.OnControl = function(self, control, down, ...)
         if TheInput:ControllerAttached() then
             if control == CONTROL_MENU_MISC_1 then return false end
@@ -196,26 +196,40 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
     end
 
     -- forbid Pinbar change page_spinner icons while gain or lose focus
-    self.OnGainFocus = function (self, ...) end
-    self.OnLoseFocus = function (self, ...) end
+    local OnGainFocus_Old = self.OnGainFocus
+    self.OnGainFocus = function (self, ...) 
+        if not TheInput:ControllerAttached() then
+            OnGainFocus_Old(self, ...)
+        end
+    end
+    local OnLoseFocus_Old = self.OnLoseFocus
+    self.OnLoseFocus = function (self, ...)
+        if not TheInput:ControllerAttached() then
+            OnLoseFocus_Old(self, ...)
+        end
+    end
 
     -- make page_spinner change itself icons correctly
     local page_spinner_ongainfocusfn_Old = self.page_spinner.ongainfocusfn
     self.page_spinner.ongainfocusfn = function ()
         page_spinner_ongainfocusfn_Old()
-        self.page_spinner.page_left:Hide()
-        self.page_spinner.page_right:Hide()
-        self.page_spinner.page_left_control:Show()
-        self.page_spinner.page_right_control:Show()
+        if TheInput:ControllerAttached() then
+            self.page_spinner.page_left:Hide()
+            self.page_spinner.page_right:Hide()
+            self.page_spinner.page_left_control:Show()
+            self.page_spinner.page_right_control:Show()
+        end
     end
 
     local page_spinner_onlosefocusfn_Old = self.page_spinner.onlosefocusfn
     self.page_spinner.onlosefocusfn = function ()
         page_spinner_onlosefocusfn_Old()
-        self.page_spinner.page_left_control:Hide()
-        self.page_spinner.page_right_control:Hide()
-        self.page_spinner.page_left:Show()
-        self.page_spinner.page_right:Show()
+        if TheInput:ControllerAttached() then
+            self.page_spinner.page_left_control:Hide()
+            self.page_spinner.page_right_control:Hide()
+            self.page_spinner.page_left:Show()
+            self.page_spinner.page_right:Show()
+        end
     end
 
 end)

@@ -101,21 +101,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 end
                 self.controls:ToggleMap()
                 return true
-            -- elseif control == CONTROL_CANCEL and TheInput:ControllerAttached() then
-                -- if self:IsCraftingOpen() then
-                --     self:CloseCrafting()
-                --     return true
-                -- elseif self:IsSpellWheelOpen() then
-                --     self:CloseSpellWheel()
-                --     return true
-                -- elseif self:IsControllerInventoryOpen() then
-                --     self:CloseControllerInventory()
-                --     return true
-                -- end
-                -- if self:IsSpellWheelOpen() then
-                --     self:CloseSpellWheel()
-                --     return true
-                -- end
             elseif control == CONTROL_TOGGLE_PLAYER_STATUS then
                 self:ShowPlayerStatusScreen(true)
                 return true
@@ -156,45 +141,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     return true
                 end
             end
-        -- elseif control == CONTROL_OPEN_INVENTORY then
-            -- if self:IsControllerInventoryOpen() then
-            --     self:CloseControllerInventory()
-            --     return true
-            -- end
-            -- local inventory = self.owner.replica.inventory
-            -- if inventory ~= nil and inventory:IsVisible() and inventory:GetNumSlots() > 0 then
-            --     self:OpenControllerInventory()
-            --     return true
-            -- end
-        elseif control >= CONTROL_INV_1 and control <= CONTROL_INV_10 then
-            --inventory hotkeys
-            local inventory = self.owner.replica.inventory
-            if inventory ~= nil and inventory:IsVisible() then
-                local hot_key_num = control - CONTROL_INV_1 + 1
-
-                if TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER) then
-                    self.controls.craftingmenu:SelectPin(hot_key_num)
-                else
-                    local item = inventory:GetItemInSlot(hot_key_num)
-                    if item ~= nil then
-                        self.owner.replica.inventory:UseItemFromInvTile(item)
-                    end
-                end
-                return true
-            end
-        elseif control >= CONTROL_INV_11 and control <= CONTROL_INV_15 then
-            -- Inventory hotkeys part two.
-            local inventory = self.owner.replica.inventory
-            if inventory ~= nil and inventory:IsVisible() then
-                local hot_key_num = control - CONTROL_INV_11 + 11
-
-                -- No crafting menu pins!
-                local item = inventory:GetItemInSlot(hot_key_num)
-                if item ~= nil then
-                    self.owner.replica.inventory:UseItemFromInvTile(item)
-                end
-                return true
-            end
         end
     end
 
@@ -213,7 +159,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
                         or (container.replica.container ~= nil and container.replica.container.type == "side_inv") and self.controls.secondary_status.side_inv
                         or (container.replica.container ~= nil and container.replica.container.type == "side_inv_behind") and self.controls.containerroot_side_behind
                         or self.controls.containerroot
-
         parent:AddChild(containerwidget)
 
         --self.controls[side and "containerroot_side" or "containerroot"]:AddChild(containerwidget)
@@ -227,35 +172,110 @@ AddClassPostConstruct("screens/playerhud", function(self)
         if parent == self.controls.containerroot then
             self:CloseSpellWheel()
         end
+        print("****** my open container")
     end
+
 	local OpenContainer_Old = self.OpenContainer
-	self.OpenContainer = function (self, container, side, ...)
+    local OpenContainer_New = function (self, container, side)
         if container == nil then
             return
-        elseif TheInput:ControllerAttached() and side and container.replica.container.inst:HasTag("backpack") and 
-                CHANGE_ADD_EXTRAL_BACKPACK_INTEGRATE_SETTING and not CHANGE_INTEGRATE_BACKPACK then
+        elseif side and Profile:GetIntegratedBackpack() then
+            self.controls.inv.rebuild_pending = true
+        else
+            print("******OpenContainer")
             OpenContainerWidget(self, container, side)
         end
-		OpenContainer_Old(self, container, side, ...)
-	end
+    end
+
+    self.OpenContainer = function (self, container, side, ...)
+        if TheInput:ControllerAttached() then
+            OpenContainer_New(self, container, side)
+        else
+            OpenContainer_Old(self, container, side, ...)
+        end
+    end
 
     -- Not Changed
     local function CloseContainerWidget(self, container, side)
         for k, v in pairs(self.controls.containers) do
             if v.container == container then
+                print("******close how many?")
                 v:Close()
             end
         end
+        print("****** my close container")
     end
 
 	local CloseContainer_Old = self.CloseContainer
-	self.CloseContainer = function (self, container, side, ...)
+    local CloseContainer_New = function (self, container, side)
         if container == nil then
             return
-        elseif TheInput:ControllerAttached() and side and container.replica.container.inst:HasTag("backpack") and
-                CHANGE_ADD_EXTRAL_BACKPACK_INTEGRATE_SETTING and not CHANGE_INTEGRATE_BACKPACK then
+        elseif side and Profile:GetIntegratedBackpack() then
+            self.controls.inv.rebuild_pending = true
+        else
+            print("CloseContainer")
             CloseContainerWidget(self, container, side)
         end
-		CloseContainer_Old(self, container, side, ...)
-	end
+    end
+
+    self.CloseContainer = function (self, container, side, ...)
+        if TheInput:ControllerAttached() then
+            CloseContainer_New(self, container, side)
+        else
+            CloseContainer_Old(self, container, side, ...)
+        end
+    end
+
+    -- Make it work right while change form switch between separated and integrated
+    local RefreshControllers_Old = self.RefreshControllers
+    local RefreshControllers_New = function (self)
+        local controller_mode = TheInput:ControllerAttached()
+        if controller_mode then
+            TheFrontEnd:StopTrackingMouse()
+        end
+
+        TheFrontEnd:UpdateRepeatDelays()
+
+        -- =============================================================================== --
+        -- local integrated_backpack = controller_mode or Profile:GetIntegratedBackpack()
+        local integrated_backpack = Profile:GetIntegratedBackpack()
+        -- =============================================================================== --
+        if self.controls.inv.controller_build ~= controller_mode or self.controls.inv.integrated_backpack ~= integrated_backpack then
+            self.controls.inv.rebuild_pending = true
+            local overflow = self.owner.replica.inventory:GetOverflowContainer()
+            if overflow == nil then
+                --switching to controller inv with no backpack
+                --don't animate out from the backpack position
+                self.controls.inv.rebuild_snapping = true
+            
+            -- =============================================================================== --
+            -- elseif controller_mode or integrated_backpack then
+            elseif integrated_backpack then
+            -- =============================================================================== --
+                --switching to controller with backpack
+                --close mouse backpack container widget
+                CloseContainerWidget(self, overflow.inst, overflow:IsSideWidget())
+            elseif overflow:IsOpenedBy(self.owner) then
+                --switching to mouse with backpack
+                --reopen backpack if it was opened
+                OpenContainerWidget(self, overflow.inst, overflow:IsSideWidget())
+            end
+        end
+
+        self.controls.craftingmenu:RefreshControllers(controller_mode)
+
+        if self._CraftingHintAllRecipesEnabled ~= Profile:GetCraftingHintAllRecipesEnabled() then
+            self.owner:PushEvent("refreshcrafting")
+            self._CraftingHintAllRecipesEnabled = Profile:GetCraftingHintAllRecipesEnabled()
+        end
+
+    end
+
+    self.RefreshControllers = function (self, ...)
+        if TheInput:ControllerAttached() then
+            RefreshControllers_New(self)
+        else
+            RefreshControllers_Old(self, ...)
+        end
+    end
 end)

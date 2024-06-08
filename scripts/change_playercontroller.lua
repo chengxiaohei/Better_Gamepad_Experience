@@ -107,49 +107,47 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif control == CONTROL_INVENTORY_EXAMINE then
 			self:DoControllerInspectItemFromInvTile(active_item or inv_item)
 		elseif control == CONTROL_INVENTORY_USEONSELF then
-			if left and right and active_item ~= nil and inv_item ~= nil then
+			if left and right and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil then
 				PutActiveItemInContainer(self, active_item, inv_item, true)
-			elseif left and active_item ~= nil and inv_item ~= nil then
+			elseif left and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil then
 				PutActiveItemInContainer(self, active_item, inv_item, false)
-			elseif right then
-				if container ~= nil and slot ~= nil then
-					local cursor_container_type = QueryContainerType(self, container.inst)
-					local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()
-					local container_list = {}
-					if cursor_container_type == "inv" then
-						--put into (rc or lc or bc or pc or hc or iv)
-						table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
-						table.insert(container_list, pc) table.insert(container_list, hc) table.insert(container_list, iv)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "hand" then
-						-- put into (rc or lc or bc or pc or iv or hc)
-						table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
-						table.insert(container_list, pc) table.insert(container_list, iv) table.insert(container_list, hc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "pack" then
-						-- put into (rc or lc or bc or hc or iv or pc)
-						table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
-						table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, pc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "beard" then
-						-- put into (rc or lc or pc or hc or iv or bc)
-						table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, pc)
-						table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, bc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "chest" then
-						-- put into (rc or bc or pc or hc or iv or lc)
-						table.insert(container_list, rc) table.insert(container_list, bc) table.insert(container_list, pc)
-						table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, lc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					elseif cursor_container_type == "cooker" then
-						-- put into (bc or pc or hc or iv or lc or rc)
-						table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, hc)
-						table.insert(container_list, iv) table.insert(container_list, lc) table.insert(container_list, rc)
-						container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
-					end
+			elseif right and container ~= nil and slot ~= nil then
+				local cursor_container_type = QueryContainerType(self, container.inst)
+				local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()
+				local container_list = {}
+				if cursor_container_type == "inv" then
+					--put into (rc or lc or bc or pc or hc or iv)
+					table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
+					table.insert(container_list, pc) table.insert(container_list, hc) table.insert(container_list, iv)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "hand" then
+					-- put into (rc or lc or bc or pc or iv or hc)
+					table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
+					table.insert(container_list, pc) table.insert(container_list, iv) table.insert(container_list, hc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "pack" then
+					-- put into (rc or lc or bc or hc or iv or pc)
+					table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
+					table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, pc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "beard" then
+					-- put into (rc or lc or pc or hc or iv or bc)
+					table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, pc)
+					table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, bc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "chest" then
+					-- put into (rc or bc or pc or hc or iv or lc)
+					table.insert(container_list, rc) table.insert(container_list, bc) table.insert(container_list, pc)
+					table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, lc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
+				elseif cursor_container_type == "cooker" then
+					-- put into (bc or pc or hc or iv or lc or rc)
+					table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, hc)
+					table.insert(container_list, iv) table.insert(container_list, lc) table.insert(container_list, rc)
+					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				end
 			else
-				if inv_item ~= nil and active_item ~= nil then
+				if inv_item ~= nil and active_item ~= nil and self:GetItemUseAction(active_item, inv_item) ~= nil then
 					self.inst.replica.inventory:ControllerUseItemOnItemFromInvTile(inv_item, active_item)
 				else
 					self:DoControllerUseItemOnSelfFromInvTile(active_item or inv_item)

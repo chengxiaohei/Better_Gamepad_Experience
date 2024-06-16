@@ -370,4 +370,569 @@ AddComponentPostInit("playercontroller", function(self)
 		return isenabled, ishudblocking
 	end
 
+	self.controller_alt_target = nil
+    self.controller_alt_target_age = math.huge
+
+	local TARGET_EXCLUDE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
+	local REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS = TheSim:RegisterFindTags({ "_combat" }, TARGET_EXCLUDE_TAGS)
+
+	-- Numerous changes
+	local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
+		if self.placer ~= nil or (self.deployplacer ~= nil and self.deploy_mode) or self.inst:HasTag("usingmagiciantool") then
+			self.controller_target = nil
+			self.controller_target_age = 0
+			self.controller_alt_target = nil
+			self.controller_alt_target_age = 0
+			return
+		end
+
+		if self.controller_target ~= nil
+			and (not self.controller_target:IsValid() or
+				self.controller_target:HasTag("INLIMBO") or
+				self.controller_target:HasTag("NOCLICK") or
+				not CanEntitySeeTarget(self.inst, self.controller_target)) then
+			--"FX" and "DECOR" tag should never change, should be safe to skip that check
+			self.controller_target = nil
+			--it went invalid, but we're not resetting the age yet
+		end
+
+		if self.controller_alt_target ~= nil
+			and (not self.controller_alt_target:IsValid() or
+				self.controller_alt_target:HasTag("INLIMBO") or
+				self.controller_alt_target:HasTag("NOCLICK") or
+				not CanEntitySeeTarget(self.inst, self.controller_alt_target)) then
+			--"FX" and "DECOR" tag should never change, should be safe to skip that check
+			self.controller_alt_target = nil
+			--it went invalid, but we're not resetting the age yet
+		end
+
+		self.controller_target_age = self.controller_target_age + dt
+		self.controller_alt_target_age = self.controller_alt_target_age + dt
+		if self.controller_target_age < .2 and self.controller_alt_target_age < .2 then
+			--prevent target flickering
+			return
+		end
+
+		local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+		--Fishing targets may have large radius, making it hard to target with normal priority
+		local fishing = equiped_item ~= nil and equiped_item:HasTag("fishingrod")
+
+		-- we want to never target our fishing hook, but others can
+		local ocean_fishing_target = (equiped_item ~= nil and equiped_item.replica.oceanfishingrod ~= nil) and equiped_item.replica.oceanfishingrod:GetTarget() or nil
+
+		local min_rad = 1.5
+		local max_rad = 6
+		local min_rad_sq = min_rad * min_rad
+		local max_rad_sq = max_rad * max_rad
+
+		local target_rad =
+				self.controller_target ~= nil and
+				math.max(min_rad, math.min(max_rad, math.sqrt(self.inst:GetDistanceSqToInst(self.controller_target)))) or
+				max_rad
+		local alt_target_rad =
+				self.controller_alt_target ~= nil and
+				math.max(min_rad, math.min(max_rad, math.sqrt(self.inst:GetDistanceSqToInst(self.controller_alt_target)))) or
+				max_rad
+		local target_rad_sq = target_rad * target_rad + .1 --allow small error
+		local alt_target_rad_sq = alt_target_rad * alt_target_rad + .1 --allow small error
+
+		local nearby_ents = TheSim:FindEntities(x, y, z, fishing and max_rad or math.max(target_rad, alt_target_rad), nil, TARGET_EXCLUDE_TAGS)
+
+		--Note: it may already contain controller_target,
+		--      so make sure to handle it only once later
+		if self.controller_target ~= nil and self.controller_alt_target ~= nil then
+			if self.controller_target ~= self.controller_alt_target then
+				table.insert(nearby_ents, 1, self.controller_alt_target)
+			end
+			table.insert(nearby_ents, 1, self.controller_target)
+		elseif self.controller_target ~= nil or self.controller_alt_target ~= nil then
+			table.insert(nearby_ents, 1, self.controller_target or self.controller_alt_target)
+		end
+
+		local target = nil
+		local target_score = 0
+		local alt_target = nil
+		local alt_target_score = 0
+		local alt_target_has_found = false
+		local canexamine = (self.inst.CanExamine == nil or self.inst:CanExamine())
+					and (not self.inst.HUD:IsPlayerAvatarPopUpOpen())
+					and (self.inst.sg == nil or self.inst.sg:HasStateTag("moving") or self.inst.sg:HasStateTag("idle") or self.inst.sg:HasStateTag("channeling"))
+					and (self.inst:HasTag("moving") or self.inst:HasTag("idle") or self.inst:HasTag("channeling"))
+
+		local onboat = self.inst:GetCurrentPlatform() ~= nil
+		local anglemax = onboat and TUNING.CONTROLLER_BOATINTERACT_ANGLE or TUNING.CONTROLLER_INTERACT_ANGLE
+		for i, v in ipairs(nearby_ents) do
+			if v ~= ocean_fishing_target then
+
+				--Only handle controller_target if it's the one we added at the front
+				if v ~= self.inst and (v ~= self.controller_target or i == 1) and (v ~= self.controller_alt_target or i == 1 or i == 2) and v.entity:IsVisible() then
+					if v.entity:GetParent() == self.inst and v:HasTag("bundle") then
+						--bundling or constructing
+						alt_target = v
+						alt_target_has_found = true
+						break
+					end
+
+					-- Calculate the dsq to filter out objects, ignoring the y component for now.
+					local x1, y1, z1 = v.Transform:GetWorldPosition()
+					local dx, dy, dz = x1 - x, y1 - y, z1 - z
+					local dsq = dx * dx + dz * dz
+
+					if fishing and v:HasTag("fishable") then
+						local r = v:GetPhysicsRadius(0)
+						if dsq <= r * r then
+							dsq = 0
+						end
+					end
+
+					-- local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dx*dx + dz*dz) * math.sqrt(dirx*dirx + dirz*dirz))) / DEGREES or 0
+					local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dsq))) / DEGREES or 0
+
+					if (dsq < min_rad_sq) or
+						(dsq <= target_rad_sq and v == self.controller_target and dx * dirx + dz * dirz > 0) or
+						(dsq <= alt_target_rad_sq and v == self.controller_alt_target and dx * dirx + dz * dirz > 0) or
+						(self.controller_target ~= nil and dsq <= target_rad_sq and included_angle < anglemax) or
+						(self.controller_alt_target ~= nil and dsq <= alt_target_rad_sq and included_angle < anglemax) or
+						(dsq <= max_rad_sq and included_angle < anglemax) and
+						CanEntitySeePoint(self.inst, x1, y1, z1) then
+						-- Incorporate the y component after we've performed the inclusion radius test.
+						-- We wait until now because we might disqualify our controller_target if its transform has a y component,
+						-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
+						dsq = dsq + (dy * dy)
+
+						local dist = dsq > 0 and math.sqrt(dsq) or 0
+						local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
+
+						--keep the angle component between [0..1]
+						local angle_component = (dot + 1) / 2
+
+						--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
+						local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
+
+						--for stuff that's *really* close - ie, just dropped
+						local add = dsq < .0625 --[[.25 * .25]] and 1 or 0
+
+						--just a little hysteresis
+						local mult = v == self.controller_target and not v:HasTag("wall") and 1.5 or 1
+						local alt_mult = v == self.controller_alt_target and not v:HasTag("wall") and 1.5 or 1
+
+						local score = angle_component * dist_component * mult * alt_mult + add
+
+						--make it easier to target stuff dropped inside the portal when alive
+						--make it easier to haunt the portal for resurrection in endless mode
+						if v:HasTag("portal") then
+							score = score * (self.inst:HasTag("playerghost") and GetPortalRez() and 1.1 or .9)
+						end
+
+						if v:HasTag("hasfurnituredecoritem") then
+							score = score * 0.5
+						end
+
+						-- print(v, angle_component, dist_component, mult, add, score)
+
+						local lmb, rmb = self:GetSceneItemControllerAction(v)
+
+						if lmb ~= nil then
+							if score < target_score or
+								(   score == target_score and
+									(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or
+										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
+									)
+								) then
+								--skip
+							else
+								target = v
+								target_score = score
+							end
+						end
+
+						if rmb ~= nil and not alt_target_has_found then
+							if score < alt_target_score or
+								(   score == alt_target_score and
+									(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or
+										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
+									)
+								) then
+								--skip
+							else
+								alt_target = v
+								alt_target_score = score
+							end
+						end
+
+						if lmb == nil and rmb == nil then
+							if score < target_score or
+								(   score == target_score and
+									(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or
+										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
+									)
+								) then
+								--skip
+							elseif canexamine and v:HasTag("inspectable") then
+								target = v
+								target_score = score
+							else
+								local inv_obj = self:GetCursorInventoryObject()
+								if inv_obj ~= nil then
+									local act = self:GetItemUseAction(inv_obj, v)
+									if act ~= nil and act.target == v then
+										target = v
+										target_score = score
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		-- print("****** target: ", target)
+		-- print("****** alt_target: ", alt_target)
+
+		if target ~= self.controller_target then
+			self.controller_target = target
+			self.controller_target_age = 0
+		end
+		if alt_target ~= self.controller_alt_target then
+			self.controller_alt_target = alt_target
+			self.controller_alt_target_age = 0
+		end
+	end
+
+	-- Not changed
+	local function CheckControllerPriorityTagOrOverride(target, tag, override)
+		if override ~= nil then
+			return FunctionOrValue(override)
+		end
+		return target:HasTag(tag)
+	end
+
+	-- Not changed yet
+	local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
+		if self.inst:HasTag("playerghost") or self.inst.replica.inventory:IsHeavyLifting() then
+			self.controller_attack_target = nil
+			self.controller_attack_target_ally_cd = nil
+
+			-- we can't target right now; disable target locking
+			self.controller_targeting_lock_target = false
+			return
+		end
+
+		local combat = self.inst.replica.combat
+
+		self.controller_attack_target_ally_cd = math.max(0, (self.controller_attack_target_ally_cd or 1) - dt)
+
+		if self.controller_attack_target ~= nil and
+			not (combat:CanTarget(self.controller_attack_target) and
+				CanEntitySeeTarget(self.inst, self.controller_attack_target)) then
+			self.controller_attack_target = nil
+
+			-- target is no longer valid; disable target locking
+			self.controller_targeting_lock_target = false
+			--it went invalid, but we're not resetting the age yet
+		end
+
+		--self.controller_attack_target_age = self.controller_attack_target_age + dt
+		--if self.controller_attack_target_age < .3 then
+			--prevent target flickering
+		--    return
+		--end
+
+		local equipped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		local forced_rad = equipped_item ~= nil and equipped_item.controller_use_attack_distance or 0
+
+		local min_rad = 3
+		local max_rad = math.max(forced_rad, combat:GetAttackRangeWithWeapon()) + 3.5
+		local max_rad_sq = max_rad * max_rad
+
+		--see entity_replica.lua for "_combat" tag
+
+		local nearby_ents = TheSim:FindEntities_Registered(x, y, z, max_rad + 3, REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS)
+		if self.controller_attack_target ~= nil then
+			--Note: it may already contain controller_attack_target,
+			--      so make sure to handle it only once later
+			table.insert(nearby_ents, 1, self.controller_attack_target)
+		end
+
+		local target = nil
+		local target_score = 0
+		local target_isally = true
+		local preferred_target =
+			TheInput:IsControlPressed(CONTROL_CONTROLLER_ATTACK) and
+			self.controller_attack_target or
+			combat:GetTarget() or
+			nil
+
+		local current_controller_targeting_targets = {}
+		local selected_target_index = 0
+		for i, v in ipairs(nearby_ents) do
+			if v ~= self.inst and (v ~= self.controller_attack_target or i == 1) then
+				local isally = combat:IsAlly(v)
+				if not (isally and
+						self.controller_attack_target_ally_cd > 0 and
+						v ~= preferred_target) and
+					combat:CanTarget(v) then
+					--Check distance including y value
+					local x1, y1, z1 = v.Transform:GetWorldPosition()
+					local dx, dy, dz = x1 - x, y1 - y, z1 - z
+					local dsq = dx * dx + dy * dy + dz * dz
+
+					--include physics radius for max range check since we don't have (dist - phys_rad) yet
+					local phys_rad = v:GetPhysicsRadius(0)
+					local max_range = max_rad + phys_rad
+
+					if dsq < max_range * max_range and CanEntitySeePoint(self.inst, x1, y1, z1) then
+						local dist = dsq > 0 and math.sqrt(dsq) or 0
+						local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
+						if dot > 0 or dist < min_rad + phys_rad then
+							--now calculate score with physics radius subtracted
+							dist = math.max(0, dist - phys_rad)
+							local score = dot + 1 - 0.5 * dist * dist / max_rad_sq
+
+							if isally then
+								score = score * .25
+							elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
+								score = score * 5
+							elseif CheckControllerPriorityTagOrOverride(v, "monster", v.controller_priority_override_is_monster) then
+								score = score * 4
+							end
+
+							if v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
+								score = score * 6
+							end
+
+							if v == preferred_target then
+								score = score * 10
+							end
+
+							table.insert(current_controller_targeting_targets, v)
+							if score > target_score then
+								selected_target_index = #current_controller_targeting_targets
+								target = v
+								target_score = score
+								target_isally = isally
+							end
+						end
+					end
+				end
+			end
+		end
+
+		if self.controller_attack_target ~= nil and self.controller_targeting_lock_target then
+			-- we have a target and target locking is enabled so only update the list of valid targets, ie. check for targets that have appeared or disappeared
+
+			-- first check if any targets should be removed
+			for idx_outer = #self.controller_targeting_targets, 1, -1 do
+				local found = false
+				local existing_target = self.controller_targeting_targets[idx_outer]
+				for idx_inner = #current_controller_targeting_targets, 1, -1 do
+					if existing_target == current_controller_targeting_targets[idx_inner] then
+						-- we found the existing target in the list of current nearby entities so remove it from the current entity list to
+						-- make later addition of new entities more straightforward
+						table.remove(current_controller_targeting_targets, idx_inner)
+						found = true
+						break
+					end
+				end
+
+				-- if the existing target isn't found in the nearby entities then remove it from the targets
+				if not found then
+					table.remove(self.controller_targeting_targets, idx_outer)
+				end
+			end
+
+			-- now add new targets; check everything left in the nearby_ents table as we've been
+			-- removing existing targets from it as we checked for targets that were no longer valid
+			for i, v in ipairs(current_controller_targeting_targets) do
+				table.insert(self.controller_targeting_targets, v)
+			end
+
+			-- fin
+			return
+		end
+
+		if self.controller_target ~= nil and self.controller_target:IsValid() then
+			if target ~= nil then
+				if target:HasTag("wall") and
+					self.classified ~= nil and
+					self.classified.hasgift:value() and
+					self.classified.hasgiftmachine:value() and
+					self.controller_target:HasTag("giftmachine") then
+					--if giftmachine has (Y) control priority, then it
+					--should also have (X) control priority over walls
+					target = nil
+					target_isally = true
+				end
+			elseif self.controller_target:HasTag("wall") and not IsEntityDead(self.controller_target, true) then
+				--if we have no (X) control target, then give
+				--it to our (Y) control target if it's a wall
+				target = self.controller_target
+				target_isally = false
+			end
+		end
+
+		if target ~= self.controller_attack_target then
+			self.controller_attack_target = target
+			self.controller_targeting_target_index = selected_target_index
+			--self.controller_attack_target_age = 0
+		end
+
+		if not target_isally then
+			--reset ally targeting cooldown
+			self.controller_attack_target_ally_cd = nil
+		end
+	end
+
+	-- Not changed yet
+	local function UpdateControllerConflictingTargets(self)
+		local target, attacktarget = self.controller_target, self.controller_attack_target
+		if target == nil or attacktarget == nil then
+			return
+		end
+		-- NOTES(JBK): This is for handling when there are two targets on a controller but one should take super priority over the other.
+		-- Most of this will be workarounds in appearance as there are no sure fire ways to guarantee what two entities should be prioritized by actions alone as they need additional context.
+		if target ~= attacktarget then
+			if target:HasTag("mermthrone") and attacktarget:HasTag("merm") then
+				-- Inspecting a throne but could interact with a Merm, Merm takes priority.
+				target = attacktarget
+				self.controller_target_age = 0
+			elseif target:HasTag("crabking_claw") and attacktarget:HasTag("crabking_claw") then
+				-- Two claws let us try targeting the closest one because it will most likely be the one next to a boat.
+				if self.inst:GetDistanceSqToInst(target) < self.inst:GetDistanceSqToInst(attacktarget) then
+					attacktarget = target
+				else
+					target = attacktarget
+					self.controller_target_age = 0
+				end
+			end
+		end
+
+		self.controller_target, self.controller_attack_target = target, attacktarget
+	end
+	
+	-- Not Change, put here to apply local function UpdateControllerInteractionTarget
+	self.UpdateControllerTargets = function (self, dt, ...)
+		if self:IsAOETargeting() or
+			self.inst:HasTag("sitting_on_chair") or
+			(self.inst:HasTag("weregoose") and not self.inst:HasTag("playerghost")) or
+			(self.classified and self.classified.inmightygym:value() > 0) then
+			self.controller_target = nil
+			self.controller_target_age = 0
+			self.controller_attack_target = nil
+			self.controller_attack_target_ally_cd = nil
+			self.controller_targeting_lock_target = nil
+			return
+		end
+		local x, y, z = self.inst.Transform:GetWorldPosition()
+		local heading_angle = -self.inst.Transform:GetRotation()
+		local dirx = math.cos(heading_angle * DEGREES)
+		local dirz = math.sin(heading_angle * DEGREES)
+		UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
+		UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
+		UpdateControllerConflictingTargets(self)
+	end
+
+	-- Newly created function
+	self.GetControllerAltTarget = function (self, ...)
+		return self.controller_alt_target ~= nil and self.controller_alt_target:IsValid() and self.controller_alt_target or nil
+	end
+
+	-- Only Change One Line
+	self.DoControllerAltActionButton = function (self, ...)
+		self:ClearActionHold()
+
+		if self.placer_recipe ~= nil then
+			self:CancelPlacement()
+			return
+		elseif self.deployplacer ~= nil then
+			self:CancelDeployPlacement()
+			return
+		elseif self:IsAOETargeting() then
+			self:CancelAOETargeting()
+			return
+		elseif self:IsControllerTargetLockEnabled() then
+			self:ControllerTargetLock(false)
+			return
+		end
+
+		self.actionholdtime = GetTime()
+
+		local lmb, act = self:GetGroundUseAction()
+		local isspecial = nil
+		local obj = act ~= nil and act.target or nil
+		if act == nil then
+			-- ========================================================================= --
+			-- obj = self:GetControllerTarget()
+			obj = self:GetControllerAltTarget()
+			-- ========================================================================= --
+			if obj ~= nil then
+				lmb, act = self:GetSceneItemControllerAction(obj)
+				if act ~= nil and act.action == ACTIONS.APPLYCONSTRUCTION then
+					local container = act.target ~= nil and act.target.replica.container
+					if container ~= nil and
+						container.widget ~= nil and
+						container.widget.overrideactionfn ~= nil and
+						container.widget.overrideactionfn(act.target, self.inst)
+						then
+						--e.g. rift offering has a local confirmation popup
+						return
+					end
+				end
+			end
+			if act == nil then
+				act = self:GetGroundUseSpecialAction(nil, true)
+				if act ~= nil then
+					obj = nil
+					isspecial = true
+				else
+					local rider = self.inst.replica.rider
+					if rider ~= nil and rider:IsRiding() then
+						obj = self.inst
+						act = BufferedAction(obj, obj, ACTIONS.DISMOUNT)
+					else
+						self:TryAOETargeting()
+						return
+					end
+				end
+			end
+		end
+
+		if self.reticule ~= nil and self.reticule.reticule ~= nil and self.reticule.reticule.entity:IsVisible() then
+			self.reticule:PingReticuleAt(act:GetDynamicActionPoint())
+		end
+
+		if act.invobject ~= nil and act.invobject:HasTag("action_pulls_up_map") then
+			if self.inst.HUD ~= nil then
+				PullUpMap(self.inst, act.invobject)
+				return
+			end
+		end
+
+		if self.ismastersim then
+			self.inst.components.combat:SetTarget(nil)
+		elseif obj ~= nil then
+			if self.locomotor == nil then
+				self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+				SendRPCToServer(RPC.ControllerAltActionButton, act.action.code, obj, nil, act.action.canforce, act.action.mod_name)
+			elseif self:CanLocomote() then
+				act.preview_cb = function()
+					self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+					local isreleased = not TheInput:IsControlPressed(CONTROL_CONTROLLER_ALTACTION)
+					SendRPCToServer(RPC.ControllerAltActionButton, act.action.code, obj, isreleased, nil, act.action.mod_name)
+				end
+			end
+		elseif self.locomotor == nil then
+			self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+			SendRPCToServer(RPC.ControllerAltActionButtonPoint, act.action.code, act.pos.local_pt.x, act.pos.local_pt.z, nil, act.action.canforce, isspecial, act.action.mod_name, act.pos.walkable_platform, act.pos.walkable_platform ~= nil)
+		elseif self:CanLocomote() then
+			act.preview_cb = function()
+				self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+				local isreleased = not TheInput:IsControlPressed(CONTROL_CONTROLLER_ALTACTION)
+				SendRPCToServer(RPC.ControllerAltActionButtonPoint, act.action.code, act.pos.local_pt.x, act.pos.local_pt.z, isreleased, nil, isspecial, act.action.mod_name, act.pos.walkable_platform, act.pos.walkable_platform ~= nil)
+			end
+		end
+
+		self:DoAction(act)
+	end
 end)

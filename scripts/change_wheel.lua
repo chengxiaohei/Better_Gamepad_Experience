@@ -2,12 +2,14 @@
 AddClassPostConstruct("widgets/wheel", function(self)
     local OnControl_Old = self.OnControl
     self.OnControl = function(self, control, down, ...)
-        if control == CONTROL_ACCEPT then return false
-        elseif control == CONTROL_CANCEL then return false
-        elseif control == CONTROL_INVENTORY_USEONSCENE then return true
-        elseif control == CONTROL_INVENTORY_USEONSELF then control = CONTROL_CANCEL
-        elseif control == CONTROL_INVENTORY_EXAMINE then return true
-        elseif control == CONTROL_INVENTORY_DROP then control = CONTROL_ACCEPT
+        if TheInput:ControllerAttached() then
+            if control == CONTROL_ACCEPT then return false
+            elseif control == CONTROL_CANCEL then return false
+            elseif control == CONTROL_INVENTORY_USEONSCENE then return true
+            elseif control == CONTROL_INVENTORY_USEONSELF then control = CONTROL_CANCEL
+            elseif control == CONTROL_INVENTORY_EXAMINE then return true
+            elseif control == CONTROL_INVENTORY_DROP then control = CONTROL_ACCEPT
+            end
         end
         return OnControl_Old(self, control, down, ...)
     end

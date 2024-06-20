@@ -2,26 +2,32 @@ local FollowText = require "widgets/followtext"
 
 AddClassPostConstruct("widgets/controls", function(self)
 
-    -- self.playeractionhint alread done
+    -- self.playeractionhint
+    self.playeractionhint:SetOffset(Vector3(0, 120, 0))
 
-    -- self.playeractionhint_itemhighlight already done
+    -- self.playeractionhint_itemhighlight
+    self.playeractionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
     
     self.playeraltactionhint = self:AddChild(FollowText(TALKINGFONT, 28))
     self.playeraltactionhint:SetHUD(self.owner.HUD.inst)
-    self.playeraltactionhint:SetOffset(Vector3(0, 100, 0))
+    self.playeraltactionhint:SetOffset(Vector3(0, 120, 0))
     self.playeraltactionhint:Hide()
 
     self.playeraltactionhint_itemhighlight = self:AddChild(FollowText(TALKINGFONT, 28))
     self.playeraltactionhint_itemhighlight:SetHUD(self.owner.HUD.inst)
-    self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
+    self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
     self.playeraltactionhint_itemhighlight:Hide()
 
-    -- self.attackhint already done
+    -- self.attackhint
+    self.attackhint:SetOffset(Vector3(0, 120, 0))
 
     self.attackhint_itemhighlight = self:AddChild(FollowText(TALKINGFONT, 28))
     self.attackhint_itemhighlight:SetHUD(self.owner.HUD.inst)
-    self.attackhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
+    self.attackhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
     self.attackhint_itemhighlight:Hide()
+
+    -- self.groundactionhint
+    self.groundactionhint:SetOffset(Vector3(0, 120, 0))
 
     local HighlightSceneItem = function(target, followerWidget, itemhighlight)
         if target ~= nil and followerWidget.text.string ~= nil then
@@ -79,14 +85,11 @@ AddClassPostConstruct("widgets/controls", function(self)
         local controller_mode = TheInput:ControllerAttached()
         local controller_id = TheInput:GetControllerID()
 
-        -- ======================================================================= --
-        -- if controller_mode then
-        --     self.mapcontrols:Hide()
-        -- else
-        --     self.mapcontrols:Show()
-        -- end
-        self.mapcontrols:Show()
-        -- ======================================================================= --
+        if not CHANGE_ALWAYS_SHOW_MAP_CONTROL_WIDGET then
+            self.mapcontrols:Hide()
+        else
+            self.mapcontrols:Show()
+        end
 
         for k,v in pairs(self.containers) do
             if v.should_close_widget then
@@ -150,8 +153,10 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
             end
 
-            local alt_shown = false
-            local attack_shown = false
+            local A_shown = false
+            local Y_shown = false
+            local B_shown = false
+            local X_shown = false
             local controller_target = self.owner.components.playercontroller:GetControllerTarget()
             local controller_alt_target = self.owner.components.playercontroller:GetControllerAltTarget()
             local controller_attack_target = self.owner.components.playercontroller:GetControllerAttackTarget()
@@ -167,7 +172,9 @@ AddClassPostConstruct("widgets/controls", function(self)
             if not isplacing and l == nil and alt_l == nil and ground_l == nil then
                 ground_l = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, false)
                 if ground_l ~= nil then
+                    print("****** usinging special Action")
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_l:GetActionString())
+                    A_shown = true
                     self.groundactionhint:Show()
                     self.groundactionhint:SetTarget(self.owner)
                     self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
@@ -176,7 +183,9 @@ AddClassPostConstruct("widgets/controls", function(self)
             if not isplacing and r == nil and alt_r and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
                 if ground_r ~= nil then
+                    print("****** usinging special Alt Action")
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
+                    B_shown = true
                     self.groundactionhint:Show()
                     self.groundactionhint:SetTarget(self.owner)
                     self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
@@ -184,21 +193,11 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
 
             if controller_target ~= nil then
-                local cmds, cmdsoffset
-                local textblock = self.playeractionhint.text
-
-                cmds = {}
-                cmdsoffset = 0
-                self.playeractionhint:Show()
-                self.playeractionhint:SetTarget(controller_target)
+                local cmds = {}
 
                 local adjective = controller_target:GetAdjective()
                 table.insert(cmds, adjective ~= nil and (adjective.." "..controller_target:GetDisplayName()) or controller_target:GetDisplayName())
 
-                if controller_target == controller_attack_target then
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
-                    attack_shown = true
-                end
                 if (self.owner.CanExamine == nil or self.owner:CanExamine()) and
                     --V2C: Closing the avatar popup takes priority
                     not self.owner.HUD:IsPlayerAvatarPopUpOpen() and
@@ -206,13 +205,23 @@ AddClassPostConstruct("widgets/controls", function(self)
                     (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
                     controller_target:HasTag("inspectable") then
                     table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.HUD.INSPECT)
+                    Y_shown = true
                 end
-                if l ~= nil then
+                if not X_shown and controller_target == controller_attack_target then
+                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    X_shown = true
+                end
+                if not A_shown and l ~= nil then
                     table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. l:GetActionString())
+                    A_shown = true
                 end
-                if r ~= nil and ground_r == nil then
+                if not B_shown and controller_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    B_shown = true
+                end
+                if not B_shown and r ~= nil and ground_r == nil and controller_target == controller_alt_target and not self.owner.components.playercontroller:IsControllerTargetLocked() then
                     table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. r:GetActionString())
-                    alt_shown = true
+                    B_shown = true
                 end
                 if controller_target.quagmire_shoptab ~= nil then
                     for k, v in pairs(self.craftingmenu.tabs.shown) do
@@ -225,26 +234,10 @@ AddClassPostConstruct("widgets/controls", function(self)
                     end
                 end
 
-                if #cmds - cmdsoffset <= 1 then
-                    --New special case that we support:
-                    -- target is highlighted but with no actions
-                    -- -> suppress any ground action hints
-                    -- -> use target's custom display name to show special action hint
-                    if cmds ~= ground_cmds then
-                        self.groundactionhint:Hide()
-                        self.groundactionhint:SetTarget(nil)
-                    end
-                    textblock:SetString(cmds[#cmds])
-                else
-                    textblock:SetString(table.concat(cmds, "\n"))
-                end
-            elseif not self.groundactionhint.shown then
-                if self.dismounthintdelay <= 0
-                    and self.owner.replica.rider ~= nil
-                    and self.owner.replica.rider:IsRiding() then
-                    self.playeractionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+                if #cmds ~= 0 then
                     self.playeractionhint:Show()
-                    self.playeractionhint:SetTarget(self.owner)
+                    self.playeractionhint:SetTarget(controller_target)
+                    self.playeractionhint.text:SetString(table.concat(cmds, "\n"))
                 else
                     self.playeractionhint:Hide()
                     self.playeractionhint:SetTarget(nil)
@@ -254,44 +247,100 @@ AddClassPostConstruct("widgets/controls", function(self)
                 self.playeractionhint:SetTarget(nil)
             end
 
-            if controller_attack_target ~= nil and not attack_shown then
-                local attackhint_textblock = ""
-                local adjective = controller_attack_target:GetAdjective()
-                if adjective ~= nil then
-                    attackhint_textblock = attackhint_textblock .. adjective .. " "
-                end
-                attackhint_textblock = attackhint_textblock .. controller_attack_target:GetDisplayName() .. "\n"
+            if controller_alt_target ~= nil then
+                local alt_cmds = {}
 
-                self.attackhint:Show()
-                self.attackhint:SetTarget(controller_attack_target)
-                attackhint_textblock = attackhint_textblock .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK .. "\n"
-                if self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    attackhint_textblock = attackhint_textblock .. TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET
-                elseif controller_alt_target ~= nil and alt_r ~= nil and ground_r == nil and controller_alt_target == controller_attack_target and not alt_shown then
-                    attackhint_textblock = attackhint_textblock .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..alt_r:GetActionString()
-                    alt_shown = true
-                end
-                self.attackhint.text:SetString(attackhint_textblock)
-            else
-                self.attackhint:Hide()
-                self.attackhint:SetTarget(nil)
-            end
-
-            if controller_alt_target ~= nil and alt_r ~= nil and ground_r == nil and not (alt_shown or self.owner.components.playercontroller:IsControllerTargetLocked()) then
-                local playeraltactionhint_textblock = ""
                 local adjective = controller_alt_target:GetAdjective()
-                if adjective ~= nil then
-                    playeraltactionhint_textblock = playeraltactionhint_textblock .. adjective .. " "
-                end
-                playeraltactionhint_textblock = playeraltactionhint_textblock .. controller_alt_target:GetDisplayName() .. "\n"
-                self.playeraltactionhint:Show()
-                self.playeraltactionhint:SetTarget(controller_alt_target)
+                table.insert(alt_cmds, adjective ~= nil and adjective .. controller_alt_target:GetDisplayName() or controller_alt_target:GetDisplayName())
 
-                playeraltactionhint_textblock = playeraltactionhint_textblock .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..alt_r:GetActionString()
-                self.playeraltactionhint.text:SetString(playeraltactionhint_textblock)
+                if not Y_shown and (self.owner.CanExamine == nil or self.owner:CanExamine()) and
+                    --V2C: Closing the avatar popup takes priority
+                    not self.owner.HUD:IsPlayerAvatarPopUpOpen() and
+                    (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
+                    (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
+                    controller_alt_target:HasTag("inspectable") then
+                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.HUD.INSPECT)
+                    Y_shown = true
+                end
+
+                if not X_shown and controller_alt_target == controller_attack_target then
+                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    X_shown = true
+                end
+                if not B_shown and controller_alt_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    B_shown = true
+                end
+                if not B_shown and alt_r ~= nil and ground_r == nil and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. alt_r:GetActionString())
+                    B_shown = true
+                end
+
+                if #alt_cmds > 1 then
+                    self.playeraltactionhint:Show()
+                    self.playeraltactionhint:SetTarget(controller_alt_target)
+                    self.playeraltactionhint.text:SetString(table.concat(alt_cmds, "\n"))
+                else
+                    self.playeraltactionhint:Hide()
+                    self.playeraltactionhint:SetTarget(nil)
+                end
             else
                 self.playeraltactionhint:Hide()
                 self.playeraltactionhint:SetTarget(nil)
+            end
+
+            if not B_shown and not self.groundactionhint.shown and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+                if self.dismounthintdelay <= 0
+                    and self.owner.replica.rider ~= nil
+                    and self.owner.replica.rider:IsRiding() then
+                    self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+                    B_shown = true
+                    self.groundactionhint:Show()
+                    self.groundactionhint:SetTarget(self.owner)
+                else
+                    self.groundactionhint:Hide()
+                    self.groundactionhint:SetTarget(nil)
+                end
+            elseif not self.groundactionhint.shown then
+                self.groundactionhint:Hide()
+                self.groundactionhint:SetTarget(nil)
+            end
+
+            if controller_attack_target ~= nil then
+                local attack_cmds = {}
+
+                local adjective = controller_attack_target:GetAdjective()
+                table.insert(attack_cmds, adjective ~= nil and adjective .. controller_attack_target:GetDisplayName() or controller_attack_target:GetDisplayName())
+
+                if not Y_shown and (self.owner.CanExamine == nil or self.owner:CanExamine()) and
+                    --V2C: Closing the avatar popup takes priority
+                    not self.owner.HUD:IsPlayerAvatarPopUpOpen() and
+                    (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
+                    (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
+                    controller_attack_target:HasTag("inspectable") then
+                    table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.HUD.INSPECT)
+                    Y_shown = true
+                end
+                if not X_shown then
+                    table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    X_shown = true
+                end
+                if not B_shown and self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    B_shown = true
+                end
+
+                if #attack_cmds > 1 then
+                    self.attackhint:Show()
+                    self.attackhint:SetTarget(controller_attack_target)
+                    self.attackhint.text:SetString(table.concat(attack_cmds, "\n"))
+                else
+                    self.attackhint:Hide()
+                    self.attackhint:SetTarget(nil)
+                end
+            else
+                self.attackhint:Hide()
+                self.attackhint:SetTarget(nil)
             end
         else
             self.attackhint:Hide()
@@ -299,6 +348,9 @@ AddClassPostConstruct("widgets/controls", function(self)
 
             self.playeractionhint:Hide()
             self.playeractionhint:SetTarget(nil)
+
+            self.playeraltactionhint:Hide()
+            self.playeraltactionhint:SetTarget(nil)
 
             self.groundactionhint:Hide()
             self.groundactionhint:SetTarget(nil)
@@ -314,43 +366,71 @@ AddClassPostConstruct("widgets/controls", function(self)
         self.playeractionhint:SetScreenOffset(0,0)
         self.playeraltactionhint:SetScreenOffset(0,0)
         self.attackhint:SetScreenOffset(0,0)
+        self.groundactionhint:SetScreenOffset(0,0)
 
-        --if we are showing both hints, make sure they don't overlap
-        if self.attackhint.shown and self.playeractionhint.shown then
+        local AdjustLocation = function(x_axis, first, second)
+            if first == nil or second == nil then
+                return
+            end
+            if first.shown and second.shown then
+                local w1, h1 = first.text:GetRegionSize()
+                local x1, y1 = first:GetPosition():Get()
+                --print (w1, h1, x1, y1)
 
-            local w1, h1 = self.attackhint.text:GetRegionSize()
-            local x1, y1 = self.attackhint:GetPosition():Get()
-            --print (w1, h1, x1, y1)
+                local w2, h2 = second.text:GetRegionSize()
+                local x2, y2 = second:GetPosition():Get()
+                --print (w2, h2, x2, y2)
 
-            local w2, h2 = self.playeractionhint.text:GetRegionSize()
-            local x2, y2 = self.playeractionhint:GetPosition():Get()
-            --print (w2, h2, x2, y2)
+                local sep = (x1 + w1/2) < (x2 - w2/2) or
+                            (x1 - w1/2) > (x2 + w2/2) or
+                            (y1 + h1/2) < (y2 - h2/2) or
+                            (y1 - h1/2) > (y2 + h2/2)
 
-            local sep = (x1 + w1/2) < (x2 - w2/2) or
-                        (x1 - w1/2) > (x2 + w2/2) or
-                        (y1 + h1/2) < (y2 - h2/2) or
-                        (y1 - h1/2) > (y2 + h2/2)
+                if not sep then
+                    if x_axis then
+                        local f_l = x1 - w1/2
+                        local f_r = x1 + w1/2
 
-            if not sep then
-                local a_l = x1 - w1/2
-                local a_r = x1 + w1/2
+                        local s_l = x2 - w2/2
+                        local s_r = x2 + w2/2
 
-                local p_l = x2 - w2/2
-                local p_r = x2 + w2/2
+                        if math.abs(s_r - f_l) < math.abs(s_l - f_r) then
+                            local d = (s_r - f_l) + 20
+                            first:SetScreenOffset(d/2,0)
+                            second:SetScreenOffset(-d/2,0)
+                        else
+                            local d = (f_r - s_l) + 20
+                            first:SetScreenOffset( -d/2,0)
+                            second:SetScreenOffset(d/2,0)
+                        end
+                    else
+                        local f_b = x1 - h1/2
+                        local f_t = x1 + h1/2
 
-                if math.abs(p_r - a_l) < math.abs(p_l - a_r) then
-                    local d = (p_r - a_l) + 20
-                    self.attackhint:SetScreenOffset(d/2,0)
-                    self.playeractionhint:SetScreenOffset(-d/2,0)
-                else
-                    local d = (a_r - p_l) + 20
-                    self.attackhint:SetScreenOffset( -d/2,0)
-                    self.playeractionhint:SetScreenOffset(d/2,0)
+                        local s_b = x2 - h2/2
+                        local s_t = x2 + h2/2
+
+                        if math.abs(s_t - f_b) < math.abs(s_b - f_t) then
+                            local d = (s_t - f_b) + 20
+                            first:SetScreenOffset(0,d/2)
+                            second:SetScreenOffset(0,-d/2)
+                        else
+                            local d = (f_t - s_b)
+                            first:SetScreenOffset(0,-d/2)
+                            second:SetScreenOffset(0,d/2)
+                        end
+                    end
                 end
             end
         end
 
-        -- self:HighlightActionItem(1, true)
+        AdjustLocation(true, self.playeractionhint, self.attackhint)
+        AdjustLocation(true, self.playeraltactionhint, self.attackhint)
+        AdjustLocation(true, self.playeractionhint, self.playeraltactionhint)
+        AdjustLocation(true, self.playeractionhint, self.groundactionhint)
+        AdjustLocation(true, self.playeraltactionhint, self.groundactionhint)
+        AdjustLocation(true, self.attackhint, self.groundactionhint)
+
         HighlightSceneItem(self.owner.components.playercontroller.controller_target, self.playeractionhint, self.playeractionhint_itemhighlight)
         HighlightSceneItem(self.owner.components.playercontroller.controller_alt_target, self.playeraltactionhint, self.playeraltactionhint_itemhighlight)
         HighlightSceneItem(self.owner.components.playercontroller.controller_attack_target, self.attackhint, self.attackhint_itemhighlight)
@@ -360,6 +440,23 @@ AddClassPostConstruct("widgets/controls", function(self)
         if TheInput:ControllerAttached() then
             return OnUpdate_New(self, dt, ...)
         else
+            self.playeractionhint:Hide()
+            self.playeractionhint:SetTarget(nil)
+            self.playeractionhint_itemhighlight:Hide()
+            self.playeractionhint_itemhighlight:SetTarget(nil)
+
+            self.playeraltactionhint:Hide()
+            self.playeraltactionhint:SetTarget(nil)
+            self.playeraltactionhint_itemhighlight:Hide()
+            self.playeraltactionhint_itemhighlight:SetTarget(nil)
+
+            self.attackhint:Hide()
+            self.attackhint:SetTarget(nil)
+            self.attackhint_itemhighlight:Hide()
+            self.attackhint_itemhighlight:SetTarget(nil)
+
+            self.groundactionhint:Hide()
+            self.groundactionhint:SetTarget(nil)
             return OnUpdate_Old(self, dt, ...)
         end
     end

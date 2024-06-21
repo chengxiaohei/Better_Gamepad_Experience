@@ -1,4 +1,5 @@
 local FollowText = require "widgets/followtext"
+local Text = require "widgets/text"
 
 AddClassPostConstruct("widgets/controls", function(self)
 
@@ -61,9 +62,16 @@ AddClassPostConstruct("widgets/controls", function(self)
         end
     end
 
+    self.mapcontrols.rotleft2 = self.mapcontrols:AddChild(Text(UIFONT, 30))
+    self.mapcontrols.rotleft2:SetPosition(-40, -40, 0)
+    self.mapcontrols.rotleft2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_LEFT))
+
+    self.mapcontrols.rotright2 = self.mapcontrols:AddChild(Text(UIFONT, 30))
+    self.mapcontrols.rotright2:SetPosition(40, -40, 0)
+    self.mapcontrols.rotright2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_RIGHT))
 
     local OnUpdate_Old = self.OnUpdate
-    
+
     local OnUpdate_New = function (self, dt, ...)
         if PerformingRestart then
             self.playeractionhint:SetTarget(nil)
@@ -85,10 +93,21 @@ AddClassPostConstruct("widgets/controls", function(self)
         local controller_mode = TheInput:ControllerAttached()
         local controller_id = TheInput:GetControllerID()
 
-        if not CHANGE_ALWAYS_SHOW_MAP_CONTROL_WIDGET then
-            self.mapcontrols:Hide()
-        else
+        if CHANGE_ALWAYS_SHOW_MAP_CONTROL_WIDGET then
             self.mapcontrols:Show()
+            if controller_mode and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+                self.mapcontrols.rotleft:Hide()
+                self.mapcontrols.rotright:Hide()
+                self.mapcontrols.rotleft2:Show()
+                self.mapcontrols.rotright2:Show()
+            else
+                self.mapcontrols.rotleft:Show()
+                self.mapcontrols.rotright:Show()
+                self.mapcontrols.rotleft2:Hide()
+                self.mapcontrols.rotright2:Hide()
+            end
+        else
+            self.mapcontrols:Hide()
         end
 
         for k,v in pairs(self.containers) do
@@ -460,4 +479,5 @@ AddClassPostConstruct("widgets/controls", function(self)
             return OnUpdate_Old(self, dt, ...)
         end
     end
+
 end)

@@ -536,6 +536,10 @@ AddComponentPostInit("playercontroller", function(self)
 							score = score * 0.5
 						end
 
+						if not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and v:HasTag("trap") and v.components.deployable ~= nil and v.components.mine ~= nil and v.components.inventoryitem ~= nil and (v:HasTag("mineactive") or v:HasTag("minesprung")) then
+							score = score * 0.1
+						end
+
 						-- print(v, angle_component, dist_component, mult, add, score)
 
 						local lmb, rmb = self:GetSceneItemControllerAction(v)
@@ -617,7 +621,24 @@ AddComponentPostInit("playercontroller", function(self)
 		return target:HasTag(tag)
 	end
 
-	-- Not changed yet
+	-- New Added and Not Change
+	local function TargetIsHostile(inst, target)
+		if inst.HostileTest ~= nil then
+			return inst:HostileTest(target)
+		elseif target.HostileToPlayerTest ~= nil then
+			return target:HostileToPlayerTest(inst)
+		else
+			return target:HasTag("hostile")
+		end
+	end
+
+	-- New Added
+	local function IsNeedForceAttack(self, target)
+		return not TargetIsHostile(self.inst, target) and
+			target ~= self.inst.replica.combat:GetTarget() and
+			self.inst ~= target.replica.combat:GetTarget()
+	end
+	-- changed a little
 	local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 		if self.inst:HasTag("playerghost") or self.inst.replica.inventory:IsHeavyLifting() then
 			self.controller_attack_target = nil
@@ -682,48 +703,57 @@ AddComponentPostInit("playercontroller", function(self)
 						self.controller_attack_target_ally_cd > 0 and
 						v ~= preferred_target) and
 					combat:CanTarget(v) then
-					--Check distance including y value
-					local x1, y1, z1 = v.Transform:GetWorldPosition()
-					local dx, dy, dz = x1 - x, y1 - y, z1 - z
-					local dsq = dx * dx + dy * dy + dz * dz
+					
+					-- ================================================================================================= --
+					local need_force_attack = IsNeedForceAttack(self, v)
+					if not CHANGE_FORCE_ATTACK_BUTTON or not need_force_attack or TheInput:IsControlPressed(CHANGE_FORCE_ATTACK_BUTTON) then
+					-- ================================================================================================= --
 
-					--include physics radius for max range check since we don't have (dist - phys_rad) yet
-					local phys_rad = v:GetPhysicsRadius(0)
-					local max_range = max_rad + phys_rad
+						--Check distance including y value
+						local x1, y1, z1 = v.Transform:GetWorldPosition()
+						local dx, dy, dz = x1 - x, y1 - y, z1 - z
+						local dsq = dx * dx + dy * dy + dz * dz
 
-					if dsq < max_range * max_range and CanEntitySeePoint(self.inst, x1, y1, z1) then
-						local dist = dsq > 0 and math.sqrt(dsq) or 0
-						local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
-						if dot > 0 or dist < min_rad + phys_rad then
-							--now calculate score with physics radius subtracted
-							dist = math.max(0, dist - phys_rad)
-							local score = dot + 1 - 0.5 * dist * dist / max_rad_sq
+						--include physics radius for max range check since we don't have (dist - phys_rad) yet
+						local phys_rad = v:GetPhysicsRadius(0)
+						local max_range = max_rad + phys_rad
 
-							if isally then
-								score = score * .25
-							elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
-								score = score * 5
-							elseif CheckControllerPriorityTagOrOverride(v, "monster", v.controller_priority_override_is_monster) then
-								score = score * 4
-							end
+						if dsq < max_range * max_range and CanEntitySeePoint(self.inst, x1, y1, z1) then
+							local dist = dsq > 0 and math.sqrt(dsq) or 0
+							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
+							if dot > 0 or dist < min_rad + phys_rad then
+								--now calculate score with physics radius subtracted
+								dist = math.max(0, dist - phys_rad)
+								local score = dot + 1 - 0.5 * dist * dist / max_rad_sq
 
-							if v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
-								score = score * 6
-							end
+								if isally then
+									score = score * .25
+								elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
+									score = score * 5
+								elseif CheckControllerPriorityTagOrOverride(v, "monster", v.controller_priority_override_is_monster) then
+									score = score * 4
+								end
 
-							if v == preferred_target then
-								score = score * 10
-							end
+								if v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
+									score = score * 6
+								end
 
-							table.insert(current_controller_targeting_targets, v)
-							if score > target_score then
-								selected_target_index = #current_controller_targeting_targets
-								target = v
-								target_score = score
-								target_isally = isally
+								if v == preferred_target then
+									score = score * 10
+								end
+
+								table.insert(current_controller_targeting_targets, v)
+								if score > target_score then
+									selected_target_index = #current_controller_targeting_targets
+									target = v
+									target_score = score
+									target_isally = isally
+								end
 							end
 						end
+					-- ================================================================================================= --
 					end
+					-- ================================================================================================= --
 				end
 			end
 		end

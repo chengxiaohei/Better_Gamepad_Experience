@@ -65,10 +65,12 @@ AddClassPostConstruct("widgets/controls", function(self)
     self.mapcontrols.rotleft2 = self.mapcontrols:AddChild(Text(UIFONT, 30))
     self.mapcontrols.rotleft2:SetPosition(-40, -40, 0)
     self.mapcontrols.rotleft2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_LEFT))
+    self.mapcontrols.rotleft2:Hide()
 
     self.mapcontrols.rotright2 = self.mapcontrols:AddChild(Text(UIFONT, 30))
     self.mapcontrols.rotright2:SetPosition(40, -40, 0)
     self.mapcontrols.rotright2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_RIGHT))
+    self.mapcontrols.rotright2:Hide()
 
     local OnUpdate_Old = self.OnUpdate
 
@@ -98,7 +100,9 @@ AddClassPostConstruct("widgets/controls", function(self)
             if controller_mode and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
                 self.mapcontrols.rotleft:Hide()
                 self.mapcontrols.rotright:Hide()
+                self.mapcontrols.rotleft2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_LEFT))
                 self.mapcontrols.rotleft2:Show()
+                self.mapcontrols.rotright2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_RIGHT))
                 self.mapcontrols.rotright2:Show()
             else
                 self.mapcontrols.rotleft:Show()
@@ -164,8 +168,8 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
                 if #ground_cmds > 0 then
                     self.groundactionhint:Show()
-                    -- self.groundactionhint:SetTarget(self.owner)
-                    self.groundactionhint:SetTarget(self.owner.components.playercontroller.reticule ~= nil and self.owner.components.playercontroller.reticule.reticule or self.owner)
+                    self.groundactionhint:SetTarget(self.owner)
+                    -- self.groundactionhint:SetTarget(self.owner.components.playercontroller.reticule ~= nil and self.owner.components.playercontroller.reticule.reticule or self.owner)
                     self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
                 else
                     self.groundactionhint:Hide()

@@ -569,7 +569,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					end
 					local use_action = self.owner.components.playercontroller:GetItemUseAction(active_item, inv_item)
 					local self_action = self.owner.components.playercontroller:GetItemSelfAction(active_item)
-					if left and inv_item.replica.container ~= nil then
+					if left and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.owner) then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.ACTIONS.STORE.GENERIC
 						if right and active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() then 
 							help_string = help_string .. " (One)"

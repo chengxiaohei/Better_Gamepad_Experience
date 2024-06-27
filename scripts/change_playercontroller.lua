@@ -42,44 +42,84 @@ AddComponentPostInit("playercontroller", function(self)
 
 	-- New Added
 	local FilterContainer = function (targetitem, checklist)
+		local find = false
+		local filtered_container = nil
 		if targetitem ~= nil then
-			for _, c in ipairs(checklist) do
-				if c ~= nil then
-					return c
+			for _, container in ipairs(checklist) do
+				if container ~= nil and container.replica.container ~= nil then
+					for islot = 1, container.replica.container:GetNumSlots() do
+						local iitem = container.replica.container:GetItemInSlot(islot)
+						if iitem ~= nil and container.replica.container:CanTakeItemInSlot(targetitem, islot) and
+							iitem.prefab == targetitem.prefab and iitem.AnimState:GetSkinBuild() == targetitem.AnimState:GetSkinBuild() and
+							iitem.replica.stackable ~= nil and container.replica.container:AcceptsStacks() then
+							find = true
+							filtered_container = container
+							break
+						end
+					end
+					if not (find or container.replica.container:IsFull()) then
+						for islot = 1, container.replica.container:GetNumSlots() do
+							local iitem = container.replica.container:GetItemInSlot(islot)
+							if iitem == nil and container.replica.container:CanTakeItemInSlot(targetitem, islot) then
+								find = true
+								filtered_container = container
+								break
+							end
+						end
+					end
 				end
+
+				if not find and container ~= nil and container.replica.inventory ~= nil then
+					for islot = 1, container.replica.inventory:GetNumSlots() do
+						local iitem = container.replica.inventory:GetItemInSlot(islot)
+						if iitem ~= nil and container.replica.inventory:CanTakeItemInSlot(targetitem, islot) and
+							iitem.prefab == targetitem.prefab and iitem.AnimState:GetSkinBuild() == targetitem.AnimState:GetSkinBuild() and
+							iitem.replica.stackable ~= nil and container.replica.inventory:AcceptsStacks() then
+							find = true
+							filtered_container = container
+							break
+						end
+					end
+					if not (find or container.replica.inventory:IsFull()) then
+						for islot = 1, container.replica.inventory:GetNumSlots() do
+							local iitem = container.replica.inventory:GetItemInSlot(islot)
+							if iitem == nil and container.replica.inventory:CanTakeItemInSlot(targetitem, islot) then
+								find = true
+								filtered_container = container
+								break
+							end
+						end
+					end
+				end
+				if find then break end
+			end
+			if find then
+				TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_object")
+			else
+				TheFocalPoint.SoundEmitter:PlaySound("dontstarve/HUD/click_negative")
 			end
 		end
+		return filtered_container
 	end
 
 	local PutActiveItemInContainer = function (self, active_item, container, single)
 		local store_success = false
 		if container ~= nil and active_item ~= nil and container.replica.container ~= nil then
 			for islot = 1, container.replica.container:GetNumSlots() do
-				print("****** loop ", islot)
 				local iitem = container.replica.container:GetItemInSlot(islot)
 				--Add active item to slot stack
-				print("item:", iitem)
-				print("cantake:", container.replica.container:CanTakeItemInSlot(active_item, islot))
-				print("prefab:", iitem ~= nil and iitem.prefab == active_item.prefab)
-				print("skin:", iitem ~= nil and iitem.AnimState:GetSkinBuild() == active_item.AnimState:GetSkinBuild())
-				print("stack:", iitem ~= nil and iitem.replica.stackable ~= nil)
-				print("accept stack:", container.replica.container:AcceptsStacks())
-
 				if iitem ~= nil and container.replica.container:CanTakeItemInSlot(active_item, islot) and
 					iitem.prefab == active_item.prefab and iitem.AnimState:GetSkinBuild() == active_item.AnimState:GetSkinBuild() and
 					iitem.replica.stackable ~= nil and container.replica.container:AcceptsStacks() then
-					print("****** loop 2")
 					if single and
 						active_item.replica.stackable ~= nil and
 						active_item.replica.stackable:IsStack() and
 						not iitem.replica.stackable:IsFull() then
 						--Add only one
 						container.replica.container:AddOneOfActiveItemToSlot(islot)
-						print("****** loop 31")
 					else
 						--Add entire stack
 						container.replica.container:AddAllOfActiveItemToSlot(islot)
-						print("****** loop 32")
 					end
 					store_success = true
 					break
@@ -87,23 +127,17 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 			if not (store_success or container.replica.container:IsFull()) then
 				for islot = 1, container.replica.container:GetNumSlots() do
-					print("****** llloop")
 					local iitem = container.replica.container:GetItemInSlot(islot)
-					print("iitem:", iitem)
-					print("cantake:", container.replica.container:CanTakeItemInSlot(active_item, islot))
 					--Put active item into empty slot
 					if iitem == nil and container.replica.container:CanTakeItemInSlot(active_item, islot) then
-						print("****** llloop 2")
 						if active_item.replica.stackable ~= nil and
 							active_item.replica.stackable:IsStack() and
 							(single or not container.replica.container:AcceptsStacks()) then
 							--Put one only
 							container.replica.container:PutOneOfActiveItemInSlot(islot)
-							print("****** llloop 31")
 						else
 							--Put entire stack
 							container.replica.container:PutAllOfActiveItemInSlot(islot)
-							print("****** llloop 32")
 						end
 						store_success = true
 						break
@@ -121,15 +155,15 @@ AddComponentPostInit("playercontroller", function(self)
 
 	-- New Added
 	local ChangePlayerController = function (self, control, inv_item, active_item, slot, container, target, left, right)
-
+		self:ClearActionHold()
 		if control == CONTROL_INVENTORY_DROP then
 			self:DoControllerDropItemFromInvTile(active_item or inv_item, right)
 		elseif control == CONTROL_INVENTORY_EXAMINE then
 			self:DoControllerInspectItemFromInvTile(active_item or inv_item)
 		elseif control == CONTROL_INVENTORY_USEONSELF then
-			if left and right and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil then
+			if left and right and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
 				PutActiveItemInContainer(self, active_item, inv_item, true)
-			elseif left and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil then
+			elseif left and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
 				PutActiveItemInContainer(self, active_item, inv_item, false)
 			elseif right and container ~= nil and slot ~= nil then
 				local cursor_container_type = QueryContainerType(self, container.inst)

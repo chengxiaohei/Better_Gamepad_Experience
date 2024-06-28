@@ -227,7 +227,11 @@ AddClassPostConstruct("widgets/controls", function(self)
                     (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
                     (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
                     controller_target:HasTag("inspectable") then
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.HUD.INSPECT)
+                    local actionstr =
+                        CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_target) and
+                        STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
+                        STRINGS.UI.HUD.INSPECT
+                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
                     Y_shown = true
                 end
                 if not X_shown and controller_target == controller_attack_target then
@@ -282,7 +286,11 @@ AddClassPostConstruct("widgets/controls", function(self)
                     (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
                     (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
                     controller_alt_target:HasTag("inspectable") then
-                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.HUD.INSPECT)
+                    local actionstr =
+                        CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_target) and
+                        STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
+                        STRINGS.UI.HUD.INSPECT
+                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
                     Y_shown = true
                 end
 
@@ -341,7 +349,11 @@ AddClassPostConstruct("widgets/controls", function(self)
                     (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
                     (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
                     controller_attack_target:HasTag("inspectable") then
-                    table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. STRINGS.UI.HUD.INSPECT)
+                    local actionstr =
+                        CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_target) and
+                        STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
+                        STRINGS.UI.HUD.INSPECT
+                    table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
                     Y_shown = true
                 end
                 if not X_shown then

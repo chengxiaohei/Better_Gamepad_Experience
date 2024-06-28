@@ -282,6 +282,15 @@ AddComponentPostInit("playercontroller", function(self)
 			return
 		end
 
+		if down and self._hack_ignore_held_controls then
+			self._hack_ignore_ups_for[control] = true
+			return true
+		end
+		if not down and self._hack_ignore_ups_for and self._hack_ignore_ups_for[control] then
+			self._hack_ignore_ups_for[control] = nil
+			return true
+		end
+
 		-- actions that can be done while the crafting menu is open go in here
 		if isenabled or ishudblocking then
 			if control == CONTROL_ACTION then
@@ -504,6 +513,7 @@ AddComponentPostInit("playercontroller", function(self)
 		local onboat = self.inst:GetCurrentPlatform() ~= nil
 		local anglemax = onboat and TUNING.CONTROLLER_BOATINTERACT_ANGLE or TUNING.CONTROLLER_INTERACT_ANGLE
 		for i, v in ipairs(nearby_ents) do
+			v = v.client_forward_target or v
 			if v ~= ocean_fishing_target then
 
 				--Only handle controller_target if it's the one we added at the front
@@ -957,11 +967,10 @@ AddComponentPostInit("playercontroller", function(self)
 			self.reticule:PingReticuleAt(act:GetDynamicActionPoint())
 		end
 
-		if act.invobject ~= nil and act.invobject:HasTag("action_pulls_up_map") then
-			if self.inst.HUD ~= nil then
-				PullUpMap(self.inst, act.invobject)
-				return
-			end
+		local maptarget = self:GetMapTarget(act)
+		if maptarget ~= nil then
+			PullUpMap(self.inst, maptarget)
+			return
 		end
 
 		if self.ismastersim then

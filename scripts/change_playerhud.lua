@@ -30,6 +30,8 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     return true
                 elseif (not CHANGE_IS_FORBID_Y_INSPECT_SELF or self.controls.skilltree_notification.controller_help.shown)
                     and self.owner.components.playercontroller:GetControllerTarget() == nil
+                    and self.owner.components.playercontroller:GetControllerAltTarget() == nil
+                    and self.owner.components.playercontroller:GetControllerAttackTarget() == nil
                     and self:InspectSelf() then
                     return true
                 end

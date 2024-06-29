@@ -21,17 +21,18 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 if self.controls.votedialog:CheckControl(control, down) then
                     return true
                 end
-                -- if self:IsVisible() and
-                --     self:IsPlayerInfoPopUpOpen() and
-                --     self.owner.components.playercontroller:IsEnabled() then
-                --     self:TogglePlayerInfoPopup()
-                --     return true
-                -- elseif self.controls.votedialog:CheckControl(control, down) then
-                --     return true
-                -- elseif self.owner.components.playercontroller:GetControllerTarget() == nil
-                --     and self:InspectSelf() then
-                --     return true
-                -- end
+                if self:IsVisible() and
+                    self:IsPlayerInfoPopUpOpen() and
+                    self.owner.components.playercontroller:IsEnabled() then
+                    self:TogglePlayerInfoPopup()
+                    return true
+                elseif self.controls.votedialog:CheckControl(control, down) then
+                    return true
+                elseif (not CHANGE_IS_FORBID_Y_INSPECT_SELF or self.controls.skilltree_notification.controller_help.shown)
+                    and self.owner.components.playercontroller:GetControllerTarget() == nil
+                    and self:InspectSelf() then
+                    return true
+                end
             elseif control == CONTROL_INSPECT_SELF and self:InspectSelf() then
                 return true
             end

@@ -192,6 +192,22 @@ AddClassPostConstruct("widgets/controls", function(self)
                 alt_l, alt_r = self.owner.components.playercontroller:GetSceneItemControllerAction(controller_alt_target)
             end
 
+            -- Show cooker type container force interaction
+            local cooker_type_container = self.owner.components.playercontroller:TryWidgetButtonFunction(false)
+            if cooker_type_container ~= nil then
+                local widget = cooker_type_container.replica.container:GetWidget()
+                local cooker_type_container_widget = self.containers[cooker_type_container]
+                if cooker_type_container_widget ~= nil then
+                    if TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) then
+                        B_shown = true
+                        cooker_type_container_widget.button:Show()
+                        cooker_type_container_widget.button.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. widget.buttoninfo.text)
+                    else
+                        cooker_type_container_widget.button:Hide()
+                    end
+                end
+            end
+
             if not isplacing and l == nil and alt_l == nil and ground_l == nil then
                 ground_l = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, false)
                 if ground_l ~= nil then
@@ -205,7 +221,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
             if not isplacing and r == nil and alt_r and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
-                if ground_r ~= nil then
+                if not B_shown and ground_r ~= nil then
                     print("****** usinging special Alt Action")
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                     B_shown = true

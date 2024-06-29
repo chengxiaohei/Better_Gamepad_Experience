@@ -1022,19 +1022,18 @@ AddComponentPostInit("playercontroller", function(self)
 			local widget = cooker_type_container.replica.container ~= nil and cooker_type_container.replica.container:GetWidget() or nil
 			if widget ~= nil and widget.buttoninfo ~= nil and widget.buttoninfo.fn ~= nil then
 				if self.inst:HasTag("busy") then
-					return false
+					return
 				end
 				local iscontrolsenabled, ishudblocking = self:IsEnabled()
 				if not (iscontrolsenabled or ishudblocking) then
-					return false
+					return
 				end
 				if call then
 					widget.buttoninfo.fn(cooker_type_container, self.inst)
 				end
-				return true
+				return cooker_type_container
 			end
 		end
-		return false
 	end
 
 	local DoControllerAltActionButton_New_Old = DoControllerAltActionButton_New

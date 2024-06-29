@@ -2,7 +2,7 @@
 AddClassPostConstruct("widgets/wheel", function(self)
     local OnControl_Old = self.OnControl
     self.OnControl = function(self, control, down, ...)
-        if TheInput:ControllerAttached() then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
             if control == CONTROL_ACCEPT then return false
             elseif control == CONTROL_CANCEL then return false
             elseif control == CONTROL_INVENTORY_USEONSCENE then return true
@@ -23,7 +23,7 @@ AddClassPostConstruct("widgets/wheel", function(self)
     end
 
     self.GetHelpText = function (self, ...)
-        if TheInput:ControllerAttached() then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
             return GetHelpText_New(self, ...)
         end
         return GetHelpText_Old(self, ...)
@@ -33,15 +33,17 @@ AddClassPostConstruct("widgets/wheel", function(self)
     local Open_Old = self.Open
     self.Open = function (self, dataset_name, ...)
         local result = Open_Old(self, dataset_name, ...)
-        for _, v in ipairs(self.activeitems) do
-            if v ~= nil and v.widget ~= nil then
-                v.widget.GetHelpText = function (_self, ...)
-                    local controller_id = TheInput:GetControllerID()
-                    local t = {}
-                    if (not _self:IsSelected() or _self.AllowOnControlWhenSelected) and _self.help_message ~= "" then
-                        table.insert(t, TheInput:GetLocalizedControl(controller_id,CONTROL_INVENTORY_DROP, false, false ) .. " " .. _self.help_message)
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
+            for _, v in ipairs(self.activeitems) do
+                if v ~= nil and v.widget ~= nil then
+                    v.widget.GetHelpText = function (_self, ...)
+                        local controller_id = TheInput:GetControllerID()
+                        local t = {}
+                        if (not _self:IsSelected() or _self.AllowOnControlWhenSelected) and _self.help_message ~= "" then
+                            table.insert(t, TheInput:GetLocalizedControl(controller_id,CONTROL_INVENTORY_DROP, false, false ) .. " " .. _self.help_message)
+                        end
+                        return table.concat(t, "  ")
                     end
-                    return table.concat(t, "  ")
                 end
             end
         end

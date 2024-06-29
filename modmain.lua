@@ -32,10 +32,6 @@ modimport("scripts/change_playercontroller")
 modimport("scripts/change_playerhud")
 modimport("scripts/change_inventorybar")
 modimport("scripts/change_craftingmenu")
-
-if CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
 modimport("scripts/change_wheel")
-end
-
 modimport("scripts/change_controls")
 modimport("scripts/change_frontend")

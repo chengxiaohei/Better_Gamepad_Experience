@@ -21,13 +21,21 @@ CHANGE_CONTROL_RIGHT = CONTROL_ROTATE_RIGHT
 CHANGE_CONTROL_CAMERA = CHANGE_CONTROL_LEFT
 CHANGE_CONTROL_HOVER = CONTROL_OPEN_INVENTORY
 
-CHANGE_FORCE_ATTACK_BUTTON = CHANGE_CONTROL_LEFT  -- CHANGE_CONTROL_LEFT or CHANGE_CONTROL_RIGHT or nil
+CHANGE_FORCE_BUTTON = CHANGE_CONTROL_LEFT  -- CHANGE_CONTROL_LEFT or CHANGE_CONTROL_RIGHT or nil
+CHANGE_IS_LOCK_TARGET_QUICKLY = true
+
+CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = true
+CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM = true
 
 modimport("scripts/change_optionsscreen")
 modimport("scripts/change_playercontroller")
 modimport("scripts/change_playerhud")
 modimport("scripts/change_inventorybar")
 modimport("scripts/change_craftingmenu")
+
+if CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
 modimport("scripts/change_wheel")
+end
+
 modimport("scripts/change_controls")
 modimport("scripts/change_frontend")

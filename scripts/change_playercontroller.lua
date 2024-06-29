@@ -172,32 +172,32 @@ AddComponentPostInit("playercontroller", function(self)
 				if cursor_container_type == "inv" then
 					--put into (rc or lc or bc or pc or hc or iv)
 					table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
-					table.insert(container_list, pc) table.insert(container_list, hc) table.insert(container_list, iv)
+					table.insert(container_list, pc) table.insert(container_list, hc) --[[ table.insert(container_list, iv) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "hand" then
 					-- put into (rc or lc or bc or pc or iv or hc)
 					table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
-					table.insert(container_list, pc) table.insert(container_list, iv) table.insert(container_list, hc)
+					table.insert(container_list, pc) table.insert(container_list, iv) --[[ table.insert(container_list, hc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "pack" then
 					-- put into (rc or lc or bc or hc or iv or pc)
 					table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, bc)
-					table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, pc)
+					table.insert(container_list, hc) table.insert(container_list, iv) --[[ table.insert(container_list, pc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "beard" then
 					-- put into (rc or lc or pc or hc or iv or bc)
 					table.insert(container_list, rc) table.insert(container_list, lc) table.insert(container_list, pc)
-					table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, bc)
+					table.insert(container_list, hc) table.insert(container_list, iv) --[[ table.insert(container_list, bc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "chest" then
 					-- put into (rc or bc or pc or hc or iv or lc)
 					table.insert(container_list, rc) table.insert(container_list, bc) table.insert(container_list, pc)
-					table.insert(container_list, hc) table.insert(container_list, iv) table.insert(container_list, lc)
+					table.insert(container_list, hc) table.insert(container_list, iv) --[[ table.insert(container_list, lc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "cooker" then
 					-- put into (bc or pc or hc or iv or lc or rc)
 					table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, hc)
-					table.insert(container_list, iv) table.insert(container_list, lc) table.insert(container_list, rc)
+					table.insert(container_list, iv) table.insert(container_list, lc) --[[ table.insert(container_list, rc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				end
 			else
@@ -216,32 +216,32 @@ AddComponentPostInit("playercontroller", function(self)
 				if cursor_container_type == "inv" then
 					--put into (lc or rc or bc or pc or hc or iv)
 					table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, bc)
-					table.insert(container_list, pc) table.insert(container_list, hc) table.insert(container_list, iv)
+					table.insert(container_list, pc) table.insert(container_list, hc) --[[ table.insert(container_list, iv) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "hand" then
 					-- put into (lc or rc or iv or bc or pc or hc)
 					table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
-					table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, hc)
+					table.insert(container_list, bc) table.insert(container_list, pc) --[[ table.insert(container_list, hc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "pack" then
 					-- put into (lc or rc or iv or hc or bc or pc)
 					table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
-					table.insert(container_list, hc) table.insert(container_list, bc) table.insert(container_list, pc)
+					table.insert(container_list, hc) table.insert(container_list, bc) --[[ table.insert(container_list, pc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "beard" then
 					-- put into (lc or rc or iv or hc or pc or bc)
 					table.insert(container_list, lc) table.insert(container_list, rc) table.insert(container_list, iv)
-					table.insert(container_list, hc) table.insert(container_list, pc) table.insert(container_list, bc)
+					table.insert(container_list, hc) table.insert(container_list, pc) --[[ table.insert(container_list, bc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "chest" then
 					-- put into (iv or hc or bc or pc or rc or lc)
 					table.insert(container_list, iv) table.insert(container_list, hc) table.insert(container_list, bc)
-					table.insert(container_list, pc) table.insert(container_list, rc) table.insert(container_list, lc)
+					table.insert(container_list, pc) table.insert(container_list, rc) --[[ table.insert(container_list, lc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				elseif cursor_container_type == "cooker" then
 					-- put into (lc or iv or hc or bc or pc or rc)
 					table.insert(container_list, lc) table.insert(container_list, iv) table.insert(container_list, hc)
-					table.insert(container_list, bc) table.insert(container_list, pc) table.insert(container_list, rc)
+					table.insert(container_list, bc) table.insert(container_list, pc) --[[ table.insert(container_list, rc) ]]
 					container:MoveItemFromAllOfSlot(slot, FilterContainer(inv_item, container_list))
 				end
 			else
@@ -254,6 +254,16 @@ AddComponentPostInit("playercontroller", function(self)
 				end
 			end
 		end
+	end
+
+	local IsControllerTargetingModifierDown_Old = self.IsControllerTargetingModifierDown
+	self.IsControllerTargetingModifierDown = function (self, ...)
+		local result = IsControllerTargetingModifierDown_Old(self, ...)
+		if result and CHANGE_IS_LOCK_TARGET_QUICKLY and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) then
+			self.controller_targeting_lock_timer = self.controller_targeting_lock_timer and self.controller_targeting_lock_timer + 0.9 or 0.9
+			return result
+		end
+		return result
 	end
 
 	local GetInspectButtonAction_Old = self.GetInspectButtonAction
@@ -413,6 +423,12 @@ AddComponentPostInit("playercontroller", function(self)
 			if TheFrontEnd.textProcessorWidget ~= nil then
 				return false
 			end
+			if not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU and self.inst.HUD:IsCraftingOpen() then
+				return isenabled, ishudblocking
+			end
+			if not CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM and self.inst.HUD:IsSpellWheelOpen() then
+				return isenabled, ishudblocking
+			end
 			return true
 		end
 		return isenabled, ishudblocking
@@ -516,123 +532,123 @@ AddComponentPostInit("playercontroller", function(self)
 			v = v.client_forward_target or v
 			if v ~= ocean_fishing_target then
 
-				--Only handle controller_target if it's the one we added at the front
-				if v ~= self.inst and (v ~= self.controller_target or i == 1) and (v ~= self.controller_alt_target or i == 1 or i == 2) and v.entity:IsVisible() then
-					if v.entity:GetParent() == self.inst and v:HasTag("bundle") then
-						--bundling or constructing
-						alt_target = v
-						alt_target_has_found = true
-						break
-					end
+				if not CHANGE_FORCE_BUTTON or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) or
+					-- not(v:HasTag("trap") and v.replica.inventoryitem ~= nil and v:HasTag("mineactive")) then
+					not((v.prefab == "trap_teeth" or v.prefab == "trap_teeth_maxwell" or v.prefab == "trap_bramble") and v:HasTag("mineactive")) then
 
-					-- Calculate the dsq to filter out objects, ignoring the y component for now.
-					local x1, y1, z1 = v.Transform:GetWorldPosition()
-					local dx, dy, dz = x1 - x, y1 - y, z1 - z
-					local dsq = dx * dx + dz * dz
-
-					if fishing and v:HasTag("fishable") then
-						local r = v:GetPhysicsRadius(0)
-						if dsq <= r * r then
-							dsq = 0
-						end
-					end
-
-					-- local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dx*dx + dz*dz) * math.sqrt(dirx*dirx + dirz*dirz))) / DEGREES or 0
-					local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dsq))) / DEGREES or 0
-
-					if (dsq < min_rad_sq) or
-						(dsq <= target_rad_sq and v == self.controller_target and dx * dirx + dz * dirz > 0) or
-						(dsq <= alt_target_rad_sq and v == self.controller_alt_target and dx * dirx + dz * dirz > 0) or
-						(self.controller_target ~= nil and dsq <= target_rad_sq and included_angle < anglemax) or
-						(self.controller_alt_target ~= nil and dsq <= alt_target_rad_sq and included_angle < anglemax) or
-						(dsq <= max_rad_sq and included_angle < anglemax) and
-						CanEntitySeePoint(self.inst, x1, y1, z1) then
-						-- Incorporate the y component after we've performed the inclusion radius test.
-						-- We wait until now because we might disqualify our controller_target if its transform has a y component,
-						-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
-						dsq = dsq + (dy * dy)
-
-						local dist = dsq > 0 and math.sqrt(dsq) or 0
-						local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
-
-						--keep the angle component between [0..1]
-						local angle_component = (dot + 1) / 2
-
-						--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
-						local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
-
-						--for stuff that's *really* close - ie, just dropped
-						local add = dsq < .0625 --[[.25 * .25]] and 1 or 0
-
-						--just a little hysteresis
-						local mult = v == self.controller_target and not v:HasTag("wall") and 1.5 or 1
-						local alt_mult = v == self.controller_alt_target and not v:HasTag("wall") and 1.5 or 1
-
-						local score = angle_component * dist_component * mult * alt_mult + add
-
-						--make it easier to target stuff dropped inside the portal when alive
-						--make it easier to haunt the portal for resurrection in endless mode
-						if v:HasTag("portal") then
-							score = score * (self.inst:HasTag("playerghost") and GetPortalRez() and 1.1 or .9)
+					--Only handle controller_target if it's the one we added at the front
+					if v ~= self.inst and (v ~= self.controller_target or i == 1) and (v ~= self.controller_alt_target or i == 1 or i == 2) and v.entity:IsVisible() then
+						if v.entity:GetParent() == self.inst and v:HasTag("bundle") then
+							--bundling or constructing
+							alt_target = v
+							alt_target_has_found = true
+							break
 						end
 
-						if v:HasTag("hasfurnituredecoritem") then
-							score = score * 0.5
-						end
+						-- Calculate the dsq to filter out objects, ignoring the y component for now.
+						local x1, y1, z1 = v.Transform:GetWorldPosition()
+						local dx, dy, dz = x1 - x, y1 - y, z1 - z
+						local dsq = dx * dx + dz * dz
 
-						if not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and v:HasTag("trap") and
-							v.replica.inventoryitem ~= nil and (v:HasTag("mineactive") or v:HasTag("minesprung")) then
-							score = score * 0.1
-						end
-
-						-- print(v, angle_component, dist_component, mult, add, score)
-
-						local lmb, rmb = self:GetSceneItemControllerAction(v)
-
-						if score < target_score or
-							(   score == target_score and
-								(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or
-									(v.CanMouseThrough ~= nil and v:CanMouseThrough())
-								)
-							) then
-							--skip
-						elseif lmb ~= nil then
-							target = v
-							target_score = score
-						else
-							local inv_obj = self:GetCursorInventoryObject()
-							if inv_obj ~= nil then
-								local act = self:GetItemUseAction(inv_obj, v)
-								if act ~= nil and act.target == v then
-									target = v
-									target_score = score
-								end
+						if fishing and v:HasTag("fishable") then
+							local r = v:GetPhysicsRadius(0)
+							if dsq <= r * r then
+								dsq = 0
 							end
 						end
 
-						if score < alt_target_score or
-							(   score == alt_target_score and
-								(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or
-									(v.CanMouseThrough ~= nil and v:CanMouseThrough())
-								)
-							) then
-							--skip
-						elseif rmb ~= nil and not alt_target_has_found then
-							alt_target = v
-							alt_target_score = score
-						end
-						
-						-- find examine_target
-						if score < examine_target_score or
-							(   score == examine_target_score and
-								(   (examine_target ~= nil and not (examine_target.CanMouseThrough ~= nil and examine_target:CanMouseThrough())) or
-									(v.CanMouseThrough ~= nil and v:CanMouseThrough())
-								)
-							) then
-							--skip
-						elseif canexamine and v:HasTag("inspectable") then
-							examine_target = v
-							examine_target_score = score
+						-- local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dx*dx + dz*dz) * math.sqrt(dirx*dirx + dirz*dirz))) / DEGREES or 0
+						local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dsq))) / DEGREES or 0
+
+						if (dsq < min_rad_sq) or
+							(dsq <= target_rad_sq and v == self.controller_target and dx * dirx + dz * dirz > 0) or
+							(dsq <= alt_target_rad_sq and v == self.controller_alt_target and dx * dirx + dz * dirz > 0) or
+							(self.controller_target ~= nil and dsq <= target_rad_sq and included_angle < anglemax) or
+							(self.controller_alt_target ~= nil and dsq <= alt_target_rad_sq and included_angle < anglemax) or
+							(dsq <= max_rad_sq and included_angle < anglemax) and
+							CanEntitySeePoint(self.inst, x1, y1, z1) then
+							-- Incorporate the y component after we've performed the inclusion radius test.
+							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
+							-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
+							dsq = dsq + (dy * dy)
+
+							local dist = dsq > 0 and math.sqrt(dsq) or 0
+							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
+
+							--keep the angle component between [0..1]
+							local angle_component = (dot + 1) / 2
+
+							--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
+							local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
+
+							--for stuff that's *really* close - ie, just dropped
+							local add = dsq < .0625 --[[.25 * .25]] and 1 or 0
+
+							--just a little hysteresis
+							local mult = v == self.controller_target and not v:HasTag("wall") and 1.5 or 1
+							local alt_mult = v == self.controller_alt_target and not v:HasTag("wall") and 1.5 or 1
+
+							local score = angle_component * dist_component * mult * alt_mult + add
+
+							--make it easier to target stuff dropped inside the portal when alive
+							--make it easier to haunt the portal for resurrection in endless mode
+							if v:HasTag("portal") then
+								score = score * (self.inst:HasTag("playerghost") and GetPortalRez() and 1.1 or .9)
+							end
+
+							if v:HasTag("hasfurnituredecoritem") then
+								score = score * 0.5
+							end
+
+							-- print(v, angle_component, dist_component, mult, add, score)
+
+							local lmb, rmb = self:GetSceneItemControllerAction(v)
+
+							if score < target_score or
+								(   score == target_score and
+									(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or
+										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
+									)
+								) then
+								--skip
+							elseif lmb ~= nil then
+								target = v
+								target_score = score
+							else
+								local inv_obj = self:GetCursorInventoryObject()
+								if inv_obj ~= nil then
+									local act = self:GetItemUseAction(inv_obj, v)
+									if act ~= nil and act.target == v then
+										target = v
+										target_score = score
+									end
+								end
+							end
+
+							if score < alt_target_score or
+								(   score == alt_target_score and
+									(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or
+										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
+									)
+								) then
+								--skip
+							elseif rmb ~= nil and not alt_target_has_found then
+								alt_target = v
+								alt_target_score = score
+							end
+							
+							-- find examine_target
+							if score < examine_target_score or
+								(   score == examine_target_score and
+									(   (examine_target ~= nil and not (examine_target.CanMouseThrough ~= nil and examine_target:CanMouseThrough())) or
+										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
+									)
+								) then
+								--skip
+							elseif canexamine and v:HasTag("inspectable") then
+								examine_target = v
+								examine_target_score = score
+							end
 						end
 					end
 				end
@@ -751,7 +767,7 @@ AddComponentPostInit("playercontroller", function(self)
 					
 					-- ================================================================================================= --
 					local need_force_attack = IsNeedForceAttack(self, v)
-					if not CHANGE_FORCE_ATTACK_BUTTON or not need_force_attack or TheInput:IsControlPressed(CHANGE_FORCE_ATTACK_BUTTON) then
+					if not CHANGE_FORCE_BUTTON or not need_force_attack or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) or self.controller_targeting_lock_target then
 					-- ================================================================================================= --
 
 						--Check distance including y value
@@ -904,7 +920,7 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	-- Only Change One Line
-	self.DoControllerAltActionButton = function (self, ...)
+	local DoControllerAltActionButton_New = function (self, ...)
 		self:ClearActionHold()
 
 		if self.placer_recipe ~= nil then
@@ -998,6 +1014,35 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 
 		self:DoAction(act)
+	end
+
+	self.TryWidgetButtonFunction = function (self, call, ...)
+		local _, _, _, _, _, cooker_type_container = self:GetAllTypeContainers()
+		if cooker_type_container ~= nil then
+			local widget = cooker_type_container.replica.container ~= nil and cooker_type_container.replica.container:GetWidget() or nil
+			if widget ~= nil and widget.buttoninfo ~= nil and widget.buttoninfo.fn ~= nil then
+				if self.inst:HasTag("busy") then
+					return false
+				end
+				local iscontrolsenabled, ishudblocking = self:IsEnabled()
+				if not (iscontrolsenabled or ishudblocking) then
+					return false
+				end
+				if call then
+					widget.buttoninfo.fn(cooker_type_container, self.inst)
+				end
+				return true
+			end
+		end
+		return false
+	end
+
+	local DoControllerAltActionButton_New_Old = DoControllerAltActionButton_New
+	self.DoControllerAltActionButton = function (self, ...)
+		if TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) and self:TryWidgetButtonFunction(true) then
+			return
+		end
+		DoControllerAltActionButton_New_Old(self, ...)
 	end
 
 	-- Allow Attack while AoeTargeting (Changed a little)

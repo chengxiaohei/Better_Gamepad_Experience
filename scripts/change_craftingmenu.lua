@@ -1,7 +1,7 @@
 AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
     local OnControl_Old = self.OnControl
     self.OnControl = function(self, control, down, ...)
-        if TheInput:ControllerAttached() then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             if control == CONTROL_MENU_MISC_1 then return false end
             if control == CONTROL_MENU_MISC_2 then return false end
             if control == CONTROL_ACCEPT or control == CONTROL_CONTROLLER_ACTION then return false end
@@ -13,7 +13,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
 
         local result = OnControl_Old(self, control, down, ...)
 
-        if not result and (
+        if not result and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU and (
             control == CONTROL_MENU_MISC_1 or control == CONTROL_INVENTORY_DROP or
             control == CONTROL_INVENTORY_USEONSELF or control == CONTROL_INVENTORY_USEONSCENE) then
             return true
@@ -70,7 +70,7 @@ end)
 AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
     local OnControl_Old = self.OnControl
     self.OnControl = function(self, control, down, ...)
-        if TheInput:ControllerAttached() then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             if control == CONTROL_INVENTORY_DROP then
                 control = CONTROL_ACCEPT
             end
@@ -81,7 +81,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
     local OnCraftingMenuOpen_Old = self.OnCraftingMenuOpen
     self.OnCraftingMenuOpen = function(self, ...)
         local result = OnCraftingMenuOpen_Old(self, ...)
-        if TheInput:ControllerAttached() then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             self.search_box:Disable()
         else
             self.search_box:Enable()
@@ -92,11 +92,12 @@ AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
     -- 修改物品制作栏上下滑动的提示图标
     local RefreshControllers_Old = self.RefreshControllers
     self.RefreshControllers = function (self, controller_mode, ...)
-        if controller_mode then controller_mode = false end
+        if controller_mode and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then controller_mode = false end
         RefreshControllers_Old(self, controller_mode, ...)
     end
 
-    self.RefreshCraftingHelpText = function(self, controller_id, ...)
+    local RefreshCraftingHelpText_Old = self.RefreshCraftingHelpText
+    local RefreshCraftingHelpText_New = function(self, controller_id, ...)
         if self.recipe_grid.focus then
             local hint_text = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE).." "..STRINGS.UI.CRAFTING_MENU.PIN
 
@@ -111,13 +112,21 @@ AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
         end
         return ""
     end
+    
+    self.RefreshCraftingHelpText = function (self, controller_id, ...)
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
+            return RefreshCraftingHelpText_New(self, controller_id, ...)
+        else
+            return RefreshCraftingHelpText_Old(self, controller_id, ...)
+        end
+    end
 end)
 
 
 AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
     local OnControl_Old = self.OnControl;
     self.OnControl = function(self, control, down, ...)
-        if TheInput:ControllerAttached() and self.crafting_hud:IsCraftingOpen() then
+        if TheInput:ControllerAttached() and self.crafting_hud:IsCraftingOpen() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             if control == CONTROL_INVENTORY_DROP then
                 control = CONTROL_ACCEPT
             end
@@ -197,7 +206,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
 
     -- forbid Pinbar change page_spinner icons while gain or lose focus
     local OnGainFocus_Old = self.OnGainFocus
-    self.OnGainFocus = function (self, ...) 
+    self.OnGainFocus = function (self, ...)
         if not TheInput:ControllerAttached() then
             OnGainFocus_Old(self, ...)
         end
@@ -282,7 +291,9 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
         end
         return result
     end
-    self.RefreshCraftingHelpText = function(self, controller_id, ...)
+
+    local RefreshCraftingHelpText_Old = self.RefreshCraftingHelpText
+    local RefreshCraftingHelpText_New = function(self, controller_id, ...)
         local hint_text = ""
         if self.recipe_name ~= nil then
             local recipe_name, skin_name = self.craftingmenu:GetCurrentRecipeName()
@@ -293,14 +304,29 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
 
         return hint_text
     end
-    self.SetUnpinControllerHintString = function(self, ...)
+    self.RefreshCraftingHelpText = function(self, controller_id, ...)
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
+            return RefreshCraftingHelpText_New(self, controller_id, ...)
+        else
+            return RefreshCraftingHelpText_Old(self, controller_id, ...)
+        end
+    end
+
+    local SetUnpinControllerHintString_Old = self.SetUnpinControllerHintString
+    local SetUnpinControllerHintString_New = function(self, ...)
         if self.craftingmenu.is_left_aligned then 
             self.unpin_controllerhint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_EXAMINE) .. " " .. (self.recipe_name ~= nil and STRINGS.UI.CRAFTING_MENU.UNPIN or STRINGS.UI.CRAFTING_MENU.PIN))
         else
             self.unpin_controllerhint:SetString((self.recipe_name ~= nil and STRINGS.UI.CRAFTING_MENU.UNPIN or STRINGS.UI.CRAFTING_MENU.PIN) .. " " .. TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_EXAMINE))
         end
     end
-
+    self.SetUnpinControllerHintString = function (self, ...)
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
+            SetUnpinControllerHintString_New(self, ...)
+        else
+            SetUnpinControllerHintString_Old(self, ...)
+        end
+    end
 
     local RefreshControllers_Old = self.RefreshControllers
     self.RefreshControllers = function (self, controller_mode, for_open_crafting_menu, ...)
@@ -423,7 +449,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_details", function(self)
         end
     end
     self.UpdateBuildButton = function (self, from_pin_slot, ...)
-        if TheInput:ControllerAttached() then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             return UpdateBuildButton_New(self, from_pin_slot, ...)
         end
         return UpdateBuildButton_Old(self, from_pin_slot, ...)

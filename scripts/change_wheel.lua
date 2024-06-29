@@ -9,6 +9,7 @@ AddClassPostConstruct("widgets/wheel", function(self)
             elseif control == CONTROL_INVENTORY_USEONSELF then control = CONTROL_CANCEL
             elseif control == CONTROL_INVENTORY_EXAMINE then return true
             elseif control == CONTROL_INVENTORY_DROP then control = CONTROL_ACCEPT
+            elseif control == CONTROL_OPEN_INVENTORY then return true
             end
         end
         return OnControl_Old(self, control, down, ...)

@@ -28,7 +28,8 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     return true
                 elseif self.controls.votedialog:CheckControl(control, down) then
                     return true
-                elseif (not CHANGE_IS_FORBID_Y_INSPECT_SELF or self.controls.skilltree_notification.controller_help.shown)
+                elseif (not CHANGE_IS_FORBID_Y_INSPECT_SELF or
+                    (self.controls.skilltree_notification ~= nil and self.controls.skilltree_notification.controller_help ~= nil and self.controls.skilltree_notification.controller_help.shown))
                     and self.owner.components.playercontroller:GetControllerTarget() == nil
                     and self.owner.components.playercontroller:GetControllerAltTarget() == nil
                     and self.owner.components.playercontroller:GetControllerAttackTarget() == nil

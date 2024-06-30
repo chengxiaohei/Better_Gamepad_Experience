@@ -25,7 +25,7 @@ CHANGE_FORCE_BUTTON = CHANGE_CONTROL_LEFT  -- CHANGE_CONTROL_LEFT or CHANGE_CONT
 CHANGE_IS_LOCK_TARGET_QUICKLY = true
 
 CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = true
-CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM = true
+CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM = false
 
 CHANGE_IS_FORBID_Y_INSPECT_SELF = true
 
@@ -36,3 +36,4 @@ modimport("scripts/change_inventorybar")
 modimport("scripts/change_craftingmenu")
 modimport("scripts/change_wheel")
 modimport("scripts/change_controls")
+modimport("scripts/change_reticule")

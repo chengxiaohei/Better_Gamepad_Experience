@@ -211,7 +211,6 @@ AddClassPostConstruct("widgets/controls", function(self)
             if not isplacing and l == nil and alt_l == nil and ground_l == nil then
                 ground_l = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, false)
                 if ground_l ~= nil then
-                    print("****** usinging special Action")
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_l:GetActionString())
                     A_shown = true
                     self.groundactionhint:Show()
@@ -219,10 +218,9 @@ AddClassPostConstruct("widgets/controls", function(self)
                     self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
                 end
             end
-            if not isplacing and r == nil and alt_r and ground_r == nil then
+            if not isplacing and r == nil and alt_r == nil and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
                 if not B_shown and ground_r ~= nil then
-                    print("****** usinging special Alt Action")
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                     B_shown = true
                     self.groundactionhint:Show()

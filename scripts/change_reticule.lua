@@ -3,7 +3,7 @@ AddPrefabPostInitAny(function(inst)
     if inst.components.reticule then
         inst.components.reticule.origin_twinstickmode = inst.components.reticule.twinstickmode
         if not inst.components.reticule.twinstickrange then
-            -- TODO: Need Optimize or Fill
+            -- TODO: Maybe Need Optimize or Fill
             if inst.prefab == "wortox" then inst.components.reticule.twinstickrange = 30  -- 灵魂跳跃
             elseif inst.prefab == "orangestaff" then inst.components.reticule.twinstickrange = 30  -- 传送法杖
             elseif inst.prefab == "yellowstaff" then inst.components.reticule.twinstickrange = 20  -- 星杖
@@ -11,11 +11,14 @@ AddPrefabPostInitAny(function(inst)
             elseif inst.prefab == "trident" then inst.components.reticule.twinstickrange = 20  -- 三叉戟
             elseif inst.prefab == "oceanfishingrod" then inst.components.reticule.twinstickrange = 20  -- 海钓竿
             elseif inst.prefab == "gnarwail_horn" then inst.components.reticule.twinstickrange = 20  -- 一角鲸的角
+            elseif inst.prefab == "wurt_swampitem_shadow" then inst.components.reticule.twinstickrange = 30  -- wurt's magic staff
+            elseif inst.prefab == "wurt_swampitem_lunar" then inst.components.reticule.twinstickrange = 30  -- wurt's magic staff
             -- default:
                 -- elseif inst:HasTag("dumbbell") then inst.components.reticule.twinstickrange = 8  -- 哑铃
                 -- elseif inst.prefab == "wilson" then inst.components.reticule.twinstickrange = 8  -- 扔火把
                 -- elseif inst.prefab == "sleepbomb" then inst.components.reticule.twinstickrange = 8  -- 催眠袋
                 -- 水球  8
+                -- 鱼食  8
                 -- 海草种子  8
             end
         end
@@ -28,11 +31,13 @@ AddComponentPostInit("reticule", function(self)
 
     local OnCameraUpdate_Old = self.OnCameraUpdate
     self.OnCameraUpdate = function (self, dt, ...)
-    	if not self.origin_twinstickmode and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-            self.twinstickmode = 1
-            self.twinstickrange = self.twinstickrange or 8  -- default is 8
-        else
-            self.twinstickmode = self.origin_twinstickmode
+        if not self.inst:HasTag("boat") then
+            if not self.origin_twinstickmode and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+                self.twinstickmode = 1
+                self.twinstickrange = self.twinstickrange or 8  -- default is 8
+            else
+                self.twinstickmode = self.origin_twinstickmode
+            end
         end
         OnCameraUpdate_Old(self, dt, ...)
     end

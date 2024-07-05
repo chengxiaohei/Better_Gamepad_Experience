@@ -4,6 +4,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
         if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             if control == CONTROL_MENU_MISC_1 then return false end
             if control == CONTROL_MENU_MISC_2 then return false end
+            if control == CONTROL_OPEN_INVENTORY then return true end
             if control == CONTROL_ACCEPT or control == CONTROL_CONTROLLER_ACTION then return false end
             if control == CONTROL_CANCEL or control == CONTROL_CONTROLLER_ALTACTION then return false end
 
@@ -68,15 +69,12 @@ end)
 
 
 AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
-    local start_time = 0
-    local end_time = 0
     local OnControl_Old = self.OnControl
     self.OnControl = function(self, control, down, ...)
         if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             if control == CONTROL_INVENTORY_DROP then
-                if down then start_time = GetTime() end
-                if not down then end_time = GetTime() end
-                if end_time - start_time > 1 and self.details_root and self.details_root.fav_button and self.details_root.fav_button.onclick then
+                if down and TheInput:IsControlPressed(CONTROL_OPEN_INVENTORY) and self.details_root and self.details_root.fav_button then
+                    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
                     self.details_root.fav_button.onclick()
                 else
                     control = CONTROL_ACCEPT
@@ -99,10 +97,9 @@ AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
         if self.recipe_grid.focus then
             local hint_text = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE).." "..STRINGS.UI.CRAFTING_MENU.PIN
 
-            -- TODO Favorite
             local recipe_name = self.details_root.data ~= nil and self.details_root.data.recipe.name or nil
             if recipe_name then
-                hint_text = hint_text .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP).." ".. STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1..(TheCraftingMenuProfile:IsFavorite(recipe_name) and STRINGS.UI.CRAFTING_MENU.FAVORITE_REMOVE or STRINGS.UI.CRAFTING_MENU.FAVORITE_ADD)
+                hint_text = hint_text .."  "..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP).." "..(TheCraftingMenuProfile:IsFavorite(recipe_name) and STRINGS.UI.CRAFTING_MENU.FAVORITE_REMOVE or STRINGS.UI.CRAFTING_MENU.FAVORITE_ADD)
             end
             return hint_text
         elseif self.filter_panel.focus then

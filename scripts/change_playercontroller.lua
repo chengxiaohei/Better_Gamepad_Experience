@@ -1145,4 +1145,134 @@ AddComponentPostInit("playercontroller", function(self)
 			DoControllerAttackButton_Old(self, target, ...)
 		end
 	end
+
+	local CancelPlacement_Old = self.CancelPlacement
+	self.CancelPlacement = function (self, cache, ...)
+		CancelPlacement_Old(self, cache, ...)
+		if TheInput:ControllerAttached() then
+			if self.fake_placer ~= nil then
+				if self.reticule ~= nil and self.reticule == self.fake_placer.components.reticule then
+					self.reticule:DestroyReticule()
+					self.reticule = nil
+				end
+				self.fake_placer:Remove()
+				self.fake_placer = nil
+				self:RefreshReticule()
+			end
+		end
+	end
+
+	local CancelDeployPlacement_Old = self.CancelDeployPlacement
+	self.CancelDeployPlacement = function (self, ...)
+		CancelDeployPlacement_Old(self, ...)
+		if TheInput:ControllerAttached() then
+			if self.fake_deployplacer ~= nil then
+				if self.reticule ~= nil and self.reticule == self.fake_deployplacer.components.reticule then
+					self.reticule:DestroyReticule()
+					self.reticule = nil
+				end
+				self.fake_deployplacer:Remove()
+				self.fake_deployplacer = nil
+				self:RefreshReticule()
+			end
+		end
+	end
+
+	local function ReticuleTargetFn(inst)
+		return Vector3(ThePlayer.entity:LocalToWorldSpace(inst.components.placer.offset_old, 0, 0))
+	end
+
+	local StartBuildPlacementMode_Old = self.StartBuildPlacementMode
+	self.StartBuildPlacementMode = function (self, recipe, skin, ...)
+		StartBuildPlacementMode_Old(self, recipe, skin, ...)
+		if TheInput:ControllerAttached() then
+			if self.fake_placer ~= nil then
+				self.fake_placer:Remove()
+			end
+			self.fake_placer =
+				skin ~= nil and
+				SpawnPrefab(recipe.placer, skin, nil, self.inst.userid) or
+				SpawnPrefab(recipe.placer)
+			self.fake_placer.components.placer.offset_old = self.fake_placer.components.placer.offset
+			self.fake_placer.components.placer.offset = 0
+			self.fake_placer.components.placer.fake = true
+			self.fake_placer.components.placer:SetBuilder(self.inst, recipe)
+			self.fake_placer:Hide()
+			
+			self.fake_placer:AddComponent("reticule")
+			self.fake_placer.components.reticule.targetfn = ReticuleTargetFn
+			self.fake_placer.components.reticule.ease = true
+
+			local newreticule = self.fake_placer.components.reticule
+			if newreticule ~= self.reticule then
+				if self.reticule ~= nil then
+					self.reticule:DestroyReticule()
+				end
+				self.reticule = newreticule
+				if newreticule ~= nil and newreticule.reticule == nil and (newreticule.mouseenabled or TheInput:ControllerAttached()) then
+					newreticule:CreateReticule()
+					if newreticule.reticule ~= nil and (not self:IsEnabled() or newreticule:ShouldHide()) then
+						newreticule.reticule:Hide()
+					end
+				end
+			end
+		end
+	end
+
+	local OnUpdate_Old = self.OnUpdate
+	self.OnUpdate = function (self, dt, ...)
+		if TheInput:ControllerAttached() then
+			local isenabled, _ = self:IsEnabled()
+			if isenabled then
+				if self.handler ~= nil then
+					local controller_mode = TheInput:ControllerAttached()
+					local placer_item = controller_mode and self:GetCursorInventoryObject() or self.inst.replica.inventory:GetActiveItem()
+					if self.deploy_mode and
+						self.placer == nil and
+						placer_item ~= nil and
+						placer_item.replica.inventoryitem ~= nil and
+						placer_item.replica.inventoryitem:IsDeployable(self.inst) then
+
+						local placer_name = placer_item.replica.inventoryitem:GetDeployPlacerName()
+						local placer_skin = placer_item.AnimState:GetSkinBuild() --hack that relies on the build name to match the linked skinname
+						if placer_skin == "" then
+							placer_skin = nil
+						end
+
+						if self.fake_deployplacer == nil then
+							self.fake_deployplacer = SpawnPrefab(placer_name, placer_skin, nil, self.inst.userid )
+							if self.fake_deployplacer ~= nil then
+								self.fake_deployplacer.components.placer.offset_old = self.fake_deployplacer.components.placer.offset
+								self.fake_deployplacer.components.placer.offset = 0
+								self.fake_deployplacer.components.placer.fake = true
+								self.fake_deployplacer.components.placer:SetBuilder(self.inst, nil, placer_item)
+								self.fake_deployplacer:Hide()
+
+								self.fake_deployplacer:AddComponent("reticule")
+								self.fake_deployplacer.components.reticule.targetfn = ReticuleTargetFn
+								self.fake_deployplacer.components.reticule.ease = true
+
+								local newreticule = self.fake_deployplacer.components.reticule
+								if newreticule ~= self.reticule then
+									if self.reticule ~= nil then
+										self.reticule:DestroyReticule()
+									end
+									self.reticule = newreticule
+									if newreticule ~= nil and newreticule.reticule == nil and (newreticule.mouseenabled or TheInput:ControllerAttached()) then
+										newreticule:CreateReticule()
+										if newreticule.reticule ~= nil and (not self:IsEnabled() or newreticule:ShouldHide()) then
+											newreticule.reticule:Hide()
+										end
+									end
+								end
+								self.fake_deployplacer.components.placer:OnUpdate(0) --so that our position is accurate on the first frame
+							end
+						end
+					end
+				end
+			end
+		end
+		OnUpdate_Old(self, dt, ...)
+	end
+
 end)

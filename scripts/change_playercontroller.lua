@@ -933,6 +933,39 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 	end
 
+	-- Not Changed
+	local function PullUpMap(inst, maptarget)
+		-- NOTES(JBK): This is assuming inst is the local client on call with a check to inst.HUD not being nil.
+		if inst.HUD:IsCraftingOpen() then
+			inst.HUD:CloseCrafting()
+		end
+		if inst.HUD:IsSpellWheelOpen() then
+			inst.HUD:CloseSpellWheel()
+		end
+		if inst.HUD:IsControllerInventoryOpen() then
+			inst.HUD:CloseControllerInventory()
+		end
+		-- Pull up map now.
+		if not inst.HUD:IsMapScreenOpen() then
+			inst.HUD.controls:ToggleMap()
+			if inst.HUD:IsMapScreenOpen() then -- Just in case.
+				local mapscreen = TheFrontEnd:GetActiveScreen()
+				mapscreen._hack_ignore_held_controls = 0.1
+				mapscreen._hack_ignore_ups_for = {}
+				mapscreen.maptarget = maptarget
+				local min_dist = maptarget.map_remap_min_dist
+				if min_dist then
+					min_dist = min_dist + 0.1 -- Padding for floating point precision.
+					local x, y, z = inst.Transform:GetWorldPosition()
+					local rotation = inst.Transform:GetRotation() * DEGREES
+					local wx, wz = x + math.cos(rotation) * min_dist, z - math.sin(rotation) * min_dist -- Z offset is negative to desired from Transform coordinates.
+					inst.HUD.controls:FocusMapOnWorldPosition(mapscreen, wx, wz)
+				end
+				-- Do not have to take into account max_dist because the map automatically centers on the player when opened.
+			end
+		end
+	end
+
 	-- Newly created function
 	self.GetControllerAltTarget = function (self, ...)
 		return self.controller_alt_target ~= nil and self.controller_alt_target:IsValid() and self.controller_alt_target or nil

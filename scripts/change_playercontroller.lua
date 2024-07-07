@@ -883,11 +883,13 @@ AddComponentPostInit("playercontroller", function(self)
 					target = nil
 					target_isally = true
 				end
-			elseif self.controller_target:HasTag("wall") and not IsEntityDead(self.controller_target, true) then
-				--if we have no (X) control target, then give
-				--it to our (Y) control target if it's a wall
-				target = self.controller_target
-				target_isally = false
+			-- ============================================================================================================ --
+			-- elseif self.controller_target:HasTag("wall") and not IsEntityDead(self.controller_target, true) then
+			-- 	--if we have no (X) control target, then give
+			-- 	--it to our (Y) control target if it's a wall
+			-- 	target = self.controller_target
+			-- 	target_isally = false
+			-- ============================================================================================================ --
 			end
 		end
 
@@ -905,7 +907,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 	-- Numerous Changed, 
 	-- 1. apply local function UpdateControllerInteractionTarget
-	-- 2. Update attack target while AOETargeting or sitting_on_chair
+	-- 2. Update attack target while AOETargeting
 	self.UpdateControllerTargets = function (self, dt, ...)
 		local x, y, z = self.inst.Transform:GetWorldPosition()
 		local heading_angle = -self.inst.Transform:GetRotation()
@@ -920,7 +922,7 @@ AddComponentPostInit("playercontroller", function(self)
 			self.controller_target_age = 0
 			self.controller_alt_target = nil
 			self.controller_alt_target_age = 0
-			if self:IsAOETargeting() or self.inst:HasTag("sitting_on_chair") then
+			if self:IsAOETargeting() then
 				UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 			else
 				self.controller_attack_target = nil

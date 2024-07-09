@@ -176,7 +176,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
         if parent == self.controls.containerroot then
             self:CloseSpellWheel()
         end
-        print("****** my open container")
     end
 
 	local OpenContainer_Old = self.OpenContainer
@@ -186,7 +185,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
         elseif side and Profile:GetIntegratedBackpack() then
             self.controls.inv.rebuild_pending = true
         else
-            print("******OpenContainer")
             OpenContainerWidget(self, container, side)
         end
     end
@@ -203,11 +201,9 @@ AddClassPostConstruct("screens/playerhud", function(self)
     local function CloseContainerWidget(self, container, side)
         for k, v in pairs(self.controls.containers) do
             if v.container == container then
-                print("******close how many?")
                 v:Close()
             end
         end
-        print("****** my close container")
     end
 
 	local CloseContainer_Old = self.CloseContainer
@@ -217,7 +213,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
         elseif side and Profile:GetIntegratedBackpack() then
             self.controls.inv.rebuild_pending = true
         else
-            print("CloseContainer")
             CloseContainerWidget(self, container, side)
         end
     end
@@ -231,6 +226,7 @@ AddClassPostConstruct("screens/playerhud", function(self)
     end
 
     -- Make it work right while change form switch between separated and integrated
+    -- Make it work right while change controller from gamepad to keyboard 
     local RefreshControllers_Old = self.RefreshControllers
     local RefreshControllers_New = function (self)
         local controller_mode = TheInput:ControllerAttached()
@@ -244,7 +240,10 @@ AddClassPostConstruct("screens/playerhud", function(self)
         -- local integrated_backpack = controller_mode or Profile:GetIntegratedBackpack()
         local integrated_backpack = Profile:GetIntegratedBackpack()
         -- =============================================================================== --
-        if self.controls.inv.controller_build ~= controller_mode or self.controls.inv.integrated_backpack ~= integrated_backpack then
+        -- ============================================================================================================================== --
+        -- if self.controls.inv.controller_build ~= controller_mode or self.controls.inv.integrated_backpack ~= integrated_backpack then
+        if self.controls.inv.integrated_backpack ~= integrated_backpack then
+        -- ============================================================================================================================== --
             self.controls.inv.rebuild_pending = true
             local overflow = self.owner.replica.inventory:GetOverflowContainer()
             if overflow == nil then

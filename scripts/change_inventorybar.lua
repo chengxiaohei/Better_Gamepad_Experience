@@ -40,10 +40,6 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
-		if  self.owner.components.playercontroller.placer ~= nil or self.owner.components.playercontroller.deployplacer ~= nil then
-			return true
-		end
-
 		if self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned then
 			local k, slot = next(self.current_list or {})
 			if slot == nil or not slot.inst:IsValid() then
@@ -67,10 +63,6 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 	self.CursorRight = function (self, ...)
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
-			return true
-		end
-
-		if  self.owner.components.playercontroller.placer ~= nil or self.owner.components.playercontroller.deployplacer ~= nil then
 			return true
 		end
 
@@ -100,10 +92,6 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
-		if self.owner.components.playercontroller.placer ~= nil or self.owner.components.playercontroller.deployplacer ~= nil then
-			return true
-		end
-
 		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
 		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
 			pressed = not pressed 
@@ -129,10 +117,6 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 	self.CursorDown = function (self, ...)
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
-			return true
-		end
-
-		if self.owner.components.playercontroller.placer ~= nil or self.owner.components.playercontroller.deployplacer ~= nil then
 			return true
 		end
 

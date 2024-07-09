@@ -197,7 +197,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             if cooker_type_container ~= nil then
                 local widget = cooker_type_container.replica.container:GetWidget()
                 local cooker_type_container_widget = self.containers[cooker_type_container]
-                if cooker_type_container_widget ~= nil then
+                if cooker_type_container_widget ~= nil and cooker_type_container_widget.button ~= nil then
                     if TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) then
                         B_shown = true
                         cooker_type_container_widget.button:Show()

@@ -157,24 +157,15 @@ AddComponentPostInit("playercontroller", function(self)
 	local ChangePlayerController = function (self, control, inv_item, active_item, slot, container, target, left, right)
 		self:ClearActionHold()
 		if control == CONTROL_INVENTORY_DROP then
-			if self.deployplacer ~= nil or self.placer ~= nil or self:IsAOETargeting() then
-				return
-			end
 			self:DoControllerDropItemFromInvTile(active_item or inv_item, right)
 		elseif control == CONTROL_INVENTORY_EXAMINE then
-			if self.deployplacer ~= nil or self.placer ~= nil or self:IsAOETargeting() then
-				return
-			end
 			self:DoControllerInspectItemFromInvTile(active_item or inv_item)
 		elseif control == CONTROL_INVENTORY_USEONSELF then
-			if self.deployplacer ~= nil or self.placer ~= nil or self:IsAOETargeting() then
-				return
-			end
 			if left and right and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
 				PutActiveItemInContainer(self, active_item, inv_item, true)
 			elseif left and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
 				PutActiveItemInContainer(self, active_item, inv_item, false)
-			elseif right and container ~= nil and slot ~= nil then
+			elseif right and container ~= nil and slot ~= nil and inv_item ~= nil then
 				local cursor_container_type = QueryContainerType(self, container.inst)
 				local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()
 				local container_list = {}
@@ -218,10 +209,7 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 
 		elseif control == CONTROL_INVENTORY_USEONSCENE then
-			if self.deployplacer ~= nil or self.placer ~= nil or self:IsAOETargeting() then
-				return
-			end
-			if right and container ~= nil and slot ~= nil then
+			if right and container ~= nil and slot ~= nil and inv_item ~= nil then
 				local cursor_container_type = QueryContainerType(self, container.inst)
 				local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()
 				local container_list = {}
@@ -260,9 +248,6 @@ AddComponentPostInit("playercontroller", function(self)
 				self:DoControllerUseItemOnSceneFromInvTile(active_item or inv_item)
 			end
 		elseif control == CONTROL_OPEN_INVENTORY then
-			if self.deployplacer ~= nil or self.placer ~= nil or self:IsAOETargeting() then
-				return
-			end
 			if inv_item ~= nil or active_item ~= nil then
 				if self.inst.HUD.controls.inv.active_slot ~= nil then
 					self.inst.HUD.controls.inv.active_slot:Click(left)

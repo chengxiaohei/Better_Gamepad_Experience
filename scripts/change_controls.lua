@@ -132,6 +132,13 @@ AddClassPostConstruct("widgets/controls", function(self)
             local ground_l, ground_r = self.owner.components.playercontroller:GetGroundUseAction()
             local ground_cmds = {}
             local isplacing = self.owner.components.playercontroller.deployplacer ~= nil or self.owner.components.playercontroller.placer ~= nil
+            local A_shown = false
+            local Y_shown = false
+            local B_shown = false
+            local X_shown = false
+            local not_force = CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_PING_RETICULE and not TheInput:IsControlPressed(CHANGE_FORCE_BUTTON)
+            local playercontroller_reticule = self.owner.components.playercontroller.reticule
+            local is_reticule = playercontroller_reticule ~= nil and playercontroller_reticule.reticule ~= nil and playercontroller_reticule.reticule.entity:IsVisible()
             if isplacing then
                 local placer = self.terraformplacer
 
@@ -157,8 +164,9 @@ AddClassPostConstruct("widgets/controls", function(self)
             else
                 local aoetargeting = self.owner.components.playercontroller:IsAOETargeting()
                 if ground_r ~= nil then
-                    if ground_r.action ~= ACTIONS.CASTAOE then
+                    if ground_r.action ~= ACTIONS.CASTAOE and not (not_force and is_reticule) then
                         table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
+                        B_shown = true
                     elseif aoetargeting then
                         table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_r:GetActionString())
                     end
@@ -168,18 +176,18 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
                 if #ground_cmds > 0 then
                     self.groundactionhint:Show()
-                    self.groundactionhint:SetTarget(self.owner)
-                    -- self.groundactionhint:SetTarget(self.owner.components.playercontroller.reticule ~= nil and self.owner.components.playercontroller.reticule.reticule or self.owner)
+                    if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_PING_RETICULE then
+                        local playercontroller_reticule = self.owner.components.playercontroller.reticule
+                        self.groundactionhint:SetTarget(playercontroller_reticule ~= nil and playercontroller_reticule.reticuleprefab == "reticule" and playercontroller_reticule.reticule or self.owner)
+                    else
+                        self.groundactionhint:SetTarget(self.owner)
+                    end
                     self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
                 else
                     self.groundactionhint:Hide()
                 end
             end
 
-            local A_shown = false
-            local Y_shown = false
-            local B_shown = false
-            local X_shown = false
             local controller_target = self.owner.components.playercontroller:GetControllerTarget()
             local controller_alt_target = self.owner.components.playercontroller:GetControllerAltTarget()
             local controller_attack_target = self.owner.components.playercontroller:GetControllerAttackTarget()
@@ -220,7 +228,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
             if not isplacing and r == nil and alt_r == nil and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
-                if not B_shown and ground_r ~= nil then
+                if not B_shown and ground_r ~= nil and not (not_force and is_reticule)then
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                     B_shown = true
                     self.groundactionhint:Show()
@@ -260,7 +268,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
                     B_shown = true
                 end
-                if not B_shown and r ~= nil and ground_r == nil and controller_target == controller_alt_target and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+                if not B_shown and r ~= nil and controller_target == controller_alt_target and not self.owner.components.playercontroller:IsControllerTargetLocked() then
                     table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. r:GetActionString())
                     B_shown = true
                 end
@@ -316,7 +324,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
                     B_shown = true
                 end
-                if not B_shown and alt_r ~= nil and ground_r == nil and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+                if not B_shown and alt_r ~= nil and not self.owner.components.playercontroller:IsControllerTargetLocked() then
                     table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. alt_r:GetActionString())
                     B_shown = true
                 end

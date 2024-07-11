@@ -31,6 +31,7 @@ CHANGE_IS_FORCE_PICK_UP_ITEM = 2  -- false or 1 or 2
 CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = true
 CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM = false
 CHANGE_IS_FORBID_Y_INSPECT_SELF = true
+CHANGE_IS_SWAP_CAMERA_ROTATION = true
 
 modimport("scripts/change_mapscreen")
 modimport("scripts/change_optionsscreen")

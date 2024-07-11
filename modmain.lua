@@ -32,6 +32,7 @@ CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = true
 CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM = false
 CHANGE_IS_FORBID_Y_INSPECT_SELF = true
 
+modimport("scripts/change_mapscreen")
 modimport("scripts/change_optionsscreen")
 modimport("scripts/change_playercontroller")
 modimport("scripts/change_playerhud")

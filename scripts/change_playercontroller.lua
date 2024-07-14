@@ -51,7 +51,7 @@ AddComponentPostInit("playercontroller", function(self)
 						local iitem = container.replica.container:GetItemInSlot(islot)
 						if iitem ~= nil and container.replica.container:CanTakeItemInSlot(targetitem, islot) and
 							iitem.prefab == targetitem.prefab and iitem.AnimState:GetSkinBuild() == targetitem.AnimState:GetSkinBuild() and
-							iitem.replica.stackable ~= nil and container.replica.container:AcceptsStacks() then
+							iitem.replica.stackable ~= nil and not iitem.replica.stackable:IsFull() and container.replica.container:AcceptsStacks() then
 							find = true
 							filtered_container = container
 							break
@@ -74,7 +74,7 @@ AddComponentPostInit("playercontroller", function(self)
 						local iitem = container.replica.inventory:GetItemInSlot(islot)
 						if iitem ~= nil and container.replica.inventory:CanTakeItemInSlot(targetitem, islot) and
 							iitem.prefab == targetitem.prefab and iitem.AnimState:GetSkinBuild() == targetitem.AnimState:GetSkinBuild() and
-							iitem.replica.stackable ~= nil and container.replica.inventory:AcceptsStacks() then
+							iitem.replica.stackable ~= nil and not iitem.replica.stackable:IsFull() and container.replica.inventory:AcceptsStacks() then
 							find = true
 							filtered_container = container
 							break

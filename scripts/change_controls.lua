@@ -2,6 +2,8 @@ local FollowText = require "widgets/followtext"
 local Text = require "widgets/text"
 
 AddClassPostConstruct("widgets/controls", function(self)
+    -- Help Klei Fix Bug: Actived Item Under Backpack Widget
+    self.containerroot_side.parent:MoveToBack()
 
     -- self.playeractionhint
     self.playeractionhint:SetOffset(Vector3(0, 120, 0))

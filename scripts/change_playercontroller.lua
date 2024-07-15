@@ -1324,4 +1324,9 @@ AddComponentPostInit("playercontroller", function(self)
 		OnUpdate_Old(self, dt, ...)
 	end
 
+	local ToggleController_Old = self.ToggleController
+	self.ToggleController = function (self, val, ...)
+		ToggleController_Old(self, val, ...)
+		self.inst.HUD.controls.inv.rebuild_pending = true
+	end
 end)

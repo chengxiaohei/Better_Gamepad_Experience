@@ -74,7 +74,17 @@ configuration_options = {
 	{
 		name = "show_map_widget",
 		label = Language_En and "Show Map Widget" or "显示地图按钮控件",
-		hover = Language_En and "Show Map Widget and Help Icon about Camera Control." or "显示地图控件。",
+		hover = Language_En and "Show Map Widget." or "显示地图按钮控件。",
+		options = {
+			{ description = "Yes (Default)", data = true,  hover = Language_En and "Show." or "显示"},
+			{ description = "No",            data = false, hover = Language_En and "Hide as Before." or "隐藏"},
+		},
+		default = true
+	},
+	{
+		name = "show_self_inspect",
+		label = Language_En and "Show Self Inspect" or "显示自我检查按钮",
+		hover = Language_En and "Show Self Inspect Button in Inventory Bar." or "显示物品栏中的自我检查按钮。",
 		options = {
 			{ description = "Yes (Default)", data = true,  hover = Language_En and "Show." or "显示"},
 			{ description = "No",            data = false, hover = Language_En and "Hide as Before." or "隐藏"},

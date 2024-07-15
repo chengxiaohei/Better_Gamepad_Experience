@@ -19,7 +19,7 @@ CHANGE_CONTROL_CAMERA = CHANGE_CONTROL_LEFT
 CHANGE_CONTROL_HOVER = CONTROL_OPEN_INVENTORY
 
 CHANGE_ALWAYS_SHOW_MAP_CONTROL_WIDGET = GetModConfigData("show_map_widget")
-CHANGE_SHOW_SELF_INSPECT_BUTTON = true
+CHANGE_SHOW_SELF_INSPECT_BUTTON = GetModConfigData("show_self_inspect")
 
 local force = GetModConfigData("enable_force_control")
 if force == "left" then

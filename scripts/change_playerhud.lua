@@ -275,10 +275,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
     end
 
     self.RefreshControllers = function (self, ...)
-        if TheInput:ControllerAttached() then
-            RefreshControllers_New(self)
-        else
-            RefreshControllers_Old(self, ...)
-        end
+        RefreshControllers_New(self)
     end
 end)

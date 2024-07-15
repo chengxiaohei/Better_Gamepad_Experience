@@ -547,7 +547,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					if active_item.replica.stackable ~= nil and inv_item.prefab == active_item.prefab and active_item.skinname == active_item.skinname then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.ACTIONS.COMBINESTACK
 						if left and active_item.replica.stackable:IsStack() then
-							help_string = help_string .. " (One)"
+							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
 					elseif can_take_active_item then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.SWAP
@@ -573,7 +573,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					if left and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.owner) then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.ACTIONS.STORE.GENERIC
 						if right and active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() then 
-							help_string = help_string .. " (One)"
+							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
 					elseif use_action ~= nil then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. use_action:GetActionString()
@@ -587,7 +587,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
 				if right and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
-					help_string = help_string .. " (One)"
+					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
 				table.insert(str, help_string)
 
@@ -603,7 +603,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
 				if not is_equip_slot then
 					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.PUT
-					help_string = help_string .. (left and active_item.replica.stackable and active_item.replica.stackable:IsStack() and " (One)" or "")
+					help_string = help_string .. (left and active_item.replica.stackable and active_item.replica.stackable:IsStack() and (Language_En and " (One)" or " (一个)") or "")
 				elseif active_item.replica.equippable ~= nil and active_item.replica.equippable:EquipSlot() == self.active_slot.equipslot and not active_item.replica.equippable:IsRestricted(self.owner) then
 					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.EQUIP
 				end
@@ -624,14 +624,14 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
 				if right and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
-					help_string = help_string .. " (One)"
+					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
 				table.insert(str, help_string)
 
 			elseif inv_item ~= nil then
 				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
 				help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.SELECT
-				help_string = help_string .. (left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() and " (Half)" or "")
+				help_string = help_string .. (left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() and (Language_En and " (Half)" or " (一半)") or "")
 				table.insert(str, help_string)
 
 				help_string = ""
@@ -670,7 +670,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
 				if right and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
-					help_string = help_string .. " (One)"
+					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
 				table.insert(str, help_string)
 			end

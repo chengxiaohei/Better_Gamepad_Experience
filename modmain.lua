@@ -7,6 +7,8 @@ setmetatable(env,
 	__index = function(table, key) return rawget(_G, key) end
 })
 
+Language_En = locale ~= "zh" and locale ~= "zht" and locale ~= "zhr"
+
 CHANGE_SHOW_SELF_INSPECT_BUTTON = true
 
 CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT = false  -- Switch Flag (Open or Close)

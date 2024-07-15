@@ -796,7 +796,7 @@ AddComponentPostInit("playercontroller", function(self)
 					
 					-- ================================================================================================= --
 					local need_force_attack = IsNeedForceAttack(self, v)
-					if not CHANGE_FORCE_BUTTON or not need_force_attack or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) or self.controller_targeting_lock_target then
+					if not CHANGE_FORCE_BUTTON or not CHANGE_IS_FORCE_ATTACK or not need_force_attack or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) or self.controller_targeting_lock_target then
 					-- ================================================================================================= --
 
 						--Check distance including y value

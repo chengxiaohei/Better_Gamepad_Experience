@@ -234,7 +234,12 @@ AddClassPostConstruct("widgets/controls", function(self)
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                     B_shown = true
                     self.groundactionhint:Show()
-                    self.groundactionhint:SetTarget(self.owner)
+                    if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_PING_RETICULE then
+                        local playercontroller_reticule = self.owner.components.playercontroller.reticule
+                        self.groundactionhint:SetTarget(playercontroller_reticule ~= nil and playercontroller_reticule.reticuleprefab == "reticule" and playercontroller_reticule.reticule or self.owner)
+                    else
+                        self.groundactionhint:SetTarget(self.owner)
+                    end
                     self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
                 end
             end

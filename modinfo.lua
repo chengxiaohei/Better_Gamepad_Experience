@@ -29,11 +29,36 @@ local GamepadButtons = {
 	Right_Trigger     = "\238\128\139",--"Right Trigger",
 }
 
-name = "Improved Gamepad UX" -- "Better Gamepad Experience"
-description = [[ 
-	Feature One: Lock Target while Examine and Allow Extra Actions
+name = "Better Gamepad UX" -- "Better Gamepad User Experience"
+description = Language_En and [[
+* It's Best to Keep the Default Control Settings in the Settings.
+* Setting Separated Backpack Layout while Using Gamepad
+* Move Camera with ]]..GamepadButtons.Left_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 
+* Move Action Point with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 
+* Select Items in the Inventroy Bar with ]]..GamepadButtons.Right_Trigger..[[ 
+* Move Items Between Opened Containers with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 
+* Lock Attack Target with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and Examine Button ]]..GamepadButtons.Button_Y..[[ 
+* Attack Friendly Creatures with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and Attack Button ]]..GamepadButtons.Button_X..[[ 
+* Pickup Well Placed Teeth Trap with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and Action Button ]]..GamepadButtons.Button_A..[[ 
+* Teleport with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and AltAction Button ]]..GamepadButtons.Button_B..[[ 
+
+Looking Forward to the Day When This Mod is Incorporated :-)
+]] or [[
+* 开启本Mod后，最好将系统设置中的控制器设置保持默认。
+* 在使用手柄时，也可以在系统设置中设置背包布局了
+* 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动视角
+* 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动操作目标点
+* 使用 ]]..GamepadButtons.Right_Trigger..[[ 从物品栏中选取物品
+* 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 在打开的容器之间移动物品
+* 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加检查按钮 ]]..GamepadButtons.Button_Y..[[ 锁定攻击目标
+* 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加攻击按钮 ]]..GamepadButtons.Button_X..[[ 攻击友好生物
+* 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加动作按钮 ]]..GamepadButtons.Button_A..[[ 捡起布置好的狗牙陷阱
+* 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加副动作按钮 ]]..GamepadButtons.Button_B..[[ 进行传送等操作
+
+期待本模组被收编的那一天 :-)
 ]]
-author = "Change"
+
+author = "程小黑OvO"
 version = "0.1.0"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"

@@ -92,7 +92,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 			elseif not self.open and not active_item and (self.current_list == self.inv or self.current_list == self.equip) then
 				-- go into the pin bar if there are no other open containers above the inventory bar
-				if self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1)) then
+				local target_slot = self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1)
+				while target_slot and target_slot.in_pinbar and target_slot:FindPinDown() and target_slot ~= target_slot:FindPinDown() do
+					target_slot = target_slot:FindPinDown()
+				end
+				if self:PinBarNav(target_slot) then
 					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 				end
 			end
@@ -113,11 +117,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 				end
 			else
-				pin_nav = false
-				local k, slot = next(self.current_list or {})
-				if slot == nil or not slot.inst:IsValid() then
-					self.current_list = self.owner.HUD.controls.craftingmenu.is_left_aligned and self.inv or self.equip
-				end
+				self:SelectDefaultSlot()
+				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 			end
 		end
 		

@@ -109,7 +109,7 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 if self:IsCraftingOpen() and not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
                     self:CloseCrafting()
                     return true
-                elseif self:IsSpellWheelOpen() and not CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
+                elseif self:IsSpellWheelOpen() and not CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM then
                     self:CloseSpellWheel()
                     return true
                 elseif self:IsControllerInventoryOpen() then

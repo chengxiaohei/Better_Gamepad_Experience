@@ -34,7 +34,7 @@ CHANGE_IS_FORCE_PICK_UP_TRAP = GetModConfigData("force_pickup_teeth_trap")  -- t
 CHANGE_IS_FORCE_PICK_UP_ITEM = GetModConfigData("force_pickup")  -- false or 1 or 2
 
 CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = GetModConfigData("change_craftingmenu")
-CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM = GetModConfigData("change_wheel")
+CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM = GetModConfigData("change_wheel")
 CHANGE_IS_FORBID_Y_INSPECT_SELF = GetModConfigData("forbid_inspect_self")
 CHANGE_IS_SWAP_CAMERA_ROTATION = GetModConfigData("change_mapscreen_rotation")
 

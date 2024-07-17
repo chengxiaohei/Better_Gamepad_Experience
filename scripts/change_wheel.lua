@@ -2,7 +2,7 @@
 AddClassPostConstruct("widgets/wheel", function(self)
     local OnControl_Old = self.OnControl
     self.OnControl = function(self, control, down, ...)
-        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM then
             if control == CONTROL_ACCEPT then return false
             elseif control == CONTROL_CANCEL then return false
             elseif control == CONTROL_INVENTORY_USEONSCENE then return true
@@ -24,7 +24,7 @@ AddClassPostConstruct("widgets/wheel", function(self)
     end
 
     self.GetHelpText = function (self, ...)
-        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM then
             return GetHelpText_New(self, ...)
         end
         return GetHelpText_Old(self, ...)
@@ -34,7 +34,7 @@ AddClassPostConstruct("widgets/wheel", function(self)
     local Open_Old = self.Open
     self.Open = function (self, dataset_name, ...)
         local result = Open_Old(self, dataset_name, ...)
-        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM then
             for _, v in ipairs(self.activeitems) do
                 if v ~= nil and v.widget ~= nil then
                     v.widget.GetHelpText = function (_self, ...)

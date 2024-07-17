@@ -130,7 +130,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
         end]]
 
-        if controller_mode and (CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU or not self.craftingmenu:IsCraftingOpen()) and (CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM or not self.spellwheel:IsOpen()) and self.owner:IsActionsVisible() then
+        if controller_mode and (CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU or not self.craftingmenu:IsCraftingOpen()) and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.spellwheel:IsOpen()) and self.owner:IsActionsVisible() then
             local ground_l, ground_r = self.owner.components.playercontroller:GetGroundUseAction()
             local ground_cmds = {}
             local isplacing = self.owner.components.playercontroller.deployplacer ~= nil or self.owner.components.playercontroller.placer ~= nil

@@ -444,7 +444,7 @@ AddComponentPostInit("playercontroller", function(self)
 			if not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU and self.inst.HUD:IsCraftingOpen() then
 				return isenabled, ishudblocking
 			end
-			if not CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM and self.inst.HUD:IsSpellWheelOpen() then
+			if not CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM and self.inst.HUD:IsSpellWheelOpen() then
 				return isenabled, ishudblocking
 			end
 			return true

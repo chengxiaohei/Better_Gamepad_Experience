@@ -105,6 +105,17 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 end
                 self.controls:ToggleMap()
                 return true
+            elseif control == CONTROL_CANCEL and TheInput:ControllerAttached() then
+                if self:IsCraftingOpen() and not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
+                    self:CloseCrafting()
+                    return true
+                elseif self:IsSpellWheelOpen() and not CHANGE_IS_USE_DPAD_SELECT_SPELLBOOK_ITEM then
+                    self:CloseSpellWheel()
+                    return true
+                elseif self:IsControllerInventoryOpen() then
+                    self:CloseControllerInventory()
+                    return true
+                end
             elseif control == CONTROL_TOGGLE_PLAYER_STATUS then
                 self:ShowPlayerStatusScreen(true)
                 return true

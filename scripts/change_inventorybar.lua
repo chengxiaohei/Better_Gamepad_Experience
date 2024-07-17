@@ -48,15 +48,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		end
 
 		local active_item = self.owner.replica.inventory:GetActiveItem()
-		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
-		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
-			pressed = not pressed 
-		end
 
-		if self:CursorNav(Vector3(-1,0,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
+		if self:CursorNav(Vector3(-1,0,0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		elseif not self.open and not active_item and not self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned and
-			(not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed) and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, -1, 0)) then
+			self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, -1, 0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		end
 	end
@@ -66,23 +62,17 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
-		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
-		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
-			pressed = not pressed 
-		end
-
 		if self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned then
-			if CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed then return end
 			local k, slot = next(self.current_list or {})
 			if slot == nil or not slot.inst:IsValid() then
 				self.current_list = self.inv
 			end
 		end
 
-		if self:CursorNav(Vector3(1,0,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
+		if self:CursorNav(Vector3(1,0,0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		elseif not self.open and not self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned and
-			(not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed) and self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 1, 0)) then
+			self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 1, 0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		end
 	end
@@ -92,20 +82,15 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
-		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
-		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
-			pressed = not pressed 
-		end
-
 		if self.pin_nav then
 			if self:PinBarNav(self.active_slot:FindPinUp()) and self.active_slot:FindPinUp() ~= self.active_slot then
 				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 			end
 		else
 			local active_item = self.owner.replica.inventory:GetActiveItem()
-			if self:CursorNav(Vector3(0,1,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
+			if self:CursorNav(Vector3(0,1,0)) then
 				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-			elseif not self.open and not active_item and (self.current_list == self.inv or self.current_list == self.equip) and (not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed) then
+			elseif not self.open and not active_item and (self.current_list == self.inv or self.current_list == self.equip) then
 				-- go into the pin bar if there are no other open containers above the inventory bar
 				if self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1)) then
 					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
@@ -120,11 +105,6 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
-		local pressed = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
-		if CHANGE_USE_ANOTHER_LIMIT_PATTERN then 
-			pressed = not pressed 
-		end
-
 		local pin_nav = self.pin_nav
 		if pin_nav then
 			local next_pin = self.active_slot:FindPinDown()
@@ -132,7 +112,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				if self:PinBarNav(next_pin) then
 					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 				end
-			elseif not CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT or pressed then
+			else
 				pin_nav = false
 				local k, slot = next(self.current_list or {})
 				if slot == nil or not slot.inst:IsValid() then
@@ -141,7 +121,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			end
 		end
 		
-		if not pin_nav and self:CursorNav(Vector3(0,-1,0), CHANGE_IS_ADD_CONTAINER_MOVE_LIMIT and not pressed) then
+		if not pin_nav and self:CursorNav(Vector3(0,-1,0)) then
 			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
 		end
 	end

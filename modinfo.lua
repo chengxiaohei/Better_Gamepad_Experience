@@ -41,8 +41,6 @@ description = Language_En and [[
 * Attack Friendly Creatures with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and Attack Button ]]..GamepadButtons.Button_X..[[ 
 * Pickup Well Placed Teeth Trap with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and Action Button ]]..GamepadButtons.Button_A..[[ 
 * Teleport with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and AltAction Button ]]..GamepadButtons.Button_B..[[ 
-
-Looking Forward to the Day When This Mod is Incorporated :-)
 ]] or [[
 * 开启本Mod后，最好将系统设置中的控制器设置保持默认。
 * 在使用手柄时，也可以在系统设置中设置背包布局了
@@ -54,12 +52,10 @@ Looking Forward to the Day When This Mod is Incorporated :-)
 * 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加攻击按钮 ]]..GamepadButtons.Button_X..[[ 攻击友好生物
 * 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加动作按钮 ]]..GamepadButtons.Button_A..[[ 捡起布置好的狗牙陷阱
 * 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加副动作按钮 ]]..GamepadButtons.Button_B..[[ 进行传送等操作
-
-期待本模组被收编的那一天 :-)
 ]]
 
 author = "程小黑OvO"
-version = "0.1.1"
+version = "0.1.2"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"

@@ -540,11 +540,16 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 				help_string = ""
 				local changebox_flag = false
+				local drop_inv_flag = false
 				local _, h, p, b, l, r = self.owner.components.playercontroller:GetAllTypeContainers()
 				if not is_equip_slot and right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) and
 					not (left and inv_item.replica.container ~= nil) then
 					changebox_flag = true
-				else
+				end
+				if right then
+					drop_inv_flag = true
+				end
+				if not changebox_flag then
 					local scene_action = self.owner.components.playercontroller:GetItemUseAction(active_item)
 					if scene_action ~= nil then
 						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. scene_action:GetActionString()
@@ -565,19 +570,29 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				if help_string ~= "" then
 					table.insert(str, help_string)
 				end
-
-				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
-				if right and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
-					help_string = help_string .. (Language_En and " (One)" or " (一个)")
+				if not drop_inv_flag then
+					help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
+					if left and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
+						help_string = help_string .. (Language_En and " (One)" or " (一个)")
+					end
+					table.insert(str, help_string)
 				end
-				table.insert(str, help_string)
 
-				if changebox_flag then
+				if changebox_flag or drop_inv_flag then
 					help_string = self:GetDescriptionString(inv_item)
 					table.insert(str, help_string)
-					help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.CHANGEBOX
-					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.CHANGEBOX
-					table.insert(str, help_string)
+					if changebox_flag then
+						help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.CHANGEBOX
+						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.CHANGEBOX
+						table.insert(str, help_string)
+					end
+					if drop_inv_flag then
+						help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
+						if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
+							help_string = help_string .. (Language_En and " (One)" or " (一个)")
+						end
+						table.insert(str, help_string)
+					end
 				end
 
 			elseif active_item ~= nil then
@@ -604,7 +619,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
-				if right and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
+				if left and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
 					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
 				table.insert(str, help_string)
@@ -650,7 +665,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 				
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
-				if right and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
+				if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
 					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
 				table.insert(str, help_string)

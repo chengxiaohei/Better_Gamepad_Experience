@@ -157,7 +157,11 @@ AddComponentPostInit("playercontroller", function(self)
 	local ChangePlayerController = function (self, control, inv_item, active_item, slot, container, target, left, right)
 		self:ClearActionHold()
 		if control == CONTROL_INVENTORY_DROP then
-			self:DoControllerDropItemFromInvTile(active_item or inv_item, right)
+			if right and active_item ~= nil and inv_item ~= nil then
+				self:DoControllerDropItemFromInvTile(inv_item, left)
+			else
+				self:DoControllerDropItemFromInvTile(active_item or inv_item, left)
+			end
 		elseif control == CONTROL_INVENTORY_EXAMINE then
 			self:DoControllerInspectItemFromInvTile(active_item or inv_item)
 		elseif control == CONTROL_INVENTORY_USEONSELF then

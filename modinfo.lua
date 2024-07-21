@@ -59,7 +59,7 @@ Looking Forward to the Day When This Mod is Incorporated :-)
 ]]
 
 author = "程小黑OvO"
-version = "0.1.0"
+version = "0.1.1"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"

@@ -99,7 +99,7 @@ AddClassPostConstruct("widgets/controls", function(self)
 
         if CHANGE_ALWAYS_SHOW_MAP_CONTROL_WIDGET then
             self.mapcontrols:Show()
-            if controller_mode and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+            if controller_mode and not self.craftingmenu:IsCraftingOpen() and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
                 self.mapcontrols.rotleft:Hide()
                 self.mapcontrols.rotright:Hide()
                 self.mapcontrols.rotleft2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_LEFT))

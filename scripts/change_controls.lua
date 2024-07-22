@@ -166,7 +166,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             else
                 local aoetargeting = self.owner.components.playercontroller:IsAOETargeting()
                 if ground_r ~= nil then
-                    if ground_r.action ~= ACTIONS.CASTAOE and not (not_force and is_reticule) then
+                    if ground_r.action ~= ACTIONS.CASTAOE and not self.owner.components.playercontroller:IsControllerTargetLocked() and not (not_force and is_reticule) then
                         table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                         B_shown = true
                     elseif aoetargeting then
@@ -208,7 +208,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 local widget = cooker_type_container.replica.container:GetWidget()
                 local cooker_type_container_widget = self.containers[cooker_type_container]
                 if cooker_type_container_widget ~= nil and cooker_type_container_widget.button ~= nil then
-                    if TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) then
+                    if TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) and not self.owner.components.playercontroller:IsControllerTargetLocked() then
                         B_shown = true
                         cooker_type_container_widget.button:Show()
                         cooker_type_container_widget.button.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. widget.buttoninfo.text)
@@ -230,7 +230,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
             if not isplacing and r == nil and alt_r == nil and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
-                if not B_shown and ground_r ~= nil and not (not_force and is_reticule)then
+                if not B_shown and ground_r ~= nil and not self.owner.components.playercontroller:IsControllerTargetLocked() and not (not_force and is_reticule)then
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                     B_shown = true
                     self.groundactionhint:Show()

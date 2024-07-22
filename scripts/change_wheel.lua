@@ -51,4 +51,12 @@ AddClassPostConstruct("widgets/wheel", function(self)
         return result
         
     end
+
+    local OnUpdate_Old = self.OnUpdate
+    self.OnUpdate = function (self, dt, ...)
+        if TheInput:ControllerAttached() and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+            return
+        end
+        OnUpdate_Old(self, dt, ...)
+    end
 end)

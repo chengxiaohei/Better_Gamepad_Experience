@@ -403,7 +403,12 @@ AddComponentPostInit("playercontroller", function(self)
 		local time = GetStaticTime()
 
 		if self.lastrottime == nil or time - self.lastrottime > CHANGE_ROT_REPEAT then
-			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (
+					self.reticule == nil or
+					CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT or
+					CHANGE_FORCE_BUTTON == nil or
+					not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
+				) then
 				if TheInput:IsControlPressed(CONTROL_INVENTORY_RIGHT) then
 					self:RotLeft()
 					self.lastrottime = time
@@ -415,7 +420,12 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 
 		if self.lastzoomtime == nil or time - self.lastzoomtime > CHANGE_ZOOM_REPEAT then
-			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (
+					self.reticule == nil or
+					CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT or
+					CHANGE_FORCE_BUTTON == nil or
+					not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
+				) then
 				if TheInput:IsControlPressed(CONTROL_INVENTORY_UP) then
 					TheCamera:ZoomIn()
 					self.lastzoomtime = time

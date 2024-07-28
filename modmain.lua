@@ -27,11 +27,10 @@ else
 end
 CHANGE_FORCE_BUTTON_LEVEL2 = CHANGE_FORCE_BUTTON and (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and CHANGE_CONTROL_RIGHT or CHANGE_CONTROL_LEFT) or nil
 
-CHANGE_IS_FORCE_ATTACK = GetModConfigData("force_attack_target")  -- true or false
-CHANGE_IS_LOCK_TARGET_QUICKLY = GetModConfigData("force_lock_attack_target")  -- true or false
-CHANGE_IS_FORCE_PING_RETICULE = GetModConfigData("force_ground_actions")  -- true or false
-CHANGE_IS_FORCE_PICK_UP_TRAP = GetModConfigData("force_pickup_teeth_trap")  -- true or false
-CHANGE_IS_FORCE_PICK_UP_ITEM = GetModConfigData("force_pickup")  -- false or 1 or 2
+CHANGE_IS_FORCE_ATTACK        = CHANGE_FORCE_BUTTON and GetModConfigData("force_attack_target")  -- true or false
+CHANGE_IS_LOCK_TARGET_QUICKLY = CHANGE_FORCE_BUTTON and GetModConfigData("force_lock_attack_target")  -- true or false
+CHANGE_IS_FORCE_PING_RETICULE = CHANGE_FORCE_BUTTON and GetModConfigData("force_ground_actions")  -- true or false
+CHANGE_IS_FORCE_SPACE_ACTION  = CHANGE_FORCE_BUTTON and GetModConfigData("force_space")
 
 CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = GetModConfigData("change_craftingmenu")
 CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM = GetModConfigData("change_wheel")

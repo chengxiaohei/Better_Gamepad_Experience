@@ -55,7 +55,7 @@ description = Language_En and [[
 ]]
 
 author = "程小黑OvO"
-version = "0.1.2"
+version = "0.1.4"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
@@ -226,26 +226,14 @@ configuration_options = {
 		default = true
 	},
 	{
-		name = "force_pickup_teeth_trap",
-		label = Language_En and "Force Pickup Teeth Trap" or "强制捡起狗牙陷阱",
-		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." or "..GamepadButtons.Right_Bumper.." ) and Press "..GamepadButtons.Button_A.." to Force Pickup Teeth Trap."
-							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." 或 "..GamepadButtons.Right_Bumper.." )，然后按下 "..GamepadButtons.Button_A.." 按钮强行捡起狗牙陷阱",
+		name = "force_space",
+		label = Language_En and "Force Space Actions" or "强制使用空格键",
+		hover = Language_En and "Hold Both Bumper Button ( "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Bumper.." ) and Press "..GamepadButtons.Button_A.." to Interact with The World Just as Press Space Button."
+							or  "同时按住两个肩键 ( "..GamepadButtons.Left_Bumper.." 和 "..GamepadButtons.Right_Bumper.." )，然后按下 "..GamepadButtons.Button_A.." 实现与按下键盘空格键一样的功能",
 		options = {
 			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用"},
-			{ description = "No",            data = false, hover = Language_En and "Just Pickup Teeth Trap as Before." or "像之前一样直接捡起狗牙陷阱"},
+			{ description = "No",            data = false, hover = Language_En and "Disable." or "不启用"},
 		},
 		default = true
-	},
-	{
-		name = "force_pickup",
-		label = Language_En and "Force Pickup Action" or "强制拾起动作",
-		hover = Language_En and "You Can Perform Only the Pickup Action by Holding Force Button ( "..GamepadButtons.Left_Bumper.." or "..GamepadButtons.Right_Bumper.." or Both) and Press "..GamepadButtons.Button_A.." ."
-							or  "当按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." 或 "..GamepadButtons.Right_Bumper.." 或两者都按下 )，然后按下 "..GamepadButtons.Button_A.." 按钮强制执行拾起操作。",
-		options = {
-			{ description = "Both (Default)", data = 2,     hover = Language_En and "Hold Both "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Bumper.." ." or "同时按住 "..GamepadButtons.Left_Bumper.." 与 "..GamepadButtons.Right_Bumper.." 。"},
-			{ description = "Yes",            data = 1,     hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." or "..GamepadButtons.Right_Bumper.." )." or "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." 或 "..GamepadButtons.Right_Bumper.." )。"},
-			{ description = "No",             data = false, hover = Language_En and "Just Interact with The World as Before." or "像之前一样直接与世界交互即可。"},
-		},
-		default = 2
 	}
 }

@@ -629,24 +629,19 @@ AddComponentPostInit("playercontroller", function(self)
 
 						local lmb, rmb = self:GetSceneItemControllerAction(v)
 
-						if CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
-							if CHANGE_IS_FORCE_PICK_UP_ITEM and (CHANGE_IS_FORCE_PICK_UP_ITEM ~= 2 or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2)) then
-								if lmb == nil or lmb.action ~= ACTIONS.PICKUP then
-									score = -1
-								end
-							end
-						elseif CHANGE_FORCE_BUTTON and not TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
-							if CHANGE_IS_FORCE_PICK_UP_TRAP then
-								if (v.prefab == "trap_teeth" or v.prefab == "trap_teeth_maxwell" or v.prefab == "trap_bramble") and v:HasTag("mineactive") then
-									score = -1
-								end
-							end
-						end
-						if not CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM and self.inst.HUD:IsSpellWheelOpen() then
-							score = -1
-						end
+						local forbid_a = false
+						local forbid_b = false
+						local forbid_ab = false
 
-						if score ~= -1 then
+						if not CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM and self.inst.HUD:IsSpellWheelOpen() then
+							forbid_ab = true
+						end
+						if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
+							forbid_a = true
+						end
+						
+						-- if score ~= -1 and score ~= -3 then
+						if not forbid_a and not forbid_ab then
 							if score < target_score or
 								(   score == target_score and
 									(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or
@@ -667,7 +662,10 @@ AddComponentPostInit("playercontroller", function(self)
 									end
 								end
 							end
+						end
 
+						-- if score ~= -2 and score ~= -3 then
+						if not forbid_b and not forbid_ab then
 							if score < alt_target_score or
 								(   score == alt_target_score and
 									(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or
@@ -679,7 +677,10 @@ AddComponentPostInit("playercontroller", function(self)
 								alt_target = v
 								alt_target_score = score
 							end
+						end
 
+						-- if score ~= -1 and score ~= -2 and score ~= -3 then
+						if not forbid_a and not forbid_b and not forbid_ab then
 							-- find examine_target
 							if score < examine_target_score or
 								(   score == examine_target_score and
@@ -989,6 +990,16 @@ AddComponentPostInit("playercontroller", function(self)
 				end
 				-- Do not have to take into account max_dist because the map automatically centers on the player when opened.
 			end
+		end
+	end
+
+	local DoControllerActionButton_Old = self.DoControllerActionButton
+	self.DoControllerActionButton = function (self, ...)
+		if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) and
+			(self.placer == nil or self.placer_recipe == nil) and self.deployplacer == nil and not self:IsAOETargeting() then
+			self:DoActionButton()
+		else
+			DoControllerActionButton_Old(self, ...)
 		end
 	end
 

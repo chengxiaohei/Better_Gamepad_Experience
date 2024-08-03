@@ -55,7 +55,7 @@ description = Language_En and [[
 ]]
 
 author = "程小黑OvO"
-version = "0.1.4"
+version = "0.1.5"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
@@ -65,6 +65,7 @@ dont_starve_compatible = true
 reign_of_giants_compatible = true
 dst_compatible = true
 api_version = 10
+priority = 0
 
 configuration_options = {
 	{name = "Title", label = Language_En and "Display Settings" or "显示设置", options = {{description = "", data = ""}}, default = ""},

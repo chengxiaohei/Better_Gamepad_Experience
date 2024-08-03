@@ -10,7 +10,13 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
             -- change pin and uppin to d-pad up
             if control == CONTROL_INVENTORY_EXAMINE then control = CONTROL_MENU_MISC_1 end
             -- change add favorite to right trigger
-            if control == CONTROL_OPEN_INVENTORY then control = CONTROL_MENU_MISC_2 end
+            if control == CONTROL_OPEN_INVENTORY then
+                if TryTriggerMappingKey(self.owner, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) then
+                    return false
+                else
+                    control = CONTROL_MENU_MISC_2
+                end
+            end
         end
 
         local result = OnControl_Old(self, control, down, ...)

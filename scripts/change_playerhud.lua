@@ -38,9 +38,17 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 end
             elseif control == CONTROL_INSPECT_SELF and self:InspectSelf() then
                 return true
+            elseif control == CONTROL_MAP then
+                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, true)
+            elseif control == CONTROL_PAUSE then
+                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, true)
+            elseif control == CONTROL_MENU_MISC_3 then
+                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_LSTICK, CHANGE_MAPPING_RB_LSTICK, CHANGE_MAPPING_LB_RB_LSTICK, true)
+            elseif control == CONTROL_MENU_MISC_4 then
+                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, CHANGE_MAPPING_RB_RSTICK, CHANGE_MAPPING_LB_RB_RSTICK, true)
             end
         elseif control == CONTROL_PAUSE then
-            if TheInput:ControllerAttached() then
+            if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, false) then
                 self.owner.components.playercontroller:CancelAOETargeting()
                 self:CloseCrafting()
                 self:CloseSpellWheel()
@@ -48,27 +56,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     self:CloseControllerInventory()
                 end
                 TheFrontEnd:PushScreen(PauseScreen())
-            else
-                local closed = false
-                if self.owner.components.playercontroller:IsAOETargeting() then
-                    self.owner.components.playercontroller:CancelAOETargeting()
-                    closed = true
-                end
-                if self:IsCraftingOpen() then
-                    self:CloseCrafting()
-                    closed = true
-                end
-                if self:IsSpellWheelOpen() then
-                    self:CloseSpellWheel()
-                    closed = true
-                end
-                if self:IsPlayerInfoPopUpOpen() and
-                    self:TogglePlayerInfoPopup() then
-                    closed = true
-                end
-                if not closed then
-                    TheFrontEnd:PushScreen(PauseScreen())
-                end
             end
             return true
         elseif control == CONTROL_CRAFTING_PINLEFT then
@@ -96,14 +83,16 @@ AddClassPostConstruct("screens/playerhud", function(self)
             return true        
         elseif not down then
             if control == CONTROL_MAP then
-                if not self:IsMapScreenOpen() then
-                    self:CloseCrafting()
-                    self:CloseSpellWheel()
-                    if self:IsControllerInventoryOpen() then
-                        self:CloseControllerInventory()
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, false) then
+                    if not self:IsMapScreenOpen() then
+                        self:CloseCrafting()
+                        self:CloseSpellWheel()
+                        if self:IsControllerInventoryOpen() then
+                            self:CloseControllerInventory()
+                        end
                     end
+                    self.controls:ToggleMap()
                 end
-                self.controls:ToggleMap()
                 return true
             elseif control == CONTROL_CANCEL and TheInput:ControllerAttached() then
                 if self:IsCraftingOpen() and not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
@@ -117,7 +106,9 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     return true
                 end
             elseif control == CONTROL_TOGGLE_PLAYER_STATUS then
-                self:ShowPlayerStatusScreen(true)
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, CHANGE_MAPPING_RB_RSTICK, CHANGE_MAPPING_LB_RB_RSTICK, false) then
+                    self:ShowPlayerStatusScreen(true)
+                end
                 return true
             elseif control == CONTROL_TOGGLE_SAY then
                 TheFrontEnd:PushScreen(ChatInputScreen(false))
@@ -142,18 +133,20 @@ AddClassPostConstruct("screens/playerhud", function(self)
             end
             return true
         elseif control == CONTROL_OPEN_CRAFTING then
-            if self:IsCraftingOpen() then
-                if TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER) then
-                    self.controls.craftingmenu.craftingmenu:StartSearching(true)
-                else
-                    self:CloseCrafting()
-                end
-                return true
-            elseif not GetGameModeProperty("no_crafting") then
-                local inventory = self.owner.replica.inventory
-                if inventory ~= nil and inventory:IsVisible() then
-                    self:OpenCrafting(TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER))
+            if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_LT, CHANGE_MAPPING_RB_LT, CHANGE_MAPPING_LB_RB_LT, true) then
+                if self:IsCraftingOpen() then
+                    if TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER) then
+                        self.controls.craftingmenu.craftingmenu:StartSearching(true)
+                    else
+                        self:CloseCrafting()
+                    end
                     return true
+                elseif not GetGameModeProperty("no_crafting") then
+                    local inventory = self.owner.replica.inventory
+                    if inventory ~= nil and inventory:IsVisible() then
+                        self:OpenCrafting(TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER))
+                        return true
+                    end
                 end
             end
         end

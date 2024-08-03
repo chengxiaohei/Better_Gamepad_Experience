@@ -163,7 +163,9 @@ AddComponentPostInit("playercontroller", function(self)
 				self:DoControllerDropItemFromInvTile(active_item or inv_item, left)
 			end
 		elseif control == CONTROL_INVENTORY_EXAMINE then
-			self:DoControllerInspectItemFromInvTile(active_item or inv_item)
+			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true) then
+				self:DoControllerInspectItemFromInvTile(active_item or inv_item)
+			end
 		elseif control == CONTROL_INVENTORY_USEONSELF then
 			if left and right and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
 				PutActiveItemInContainer(self, active_item, inv_item, true)
@@ -266,9 +268,11 @@ AddComponentPostInit("playercontroller", function(self)
 				self:DoControllerUseItemOnSceneFromInvTile(active_item or inv_item)
 			end
 		elseif control == CONTROL_OPEN_INVENTORY then
-			if inv_item ~= nil or active_item ~= nil then
-				if self.inst.HUD.controls.inv.active_slot ~= nil then
-					self.inst.HUD.controls.inv.active_slot:Click(left)
+			if not TryTriggerMappingKey(self.inst, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true) then
+				if inv_item ~= nil or active_item ~= nil then
+					if self.inst.HUD.controls.inv.active_slot ~= nil then
+						self.inst.HUD.controls.inv.active_slot:Click(left)
+					end
 				end
 			end
 		end

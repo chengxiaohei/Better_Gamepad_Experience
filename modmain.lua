@@ -36,8 +36,36 @@ CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = GetModConfigData("change_craftingmenu
 CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM = GetModConfigData("change_wheel")
 CHANGE_IS_FORBID_Y_INSPECT_SELF = GetModConfigData("forbid_inspect_self")
 CHANGE_IS_ATTACK_ALL_DIRECTION = GetModConfigData("attack_all_direction")
-CHANGE_IS_SWAP_CAMERA_ROTATION = GetModConfigData("change_mapscreen_rotation")
+CHANGE_IS_SWAP_CAMERA_ROTATION = true
 
+CHANGE_MAPPING_LB_LT = GetModConfigData("MAPPING_LB_LT")
+CHANGE_MAPPING_RB_LT = GetModConfigData("MAPPING_RB_LT")
+CHANGE_MAPPING_LB_RB_LT = GetModConfigData("MAPPING_LB_RB_LT")
+
+CHANGE_MAPPING_RB_RT = GetModConfigData("MAPPING_RB_RT")
+CHANGE_MAPPING_LB_RB_RT = GetModConfigData("MAPPING_LB_RB_RT")
+
+CHANGE_MAPPING_LB_BACK = GetModConfigData("MAPPING_LB_BACK")
+CHANGE_MAPPING_RB_BACK = GetModConfigData("MAPPING_RB_BACK")
+CHANGE_MAPPING_LB_RB_BACK = GetModConfigData("MAPPING_LB_RB_BACK")
+
+CHANGE_MAPPING_LB_START = GetModConfigData("MAPPING_LB_START")
+CHANGE_MAPPING_RB_START = GetModConfigData("MAPPING_RB_START")
+CHANGE_MAPPING_LB_RB_START = GetModConfigData("MAPPING_LB_RB_START")
+
+CHANGE_MAPPING_LB_LSTICK = GetModConfigData("MAPPING_LB_LSTICK")
+CHANGE_MAPPING_RB_LSTICK = GetModConfigData("MAPPING_RB_LSTICK")
+CHANGE_MAPPING_LB_RB_LSTICK = GetModConfigData("MAPPING_LB_RB_LSTICK")
+
+CHANGE_MAPPING_LB_RSTICK = GetModConfigData("MAPPING_LB_RSTICK")
+CHANGE_MAPPING_RB_RSTICK = GetModConfigData("MAPPING_RB_RSTICK")
+CHANGE_MAPPING_LB_RB_RSTICK = GetModConfigData("MAPPING_LB_RB_RSTICK")
+
+CHANGE_MAPPING_LB_UP = GetModConfigData("MAPPING_LB_UP")
+CHANGE_MAPPING_RB_UP = GetModConfigData("MAPPING_RB_UP")
+CHANGE_MAPPING_LB_RB_UP = GetModConfigData("MAPPING_LB_RB_UP")
+
+modimport("scripts/change_functions")
 modimport("scripts/change_mapscreen")
 modimport("scripts/change_optionsscreen")
 modimport("scripts/change_playercontroller")

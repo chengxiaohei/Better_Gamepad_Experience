@@ -127,6 +127,14 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
             if control == CONTROL_INVENTORY_DROP then
                 control = CONTROL_ACCEPT
             end
+            if down and control == CONTROL_INVENTORY_USEONSCENE and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+                self:GoToPrevPage()
+                return true
+            end
+            if down and control == CONTROL_INVENTORY_USEONSELF and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT)  then
+                self:GoToNextPage()
+                return true
+            end
         end
         return OnControl_Old(self, control, down, ...)
     end
@@ -258,7 +266,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
                                 self:SetRecipe(recipe_name, skin_name)
                                 self.craftingmenu.craftingmenu.details_root:UpdateBuildButton(self)
                                 return true 
-                            elseif control == CONTROL_INVENTORY_USEONSELF then
+                            elseif control == CONTROL_INVENTORY_USEONSELF and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
                                 if self.recipe_name ~= nil then
                                     local new_skin = self:GetPrevSkin(self.skin_name)
                                     if new_skin ~= self.skin_name then
@@ -269,7 +277,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
                                     end
                                     return true
                                 end
-                            elseif control == CONTROL_INVENTORY_USEONSCENE then
+                            elseif control == CONTROL_INVENTORY_USEONSCENE and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
                                 if self.recipe_name ~= nil then
                                     local new_skin = self:GetNextSkin(self.skin_name)
                                     if new_skin ~= self.skin_name then
@@ -291,15 +299,26 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
 
     local RefreshCraftingHelpText_Old = self.RefreshCraftingHelpText
     local RefreshCraftingHelpText_New = function(self, controller_id, ...)
-        local hint_text = ""
+        local t = {}
+        if self.recipe_name ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+            local prev_skin = self:GetPrevSkin(self.skin_name)
+            if prev_skin ~= self.skin_name then
+                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..STRINGS.UI.HELP.PREV.." "..STRINGS.UI.LOBBYSCREEN.SKINS)
+                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.NEXT.." "..STRINGS.UI.LOBBYSCREEN.SKINS)
+            end
+        elseif TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+            table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..STRINGS.UI.HELP.PREVPAGE)
+            table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.NEXTPAGE)
+        end
+
         if self.recipe_name ~= nil then
             local recipe_name, skin_name = self.craftingmenu:GetCurrentRecipeName()
             if recipe_name == nil or self.recipe_name ~= recipe_name or self.skin_name ~= skin_name then
-                hint_text = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP).." "..STRINGS.UI.HUD.SELECT
+                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP).." "..STRINGS.UI.HUD.SELECT)
             end
         end
 
-        return hint_text
+        return table.concat(t, " ")
     end
     self.RefreshCraftingHelpText = function(self, controller_id, ...)
         if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then

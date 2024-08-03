@@ -35,6 +35,7 @@ CHANGE_IS_FORCE_SPACE_ACTION  = CHANGE_FORCE_BUTTON and GetModConfigData("force_
 CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = GetModConfigData("change_craftingmenu")
 CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM = GetModConfigData("change_wheel")
 CHANGE_IS_FORBID_Y_INSPECT_SELF = GetModConfigData("forbid_inspect_self")
+CHANGE_IS_ATTACK_ALL_DIRECTION = GetModConfigData("attack_all_direction")
 CHANGE_IS_SWAP_CAMERA_ROTATION = GetModConfigData("change_mapscreen_rotation")
 
 modimport("scripts/change_mapscreen")

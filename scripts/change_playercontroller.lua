@@ -826,10 +826,10 @@ AddComponentPostInit("playercontroller", function(self)
 						if dsq < max_range * max_range and CanEntitySeePoint(self.inst, x1, y1, z1) then
 							local dist = dsq > 0 and math.sqrt(dsq) or 0
 							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
-							if dot > 0 or dist < min_rad + phys_rad then
+							if (CHANGE_IS_ATTACK_ALL_DIRECTION or dot > 0) or dist < min_rad + phys_rad then
 								--now calculate score with physics radius subtracted
 								dist = math.max(0, dist - phys_rad)
-								local score = dot + 1 - 0.5 * dist * dist / max_rad_sq
+								local score = (CHANGE_IS_ATTACK_ALL_DIRECTION and 1 or dot) + 1 - 0.5 * dist * dist / max_rad_sq
 
 								if isally then
 									score = score * .25

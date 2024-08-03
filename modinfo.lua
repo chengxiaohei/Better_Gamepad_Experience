@@ -178,6 +178,24 @@ configuration_options = {
 		},
 		default = true
 	},
+	{
+		name = "attack_all_direction",
+		label = Language_En and "Allow Attack Targets Behind" or "允许攻击身后的目标",
+		hover = Language_En and "Allow Attack All Targets Nearby Even though it Behind You." or "允许攻击角色附近的所有目标，即使目标在角色的身后",
+		options = {
+			{
+				description = "Yes (Default)",
+				data = true,
+				hover = Language_En and "Now You Can Attack All Targets Nearby." or "现在你可以攻击到你附近的所有目标了",
+			},
+			{
+				description = "No",
+				data = false,
+				hover = Language_En and "Now You Can Only Attack Targets you're facing" or "现在你只能攻击到你面前的目标",
+			}
+		},
+		default = true
+	},
 
 	{name = "Title", label = "",                                                        options = {{description = "", data = ""}}, default = ""},
 	{name = "Title", label = Language_En and "Force Control Settings" or "强制操作设置", options = {{description = "", data = ""}}, default = ""},

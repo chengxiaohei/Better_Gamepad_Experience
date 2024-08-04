@@ -1000,7 +1000,8 @@ AddComponentPostInit("playercontroller", function(self)
 	local DoControllerActionButton_Old = self.DoControllerActionButton
 	self.DoControllerActionButton = function (self, ...)
 		if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) and
-			(self.placer == nil or self.placer_recipe == nil) and self.deployplacer == nil and not self:IsAOETargeting() then
+			(self.placer == nil or self.placer_recipe == nil) and self.deployplacer == nil and self:IsEnabled() and not self:IsAOETargeting() and
+			(CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) then
 			self:DoActionButton()
 		else
 			DoControllerActionButton_Old(self, ...)

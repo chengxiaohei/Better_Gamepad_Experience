@@ -163,7 +163,7 @@ AddComponentPostInit("playercontroller", function(self)
 				self:DoControllerDropItemFromInvTile(active_item or inv_item, left)
 			end
 		elseif control == CONTROL_INVENTORY_EXAMINE then
-			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true) then
+			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) then
 				self:DoControllerInspectItemFromInvTile(active_item or inv_item)
 			end
 		elseif control == CONTROL_INVENTORY_USEONSELF then
@@ -268,7 +268,7 @@ AddComponentPostInit("playercontroller", function(self)
 				self:DoControllerUseItemOnSceneFromInvTile(active_item or inv_item)
 			end
 		elseif control == CONTROL_OPEN_INVENTORY then
-			if not TryTriggerMappingKey(self.inst, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true) then
+			if not TryTriggerMappingKey(self.inst, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) then
 				if inv_item ~= nil or active_item ~= nil then
 					if self.inst.HUD.controls.inv.active_slot ~= nil then
 						self.inst.HUD.controls.inv.active_slot:Click(left)

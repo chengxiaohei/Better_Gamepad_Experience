@@ -46,6 +46,10 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_LSTICK, CHANGE_MAPPING_RB_LSTICK, CHANGE_MAPPING_LB_RB_LSTICK, true)
             elseif control == CONTROL_MENU_MISC_4 then
                 TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, CHANGE_MAPPING_RB_RSTICK, CHANGE_MAPPING_LB_RB_RSTICK, true)
+            elseif control == CONTROL_INVENTORY_EXAMINE then
+                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true)
+            elseif control == CONTROL_OPEN_INVENTORY then
+                TryTriggerMappingKey(self.owner, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true)
             end
         elseif control == CONTROL_PAUSE then
             if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, false) then

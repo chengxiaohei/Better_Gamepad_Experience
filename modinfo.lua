@@ -60,7 +60,7 @@ description = Language_En and [[
 * Attack Friendly Creatures with Force Button ]]..GamepadButtons.Left_Bumper..[[ and Attack Button ]]..GamepadButtons.Button_X..[[ 
 * Trigger the Same Function as the Space Bar on the Keyboard with ]]..GamepadButtons.Left_Bumper..[[ ]]..GamepadButtons.Right_Bumper..[[ and Action Button ]]..GamepadButtons.Button_A..[[ 
 * Teleport with Force Button ]]..GamepadButtons.Left_Bumper..[[ and AltAction Button ]]..GamepadButtons.Button_B..[[ 
-* While Focus on Crafting Menu Pinbar, Use ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Skins and Use ]]..GamepadButtons.Left_Bumper..[[ And ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Pages
+* While Focus on Crafting Menu Pinbar, Use ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Skins and Use ]]..GamepadButtons.Left_Bumper..[[ + ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Pages
 ]] or [[
 * 开启本Mod后，最好将系统设置中的控制器设置保持默认。
 * 在使用手柄时，也可以在系统设置中设置背包布局了
@@ -76,7 +76,7 @@ description = Language_En and [[
 ]]
 
 author = "程小黑OvO"
-version = "0.1.5"
+version = "0.1.6"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
@@ -144,7 +144,7 @@ configuration_options = {
 				description = "Yes (Default)",
 				data = true,
 				hover = Language_En and "Use "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Right.." to Interact with Skill Wheel Instead."
-									or "使用 "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Righ.. "与角色技能轮盘交互",
+									or "使用 "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Right.. "与角色技能轮盘交互",
 			},
 			{
 				description = "No",

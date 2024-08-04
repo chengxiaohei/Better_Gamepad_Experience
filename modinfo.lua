@@ -29,6 +29,25 @@ local GamepadButtons = {
 	Right_Trigger     = "\238\128\139",--"Right Trigger",
 }
 
+local MappingOptions = {
+	{ description = "None",          data = false, hover = ""},
+	{ description = "Inv 1 Item",    data = 1,     hover = ""},
+	{ description = "Inv 2 Item",    data = 2,     hover = ""},
+	{ description = "Inv 3 Item",    data = 3,     hover = ""},
+	{ description = "Inv 4 Item",    data = 4,     hover = ""},
+	{ description = "Inv 5 Item",    data = 5,     hover = ""},
+	{ description = "Inv 6 Item",    data = 6,     hover = ""},
+	{ description = "Inv 7 Item",    data = 7,     hover = ""},
+	{ description = "Inv 8 Item",    data = 8,     hover = ""},
+	{ description = "Inv 9 Item",    data = 9,     hover = ""},
+	{ description = "Inv 10 Item",   data = 10,    hover = ""},
+	{ description = "Inv 11 Item",   data = 11,    hover = ""},
+	{ description = "Inv 12 Item",   data = 12,    hover = ""},
+	{ description = "Inv 13 Item",   data = 13,    hover = ""},
+	{ description = "Inv 14 Item",   data = 14,    hover = ""},
+	{ description = "Inv 15 Item",   data = 15,    hover = ""},
+}
+
 name = "Better Gamepad UX" -- "Better Gamepad User Experience"
 description = Language_En and [[
 * It's Best to Keep the Default Control Settings in the Settings.
@@ -37,10 +56,11 @@ description = Language_En and [[
 * Move Action Point with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 
 * Select Items in the Inventroy Bar with ]]..GamepadButtons.Right_Trigger..[[ 
 * Move Items Between Opened Containers with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 
-* Lock Attack Target with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and Examine Button ]]..GamepadButtons.Button_Y..[[ 
-* Attack Friendly Creatures with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and Attack Button ]]..GamepadButtons.Button_X..[[ 
+* Lock Attack Target with Force Button ]]..GamepadButtons.Left_Bumper..[[ and Examine Button ]]..GamepadButtons.Button_Y..[[ 
+* Attack Friendly Creatures with Force Button ]]..GamepadButtons.Left_Bumper..[[ and Attack Button ]]..GamepadButtons.Button_X..[[ 
 * Trigger the Same Function as the Space Bar on the Keyboard with ]]..GamepadButtons.Left_Bumper..[[ ]]..GamepadButtons.Right_Bumper..[[ and Action Button ]]..GamepadButtons.Button_A..[[ 
-* Teleport with Force Button(]]..GamepadButtons.Left_Bumper..[[ by Default) and AltAction Button ]]..GamepadButtons.Button_B..[[ 
+* Teleport with Force Button ]]..GamepadButtons.Left_Bumper..[[ and AltAction Button ]]..GamepadButtons.Button_B..[[ 
+* While Focus on Crafting Menu Pinbar, Use ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Skins and Use ]]..GamepadButtons.Left_Bumper..[[ And ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Pages
 ]] or [[
 * 开启本Mod后，最好将系统设置中的控制器设置保持默认。
 * 在使用手柄时，也可以在系统设置中设置背包布局了
@@ -48,10 +68,11 @@ description = Language_En and [[
 * 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动操作目标点
 * 使用 ]]..GamepadButtons.Right_Trigger..[[ 从物品栏中选取物品
 * 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 在打开的容器之间移动物品
-* 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加检查按钮 ]]..GamepadButtons.Button_Y..[[ 锁定攻击目标
-* 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加攻击按钮 ]]..GamepadButtons.Button_X..[[ 攻击友好生物
+* 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加检查按钮 ]]..GamepadButtons.Button_Y..[[ 锁定攻击目标
+* 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加攻击按钮 ]]..GamepadButtons.Button_X..[[ 攻击友好生物
 * 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Bumper..[[ 加动作按钮 ]]..GamepadButtons.Button_A..[[ 实现与按下键盘空格键一样的功能
-* 使用强制按钮（默认为 ]]..GamepadButtons.Left_Bumper..[[ ）加副动作按钮 ]]..GamepadButtons.Button_B..[[ 进行传送等操作
+* 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加副动作按钮 ]]..GamepadButtons.Button_B..[[ 进行传送等操作
+* 当光标在左侧的快捷制作栏上时，使用]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换皮肤，使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换页面
 ]]
 
 author = "程小黑OvO"
@@ -81,7 +102,7 @@ configuration_options = {
 	},
 	{
 		name = "show_self_inspect",
-		label = Language_En and "Show Self Inspect" or "显示自我检查按钮",
+		label = Language_En and "Show Self Inspect Button" or "显示自我检查按钮",
 		hover = Language_En and "Show Self Inspect Button in Inventory Bar." or "显示物品栏中的自我检查按钮。",
 		options = {
 			{ description = "Yes (Default)", data = true,  hover = Language_En and "Show." or "显示"},
@@ -93,21 +114,21 @@ configuration_options = {
 	{name = "Title", label = Language_En and "Player Control Settings" or "角色控制设置", options = {{description = "", data = ""}}, default = ""},
 	{
 		name = "change_craftingmenu",
-		label = Language_En and "Change Crafting Menu" or "修改建造栏控制方式",
-		hover = Language_En and "Allow Interactions with The World while the Crafting Menu is Open by Change Crafting Menu Control Button."
+		label = Language_En and "Modify Crafting Menu Interaction" or "修改建造栏交互方式",
+		hover = Language_En and "Allow Interact with The World while the Crafting Menu is Open by Modify Crafting Menu Interaction."
 							or  "允许在建造栏打开的情况下，角色仍然可以与世界交互。",
 		options = {
 			{
 				description = "Yes (Default)",
 				data = true,
-				hover = Language_En and "Use "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." Instead."
-									or "使用 "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right,
+				hover = Language_En and "Use "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." to Interact with Crafting Menu Instead."
+									or "使用 "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." 与建造栏交互",
 			},
 			{
 				description = "No",
 				data = false,
-				hover = Language_En and "Use "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B.." "..GamepadButtons.Button_X.." "..GamepadButtons.Button_Y.." as Before."
-									or  "使用 "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B.." "..GamepadButtons.Button_X.." "..GamepadButtons.Button_Y,
+				hover = Language_En and "Use "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B.." "..GamepadButtons.Button_X.." "..GamepadButtons.Button_Y.." to Interact with Crafting Menu as Before."
+									or  "使用 "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B.." "..GamepadButtons.Button_X.." "..GamepadButtons.Button_Y.." 与建造栏交互",
 			},
 
 		},
@@ -115,21 +136,21 @@ configuration_options = {
 	},
 	{
 		name = "change_wheel",
-		label = Language_En and "Change Skill Wheel" or "修改角色技能轮盘控制方式",
-		hover = Language_En and "Allow Interactions with The World while the Skill Wheel is Open by Change Skill Wheel Control Button."
+		label = Language_En and "Modify Skill Wheel Interaction" or "修改角色技能轮盘交互方式",
+		hover = Language_En and "Allow Interact with The World while the Skill Wheel is Open by Modify Skill Wheel Interaction."
 							or  "允许在角色技能轮盘打开的情况下，角色仍然可以与世界交互。",
 		options = {
 			{
 				description = "Yes (Default)",
 				data = true,
-				hover = Language_En and "Use "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Right.." Instead."
-									or "使用 "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Right
+				hover = Language_En and "Use "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Right.." to Interact with Skill Wheel Instead."
+									or "使用 "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Righ.. "与角色技能轮盘交互",
 			},
 			{
 				description = "No",
 				data = false,
-				hover = Language_En and "Use "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B.." as Before."
-									or "使用 "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B
+				hover = Language_En and "Use "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B.." to Interact with Skill Wheel as Before."
+									or "使用 "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B.." 与角色技能轮盘交互",
 			},
 		},
 		default = true
@@ -137,7 +158,7 @@ configuration_options = {
 	{
 		name = "forbid_inspect_self",
 		label = Language_En and "Forbid Inspect Self" or "禁止检查自我",
-		hover = Language_En and "In Case You are Troubled by Pop-up Inspect Screen From Time to Time." or "检查自我界面时不时弹出，让我们关掉它吧。",
+		hover = Language_En and "In Case You are Troubled by Pop-up Inspect Screen From Time to Time." or "检查自我界面时常弹出，让我们关掉它吧。",
 		options = {
 			{
 				description = "Yes (Default)",
@@ -148,8 +169,8 @@ configuration_options = {
 			{
 				description = "No",
 				data = false,
-				hover = Language_En and "Just Use Examine Button ( "..GamepadButtons.Button_Y.." ) to Insepct Self as Before."
-									or  "像以前一样，使用检查按键 ( "..GamepadButtons.Button_Y.." ) 检查自我。"
+				hover = Language_En and "Just Use Examine Button "..GamepadButtons.Button_Y.." to Insepct Self as Before."
+									or  "像以前一样，使用检查按键 "..GamepadButtons.Button_Y.." 检查自我。"
 			},
 		},
 		default = true
@@ -167,7 +188,7 @@ configuration_options = {
 			{
 				description = "No",
 				data = false,
-				hover = Language_En and "Now You Can Only Attack Targets you're facing" or "现在你只能攻击到你面前的目标",
+				hover = Language_En and "Now You Can Only Attack Targets you're facing as Before" or "现在你只能攻击到你面前的目标",
 			}
 		},
 		default = true
@@ -236,24 +257,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -261,24 +265,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -286,24 +273,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -311,24 +281,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -336,24 +289,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -361,24 +297,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Back.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -386,24 +305,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -411,24 +313,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -436,24 +321,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Start.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -461,24 +329,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -486,24 +337,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -511,24 +345,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -536,24 +353,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -561,24 +361,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -586,24 +369,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -611,24 +377,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -636,24 +385,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -661,24 +393,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -686,24 +401,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 	{
@@ -711,24 +409,7 @@ configuration_options = {
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
 		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
-		options = {
-			{ description = "None",          data = false, hover = ""},
-			{ description = "Inv 1 Item",    data = 1,     hover = ""},
-			{ description = "Inv 2 Item",    data = 2,     hover = ""},
-			{ description = "Inv 3 Item",    data = 3,     hover = ""},
-			{ description = "Inv 4 Item",    data = 4,     hover = ""},
-			{ description = "Inv 5 Item",    data = 5,     hover = ""},
-			{ description = "Inv 6 Item",    data = 6,     hover = ""},
-			{ description = "Inv 7 Item",    data = 7,     hover = ""},
-			{ description = "Inv 8 Item",    data = 8,     hover = ""},
-			{ description = "Inv 9 Item",    data = 9,     hover = ""},
-			{ description = "Inv 10 Item",   data = 10,    hover = ""},
-			{ description = "Inv 11 Item",   data = 11,    hover = ""},
-			{ description = "Inv 12 Item",   data = 12,    hover = ""},
-			{ description = "Inv 13 Item",   data = 13,    hover = ""},
-			{ description = "Inv 14 Item",   data = 14,    hover = ""},
-			{ description = "Inv 15 Item",   data = 15,    hover = ""},
-		},
+		options = MappingOptions,
 		default = false
 	},
 }

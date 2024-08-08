@@ -487,6 +487,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	-- Numerous changes
 	self.UpdateCursorText = function (self, ...)
 		local inv_item = self:GetCursorItem()
+		local slot_num, container = self:GetCursorSlot()
 		local active_item = self.cursortile ~= nil and self.cursortile.item or nil
 		if inv_item ~= nil and inv_item.replica.inventoryitem == nil then
 			inv_item = nil
@@ -541,6 +542,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				help_string = ""
 				local changebox_flag = false
 				local drop_inv_flag = false
+				local quick_use_flag = false
 				local _, h, p, b, l, r = self.owner.components.playercontroller:GetAllTypeContainers()
 				if not is_equip_slot and right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) and
 					not (left and inv_item.replica.container ~= nil) then
@@ -548,6 +550,9 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 				if right then
 					drop_inv_flag = true
+				end
+				if slot_num ~= nil and container ~= nil and container.inst == self.owner and GetQuickUseString(self.owner, slot_num) ~= "" then
+					quick_use_flag = true
 				end
 				if not changebox_flag then
 					local scene_action = self.owner.components.playercontroller:GetItemUseAction(active_item)
@@ -578,7 +583,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					table.insert(str, help_string)
 				end
 
-				if changebox_flag or drop_inv_flag then
+				if changebox_flag or drop_inv_flag or quick_use_flag then
 					help_string = self:GetDescriptionString(inv_item)
 					table.insert(str, help_string)
 					if changebox_flag then
@@ -592,6 +597,9 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
 						table.insert(str, help_string)
+					end
+					if quick_use_flag then
+						table.insert(str, GetQuickUseString(self.owner, slot_num))
 					end
 				end
 
@@ -669,6 +677,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
 				table.insert(str, help_string)
+
+				local quick_use_string = GetQuickUseString(self.owner, slot_num)
+				if slot_num ~= nil and container ~= nil and container.inst == self.owner and  quick_use_string~= "" then
+					table.insert(str, quick_use_string)
+				end
 			end
 
 			local was_shown = self.actionstring.shown

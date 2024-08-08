@@ -710,7 +710,13 @@ AddComponentPostInit("playercontroller", function(self)
 			alt_target = examine_target
 		end
 
-		if target ~= self.controller_target then
+		if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
+			local action = self:GetActionButtonAction()
+			if action ~= nil and action.target ~= nil then
+				self.controller_target = action.target
+				self.controller_target_age = 0
+			end
+		elseif target ~= self.controller_target then
 			self.controller_target = target
 			self.controller_target_age = 0
 			-- print("****** change target to: ", target)

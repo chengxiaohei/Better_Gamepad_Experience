@@ -190,17 +190,20 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
             end
 
-            if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
-                A_shown = true
-            end
-
+            local controller_action_from_space = false
             local controller_target = self.owner.components.playercontroller:GetControllerTarget()
             local controller_alt_target = self.owner.components.playercontroller:GetControllerAltTarget()
             local controller_attack_target = self.owner.components.playercontroller:GetControllerAttackTarget()
             local l, r
             if controller_target ~= nil then
                 l, r = self.owner.components.playercontroller:GetSceneItemControllerAction(controller_target)
+                if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
+                    l = self.owner.components.playercontroller:GetActionButtonAction()
+                    controller_action_from_space = true
+                end
             end
+            local action_string_from_keyboard = controller_action_from_space and " ("..STRINGS.UI.CONTROLSSCREEN.INPUTS[1][32] ..") " or " "
+
             local alt_l, alt_r
             if controller_alt_target ~= nil then
                 alt_l, alt_r = self.owner.components.playercontroller:GetSceneItemControllerAction(controller_alt_target)
@@ -272,7 +275,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     X_shown = true
                 end
                 if not A_shown and l ~= nil then
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. l:GetActionString())
+                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. action_string_from_keyboard .. l:GetActionString())
                     A_shown = true
                 end
                 if not B_shown and controller_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then

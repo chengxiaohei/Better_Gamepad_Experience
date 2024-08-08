@@ -843,10 +843,18 @@ AddComponentPostInit("playercontroller", function(self)
 						if dsq < max_range * max_range and CanEntitySeePoint(self.inst, x1, y1, z1) then
 							local dist = dsq > 0 and math.sqrt(dsq) or 0
 							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
+							-- ========================================================================================== --
 							if (CHANGE_IS_ATTACK_ALL_DIRECTION or dot > 0) or dist < min_rad + phys_rad then
+							-- if dot > 0 or dist < min_rad + phys_rad then
+							-- ========================================================================================== --
 								--now calculate score with physics radius subtracted
 								dist = math.max(0, dist - phys_rad)
-								local score = (CHANGE_IS_ATTACK_ALL_DIRECTION and 1 or dot) + 1 - 0.5 * dist * dist / max_rad_sq
+								-- ======================================================================== --
+								if CHANGE_IS_ATTACK_ALL_DIRECTION and dot < 0 then
+									dot = (-0.7) * dot
+								end
+								-- ======================================================================== --
+								local score = dot + 1 - 0.5 * dist * dist / max_rad_sq
 
 								if isally then
 									score = score * .25
@@ -863,6 +871,12 @@ AddComponentPostInit("playercontroller", function(self)
 								if v == preferred_target then
 									score = score * 10
 								end
+
+								-- ============================================================================================================= --
+								if CHANGE_IS_ATTACK_ALL_DIRECTION and v == self:GetAttackTarget(true, nil, nil ~= self:GetCombatTarget()) then
+									score = score * 20
+								end
+								-- ============================================================================================================= --
 
 								table.insert(current_controller_targeting_targets, v)
 								if score > target_score then

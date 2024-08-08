@@ -129,9 +129,11 @@ end)
 AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
     local OnControl_Old = self.OnControl;
     self.OnControl = function(self, control, down, ...)
-        if TheInput:ControllerAttached() and self.crafting_hud:IsCraftingOpen() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
-            if control == CONTROL_INVENTORY_DROP then
-                control = CONTROL_ACCEPT
+        if TheInput:ControllerAttached() and self.crafting_hud:IsCraftingOpen() then
+            if CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
+                if control == CONTROL_INVENTORY_DROP then
+                    control = CONTROL_ACCEPT
+                end
             end
             if down and control == CONTROL_INVENTORY_USEONSCENE and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
                 self:GoToPrevPage()
@@ -160,7 +162,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
 
     -- Do Not move focus down while GoToPrevPage or GoToNextPage
     -- stupid but works
-     self.GoToNextPage = function (self, silent)
+    self.GoToNextPage = function (self, silent)
         TheCraftingMenuProfile:NextPage()
         self:RefreshPinnedRecipes()
 
@@ -252,6 +254,22 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
         end
     end
 
+    self.page_spinner.RefreshCraftingHelpText = function (self, controller_id, ...)
+        local t = {}
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..STRINGS.UI.HELP.PREVPAGE)
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.NEXTPAGE)
+        return table.concat(t, " ")
+    end
+
+    local RefreshCraftingHelpText_Old = self.RefreshCraftingHelpText
+    self.RefreshCraftingHelpText = function (self, controller_id, ...)
+        local slot_help_text = RefreshCraftingHelpText_Old(self, controller_id, ...)
+        if slot_help_text == "" and self.page_spinner.focus and self.page_spinner.RefreshCraftingHelpText then
+            slot_help_text = slot_help_text .. self.page_spinner:RefreshCraftingHelpText(controller_id, ...)
+        end
+        return slot_help_text
+    end
+
 end)
 
 AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
@@ -309,8 +327,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
         if self.recipe_name ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
             local prev_skin = self:GetPrevSkin(self.skin_name)
             if prev_skin ~= self.skin_name then
-                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..STRINGS.UI.HELP.PREV.." "..STRINGS.UI.LOBBYSCREEN.SKINS)
-                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.NEXT.." "..STRINGS.UI.LOBBYSCREEN.SKINS)
+                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.TOGGLE.." "..STRINGS.UI.LOBBYSCREEN.SKINS)
             end
         elseif TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
             table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..STRINGS.UI.HELP.PREVPAGE)
@@ -330,7 +347,17 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
         if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             return RefreshCraftingHelpText_New(self, controller_id, ...)
         else
-            return RefreshCraftingHelpText_Old(self, controller_id, ...)
+            local t = {}
+            if self.recipe_name ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+                local prev_skin = self:GetPrevSkin(self.skin_name)
+                if prev_skin ~= self.skin_name then
+                    table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.TOGGLE.." "..STRINGS.UI.LOBBYSCREEN.SKINS)
+                end
+            elseif TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..STRINGS.UI.HELP.PREVPAGE)
+                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.NEXTPAGE)
+            end
+            return table.concat(t, " ") .. RefreshCraftingHelpText_Old(self, controller_id, ...)
         end
     end
 

@@ -715,7 +715,14 @@ AddComponentPostInit("playercontroller", function(self)
 			self.controller_target_age = 0
 			-- print("****** change target to: ", target)
 		end
-		if alt_target ~= self.controller_alt_target then
+
+		-- Optimize for staff tornado
+		if equiped_item and equiped_item.controller_should_use_attack_target and self.controller_attack_target ~= nil then
+			if self.controller_alt_target ~= self.controller_attack_target then
+				self.controller_alt_target = self.controller_attack_target
+				self.controller_alt_target_age = 0
+			end
+		elseif alt_target ~= self.controller_alt_target then
 			self.controller_alt_target = alt_target
 			self.controller_alt_target_age = 0
 			-- print("****** change alt_target to: ", alt_target)

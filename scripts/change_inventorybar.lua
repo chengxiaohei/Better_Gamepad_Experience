@@ -540,6 +540,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				table.insert(str, help_string)
 
 				help_string = ""
+				local always_show_inv = true
 				local changebox_flag = false
 				local drop_inv_flag = false
 				local quick_use_flag = false
@@ -551,7 +552,16 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				if right then
 					drop_inv_flag = true
 				end
-				if slot_num ~= nil and container ~= nil and container.inst == self.owner and GetQuickUseString(self.owner, slot_num) ~= "" then
+				local quick_act = nil
+				local quick_act_string = ""
+				if not is_equip_slot and slot_num ~= nil and container ~= nil and container.inst == self.owner then
+					quick_act = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
+					quick_act_string = GetQuickUseString(slot_num, quick_act)
+				elseif is_equip_slot and is_equip_slot ~= EQUIPSLOTS.BEARD then
+					quick_act = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
+					quick_act_string = GetQuickUseString(is_equip_slot, quick_act)
+				end
+				if quick_act ~= nil and quick_act.action.id ~= "TOGGLE_DEPLOY_MODE" and quick_act.action ~= ACTIONS.UNEQUIP and quick_act_string ~= "" then
 					quick_use_flag = true
 				end
 				if not changebox_flag then
@@ -583,7 +593,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					table.insert(str, help_string)
 				end
 
-				if changebox_flag or drop_inv_flag or quick_use_flag then
+				if always_show_inv or changebox_flag or drop_inv_flag or quick_use_flag then
 					help_string = self:GetDescriptionString(inv_item)
 					table.insert(str, help_string)
 					if changebox_flag then
@@ -599,7 +609,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 						table.insert(str, help_string)
 					end
 					if quick_use_flag then
-						table.insert(str, GetQuickUseString(self.owner, slot_num))
+						table.insert(str, quick_act_string)
 					end
 				end
 
@@ -678,9 +688,17 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 				table.insert(str, help_string)
 
-				local quick_use_string = GetQuickUseString(self.owner, slot_num)
-				if slot_num ~= nil and container ~= nil and container.inst == self.owner and  quick_use_string~= "" then
-					table.insert(str, quick_use_string)
+				local quick_act = nil
+				local quick_act_string = ""
+				if not is_equip_slot and slot_num ~= nil and container ~= nil and container.inst == self.owner then
+					quick_act = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
+					quick_act_string = GetQuickUseString(slot_num, quick_act)
+				elseif is_equip_slot and is_equip_slot ~= EQUIPSLOTS.BEARD then
+					quick_act = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
+					quick_act_string = GetQuickUseString(is_equip_slot, quick_act)
+				end
+				if quick_act ~= nil and quick_act.action.id ~= "TOGGLE_DEPLOY_MODE" and quick_act.action ~= ACTIONS.UNEQUIP and quick_act_string ~= "" then
+					table.insert(str, quick_act_string)
 				end
 			end
 

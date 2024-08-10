@@ -1,10 +1,24 @@
+
+local EquipmentMappingTable = {
+    [-1] = EQUIPSLOTS.HANDS,
+    [-2] = EQUIPSLOTS.BODY,
+    [-3] = EQUIPSLOTS.HEAD,
+}
+
 function TryTriggerMappingKey(player, left, right, left_and_right, use)
     if left_and_right and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
-            local item = inventory:GetItemInSlot(left_and_right)
-            if item ~= nil then
-                inventory:ControllerUseItemOnSelfFromInvTile(item)
+            if left_and_right > 0 then
+                local item = inventory:GetItemInSlot(left_and_right)
+                if item ~= nil then
+                    inventory:ControllerUseItemOnSelfFromInvTile(item)
+                end
+            else
+                local equipment = inventory:GetEquippedItem(EquipmentMappingTable[left_and_right])
+                if equipment ~= nil then
+                    inventory:ControllerUseItemOnSceneFromInvTile(equipment)
+                end
             end
         end
         return true
@@ -13,9 +27,16 @@ function TryTriggerMappingKey(player, left, right, left_and_right, use)
     if left and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
-            local item = inventory:GetItemInSlot(left)
-            if item ~= nil then
-                inventory:ControllerUseItemOnSelfFromInvTile(item)
+            if left > 0 then
+                local item = inventory:GetItemInSlot(left)
+                if item ~= nil then
+                    inventory:ControllerUseItemOnSelfFromInvTile(item)
+                end
+            else
+                local equipment = inventory:GetEquippedItem(EquipmentMappingTable[left])
+                if equipment ~= nil then
+                    inventory:ControllerUseItemOnSceneFromInvTile(equipment)
+                end
             end
         end
         Trigger = true
@@ -23,9 +44,16 @@ function TryTriggerMappingKey(player, left, right, left_and_right, use)
     if right and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
-            local item = inventory:GetItemInSlot(right)
-            if item ~= nil then
-                inventory:ControllerUseItemOnSelfFromInvTile(item)
+            if right > 0 then
+                local item = inventory:GetItemInSlot(right)
+                if item ~= nil then
+                    inventory:ControllerUseItemOnSelfFromInvTile(item)
+                end
+            else
+                local equipment = inventory:GetEquippedItem(EquipmentMappingTable[right])
+                if equipment ~= nil then
+                    inventory:ControllerUseItemOnSceneFromInvTile(equipment)
+                end
             end
         end
         Trigger = true
@@ -33,7 +61,7 @@ function TryTriggerMappingKey(player, left, right, left_and_right, use)
     return Trigger
 end
 
-function GetQuickUseString(player, inv_slot_num)
+function GetQuickUseString(inv_slot, act)
     local CHANGE_MAPPING_TABLE = {
 
         MAPPING_LB_LT = {
@@ -123,14 +151,17 @@ function GetQuickUseString(player, inv_slot_num)
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_EXAMINE)
         }
     }
-
-    local item = player.replica.inventory:GetItemInSlot(inv_slot_num)
-    local action = player.components.playercontroller:GetItemSelfAction(item)
     local t = {}
-    if action ~= nil then
-        for _,v in pairs(CHANGE_MAPPING_TABLE) do
-            if v.slot == inv_slot_num then
-                table.insert(t, v.string.." "..STRINGS.UI.COOKBOOK.PERISH_QUICKLY.." "..STRINGS.ACTIONS.USEITEM)
+    if inv_slot ~= nil and act ~= nil then
+        for _, v in pairs(CHANGE_MAPPING_TABLE) do
+            if type(inv_slot) == "number" then
+                if v.slot == inv_slot then
+                    table.insert(t, v.string.." "..STRINGS.UI.COOKBOOK.PERISH_QUICKLY.." "..act:GetActionString())
+                end
+            else
+                if EquipmentMappingTable[v.slot] == inv_slot then
+                    table.insert(t, v.string.." "..STRINGS.UI.COOKBOOK.PERISH_QUICKLY.." "..act:GetActionString())
+                end
             end
         end
     end

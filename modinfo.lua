@@ -50,6 +50,7 @@ local MappingOptions = {
 	{ description = Language_En and "Body Equipment" or "身体装备物品",    data = -2,     hover = ""},
 	{ description = Language_En and "Head Equipment" or "头部装备物品",    data = -3,     hover = ""},
 }
+local MappingHoverText = Language_En and "Mapping an Inventory or Equipment Slot for this Shortcut Key." or "为该快捷键映射一个物品栏或装备栏格子"
 
 name = "Better Gamepad UX" -- "Better Gamepad User Experience"
 description = Language_En and [[
@@ -64,6 +65,7 @@ description = Language_En and [[
 * Trigger the Same Function as the Space Bar on the Keyboard with ]]..GamepadButtons.Left_Bumper..[[ ]]..GamepadButtons.Right_Bumper..[[ and Action Button ]]..GamepadButtons.Button_A..[[ 
 * Teleport with Force Button ]]..GamepadButtons.Left_Bumper..[[ and AltAction Button ]]..GamepadButtons.Button_B..[[ 
 * While Focus on Crafting Menu Pinbar, Use ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Skins and Use ]]..GamepadButtons.Left_Bumper..[[ + ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Pages
+* Customize your Shortcut Key Mapping
 ]] or [[
 * 开启本Mod后，最好将系统设置中的控制器设置保持默认。
 * 在使用手柄时，也可以在系统设置中设置背包布局了
@@ -76,6 +78,7 @@ description = Language_En and [[
 * 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Bumper..[[ 加动作按钮 ]]..GamepadButtons.Button_A..[[ 实现与按下键盘空格键一样的功能
 * 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加副动作按钮 ]]..GamepadButtons.Button_B..[[ 进行传送等操作
 * 当光标在左侧的快捷制作栏上时，使用]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换皮肤，使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换页面
+* 自定义快捷键映射
 ]]
 
 author = "程小黑OvO"
@@ -212,8 +215,8 @@ configuration_options = {
 	{
 		name = "force_attack_target",
 		label = Language_En and "Force Attack" or "强制攻击",
-		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." or "..GamepadButtons.Right_Bumper.." ) and Press "..GamepadButtons.Button_X.." to Force Attack Friendly Creatures or Wall."
-							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." 或 "..GamepadButtons.Right_Bumper.." )，然后按下 "..GamepadButtons.Button_X.." 按钮强制攻击友好生物或墙体。",
+		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." ) and Press "..GamepadButtons.Button_X.." to Force Attack Friendly Creatures or Wall."
+							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." )，然后按下 "..GamepadButtons.Button_X.." 按钮强制攻击友好生物或墙体。",
 		options = {
 			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用。"},
 			{ description = "No",            data = false, hover = Language_En and "Just Attack Every Creatures or Wall as Before." or "像之前一样直接攻击生物或墙。"},
@@ -223,8 +226,8 @@ configuration_options = {
 	{
 		name = "force_lock_attack_target",
 		label = Language_En and "Force Lock Attack Target" or "强制锁定攻击目标",
-		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." or "..GamepadButtons.Right_Bumper.." ) and Press "..GamepadButtons.Button_Y.." to Force Lock Attackable Target."
-							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." 或 "..GamepadButtons.Right_Bumper.." )，然后按下 "..GamepadButtons.Button_Y.." 按钮强制锁定攻击目标。",
+		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." ) and Press "..GamepadButtons.Button_Y.." to Force Lock Attackable Target."
+							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." )，然后按下 "..GamepadButtons.Button_Y.." 按钮强制锁定攻击目标。",
 		options = {
 			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用"},
 			{ description = "No",            data = false, hover = Language_En and "Lock Attack Target by Holding "..GamepadButtons.Button_Y.." as Before." or "像之前一样长按 "..GamepadButtons.Button_Y.." 按键锁定攻击目标。"},
@@ -234,8 +237,8 @@ configuration_options = {
 	{
 		name = "force_ground_actions",
 		label = Language_En and "Force Ground Actions" or "强制地面施法动作",
-		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." or "..GamepadButtons.Right_Bumper.." ) and Press "..GamepadButtons.Button_B.." to Force Preform Toss/Cast/Teleport/Play/... Actions."
-							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." 或 "..GamepadButtons.Right_Bumper.." )，然后按下 "..GamepadButtons.Button_B.." 按钮强制执行扔、投、传送、演奏等地面施法动作。",
+		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." ) and Press "..GamepadButtons.Button_B.." to Force Preform Toss/Cast/Teleport/Play/... Actions."
+							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." )，然后按下 "..GamepadButtons.Button_B.." 按钮强制执行扔、投、传送、演奏等地面施法动作。",
 		options = {
 			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用"},
 			{ description = "No",            data = false, hover = Language_En and "Just Preform Ground Actions as Before." or "像之前一样直接执行地面施法动作。"},
@@ -259,7 +262,7 @@ configuration_options = {
 		name = "MAPPING_LB_LT",
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -267,7 +270,7 @@ configuration_options = {
 		name = "MAPPING_RB_LT",
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -275,7 +278,7 @@ configuration_options = {
 		name = "MAPPING_LB_RB_LT",
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -283,7 +286,7 @@ configuration_options = {
 		name = "MAPPING_RB_RT",
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -291,7 +294,7 @@ configuration_options = {
 		name = "MAPPING_LB_RB_RT",
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -299,7 +302,7 @@ configuration_options = {
 		name = "MAPPING_LB_BACK",
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Back.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -307,7 +310,7 @@ configuration_options = {
 		name = "MAPPING_RB_BACK",
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -315,7 +318,7 @@ configuration_options = {
 		name = "MAPPING_LB_RB_BACK",
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -323,7 +326,7 @@ configuration_options = {
 		name = "MAPPING_LB_START",
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Start.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -331,7 +334,7 @@ configuration_options = {
 		name = "MAPPING_RB_START",
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -339,7 +342,7 @@ configuration_options = {
 		name = "MAPPING_LB_RB_START",
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -347,7 +350,7 @@ configuration_options = {
 		name = "MAPPING_LB_LSTICK",
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -355,7 +358,7 @@ configuration_options = {
 		name = "MAPPING_RB_LSTICK",
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -363,7 +366,7 @@ configuration_options = {
 		name = "MAPPING_LB_RB_LSTICK",
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -371,7 +374,7 @@ configuration_options = {
 		name = "MAPPING_LB_RSTICK",
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -379,7 +382,7 @@ configuration_options = {
 		name = "MAPPING_RB_RSTICK",
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -387,7 +390,7 @@ configuration_options = {
 		name = "MAPPING_LB_RB_RSTICK",
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -395,7 +398,7 @@ configuration_options = {
 		name = "MAPPING_LB_UP",
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -403,7 +406,7 @@ configuration_options = {
 		name = "MAPPING_RB_UP",
 		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
 							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
@@ -411,7 +414,7 @@ configuration_options = {
 		name = "MAPPING_LB_RB_UP",
 		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
 							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
-		hover = Language_En and "Mapping an Inventory Slot Number for this Shortcut Key." or "为该快捷键映射一个物品栏格子编号",
+		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},

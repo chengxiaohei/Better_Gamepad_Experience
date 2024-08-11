@@ -167,3 +167,27 @@ function GetQuickUseString(inv_slot, act)
     end
     return table.concat(t, "\n")
 end
+
+local ModCompatabilityTable = {
+    ["Geometric Placement"] = "workshop-351325790"
+}
+
+function IsOtherModEnabled(modname)
+    return KnownModIndex:IsModEnabled(ModCompatabilityTable[modname])
+end
+
+function GetOtherModConfig(modname, configname)
+    return GLOBAL.GetModConfigData(configname, ModCompatabilityTable[modname])
+end
+
+function LoadGeometricPlacementCtrlOption()
+	local config_options = KnownModIndex:LoadModConfigurationOptions(KnownModIndex:GetModActualName("Geometric Placement"), TheNet:GetIsClient())
+    -- I don't Know Why, But Below Code is Necessary, Believe me.
+    if type(config_options) == "table" then
+        for _, v in ipairs(config_options) do
+            if v.name == configname then
+                return v.saved
+            end
+        end
+    end
+end

@@ -1323,6 +1323,7 @@ AddComponentPostInit("playercontroller", function(self)
 				end
 			end
 		end
+		LoadGeometricPlacementCtrlOption()
 	end
 
 	local OnUpdate_Old = self.OnUpdate
@@ -1373,6 +1374,7 @@ AddComponentPostInit("playercontroller", function(self)
 								end
 								self.fake_deployplacer.components.placer:OnUpdate(0) --so that our position is accurate on the first frame
 							end
+							LoadGeometricPlacementCtrlOption()
 						end
 					end
 				end

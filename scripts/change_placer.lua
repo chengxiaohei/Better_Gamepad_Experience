@@ -144,17 +144,7 @@ AddComponentPostInit("placer", function(self)
         TriggerDeployHelpers(x, y, z, 64, self.recipe, self.inst)
 
 
-        -- ================================================================================================================================ --
-        if self.fake then
-            self.inst:Hide()
-            for _, v in ipairs(self.linked) do
-                v:Hide()
-            end
-        -- ================================================================================================================================ --
-        -- ================================================================================================================================ --
-        -- if self.can_build then
-        elseif self.can_build then
-        -- ================================================================================================================================ --
+        if self.can_build then
             if self.oncanbuild ~= nil then
                 self.oncanbuild(self.inst, self.mouse_blocked)
                 return
@@ -196,10 +186,16 @@ AddComponentPostInit("placer", function(self)
     end
 
     self.OnUpdate = function (self, dt, ...)
-        if TheInput:ControllerAttached() then
+        if TheInput:ControllerAttached() and (not IsOtherModEnabled("Geometric Placement") or GetOtherModConfig("Geometric Placement", "CTRL") or TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
             OnUpdate_New(self, dt, ...)
         else
             OnUpdate_Old(self, dt, ...)
+        end
+        if self.fake then
+            self.inst:Hide()
+            for _, v in ipairs(self.linked) do
+                v:Hide()
+            end
         end
     end
 end)

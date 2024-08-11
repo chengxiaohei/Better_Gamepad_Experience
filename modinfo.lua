@@ -116,6 +116,94 @@ configuration_options = {
 		},
 		default = true
 	},
+	{
+		name = "show_backpack_widget",
+		label = Language_En and "Show Backpack Widget" or "显示背包控件",
+		hover = Language_En and "Setting Backpack Layout to Separated in Settings Page of Original Game to Show Backpace Widget on the Right of Screen." or "在原版游戏的设置页面将更改背包布局为分开，即可在屏幕右侧显示背包控件。",
+		options = {
+			{
+				description = "None (Default)",
+				data = false,
+				hover = ""
+			},
+		},
+		default = false
+	},
+
+	{name = "Title", label = Language_En and "Camera Control Settings" or "视角控制设置", options = {{description = "", data = ""}}, default = ""},
+	{
+		name = "reverse_rotation",
+		label = Language_En and "Reverse Camera Rotation" or "反转视角旋转",
+		hover = Language_En and "Reverse Camera Rotation" or "反转视角旋转",
+		options = {
+			{
+				description = "No (Default)",
+				data = false,
+				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.."and"..GamepadButtons.Right_Thumb_Left.." Rotate Camera Left, Use "..GamepadButtons.Left_Bumper.."and"..GamepadButtons.Right_Thumb_Right.." Rotate Camera Right."
+									or "使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Left.." 向左旋转视角，使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Right.." 向右旋转视角。"
+			},
+			{
+				description = "Yes",
+				data = true,
+				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Right.." Rotate Camera Left, Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Left.." Rotate Camera Right."
+									or "使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Right.." 向左旋转视角，使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Left.." 向右旋转视角。"
+			},
+		},
+		default = false
+	},
+	{
+		name = "reverse_zoom",
+		label = Language_En and "Reverse Camera Zoom" or "反转视角缩放",
+		hover = Language_En and "Reverse Camera Zoom" or "反转视角缩放",
+		options = {
+			{
+				description = "No (Default)",
+				data = false,
+				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Up.." Zoom In, Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Down.." Zoom Out."
+									or "使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Up.." 拉近视角，使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Down.." 拉远视角。"
+			},
+			{
+				description = "Yes",
+				data = true,
+				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Down.." Zoom In, Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Up.." Zoom Out."
+									or "使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Down.." 拉近视角，使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Up.." 拉远视角。"
+			},
+		},
+		default = false
+	},
+	{
+		name = "reverse_rotation_minimap",
+		label = Language_En and "Reverse Map Rotation" or "反转地图旋转",
+		hover = Language_En and "Reverse Map Rotation" or "反转地图旋转",
+		options = {
+			{
+				description = "No (Default)",
+				data = false,
+				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.." Rotate Map Left, Use "..GamepadButtons.Right_Bumper.." Rotate Map Right."
+									or "使用 "..GamepadButtons.Left_Bumper.." 向左旋转地图，使用 "..GamepadButtons.Right_Bumper.." 向右旋转地图。"
+			},
+			{
+				description = "Yes",
+				data = true,
+				hover = Language_En and "Use "..GamepadButtons.Right_Bumper.." Rotate Map Left, Use "..GamepadButtons.Left_Bumper.." Rotate Map Right."
+									or "使用 "..GamepadButtons.Right_Bumper.." 向左旋转地图，使用 "..GamepadButtons.Left_Bumper.." 向右旋转地图。"
+			},
+		},
+		default = false
+	},
+	{
+		name = "reverse_zoom_minimap",
+		label = Language_En and "Reverse Map Zoom" or "反转地图缩放",
+		hover = Language_En and "Setting \"Map Zoom In\" and \"Map Zoom Out\" Control Button in Control Settings Page of Original Game." or "在原版游戏的控制设置页面设置\"地图放大\"和\"地图缩小\"按键映射即可。",
+		options = {
+			{
+				description = "None (Default)",
+				data = false,
+				hover = ""
+			},
+		},
+		default = false
+	},
 
 	{name = "Title", label = Language_En and "Player Control Settings" or "角色控制设置", options = {{description = "", data = ""}}, default = ""},
 	{

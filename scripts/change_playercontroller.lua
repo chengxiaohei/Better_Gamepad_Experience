@@ -413,10 +413,10 @@ AddComponentPostInit("playercontroller", function(self)
 					CHANGE_FORCE_BUTTON == nil or
 					not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
 				) then
-				if TheInput:IsControlPressed(CONTROL_INVENTORY_RIGHT) then
+				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION and CONTROL_INVENTORY_LEFT or CONTROL_INVENTORY_RIGHT) then
 					self:RotLeft()
 					self.lastrottime = time
-				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_LEFT) then
+				elseif TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION and CONTROL_INVENTORY_RIGHT or CONTROL_INVENTORY_LEFT) then
 					self:RotRight()
 					self.lastrottime = time
 				end
@@ -430,10 +430,10 @@ AddComponentPostInit("playercontroller", function(self)
 					CHANGE_FORCE_BUTTON == nil or
 					not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
 				) then
-				if TheInput:IsControlPressed(CONTROL_INVENTORY_UP) then
+				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ZOOM and CONTROL_INVENTORY_DOWN or CONTROL_INVENTORY_UP) then
 					TheCamera:ZoomIn()
 					self.lastzoomtime = time
-				elseif TheInput:IsControlPressed(CONTROL_INVENTORY_DOWN) then
+				elseif TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ZOOM and CONTROL_INVENTORY_UP or CONTROL_INVENTORY_DOWN) then
 					TheCamera:ZoomOut()
 					self.lastzoomtime = time
 				end

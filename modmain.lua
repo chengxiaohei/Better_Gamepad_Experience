@@ -7,8 +7,6 @@ setmetatable(env,
 	__index = function(table, key) return rawget(_G, key) end
 })
 
-Language_En = locale ~= "zh" and locale ~= "zht" and locale ~= "zhr"
-
 CHANGE_CONTROL_LEFT = CONTROL_ROTATE_LEFT
 CHANGE_CONTROL_RIGHT = CONTROL_ROTATE_RIGHT
 CHANGE_CONTROL_CAMERA = CHANGE_CONTROL_LEFT

@@ -14,6 +14,8 @@ CHANGE_CONTROL_HOVER = CONTROL_OPEN_INVENTORY
 
 CHANGE_ALWAYS_SHOW_MAP_CONTROL_WIDGET = GetModConfigData("show_map_widget")
 CHANGE_SHOW_SELF_INSPECT_BUTTON = GetModConfigData("show_self_inspect")
+CHANGE_HIDE_INVENTORY_BAR_HINT = GetModConfigData("hide_inventory_hint")
+CHANGE_HIDE_THEWORLD_ITEM_HINT = GetModConfigData("hide_world_item_hint")
 
 local force = GetModConfigData("enable_force_control")
 if force == "left" then

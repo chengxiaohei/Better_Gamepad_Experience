@@ -82,7 +82,7 @@ description = Language_En and [[
 ]]
 
 author = "程小黑OvO"
-version = "0.1.6"
+version = "0.1.7"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
@@ -126,6 +126,26 @@ configuration_options = {
 				data = false,
 				hover = ""
 			},
+		},
+		default = false
+	},
+	{
+		name = "hide_inventory_hint",
+		label = Language_En and "Hide Inventory Bar Hint Message" or "隐藏物品栏物品的提示信息",
+		hover = Language_En and "Hide Inventory Bar Hint Message" or "隐藏物品栏物品的提示信息",
+		options = {
+			{ description = "No (Default)", data = false, hover = Language_En and "Show." or "显示"},
+			{ description = "Yes",          data = true,  hover = Language_En and "Hide." or "隐藏"},
+		},
+		default = false
+	},
+	{
+		name = "hide_world_item_hint",
+		label = Language_En and "Hide World Items Hint Message" or "隐藏世界物品的提示信息",
+		hover = Language_En and "Hide World Items Hint Message" or "隐藏世界物品的提示信息",
+		options = {
+			{ description = "No (Default)", data = false, hover = Language_En and "Show." or "显示"},
+			{ description = "Yes",          data = true,  hover = Language_En and "Hide." or "隐藏"},
 		},
 		default = false
 	},

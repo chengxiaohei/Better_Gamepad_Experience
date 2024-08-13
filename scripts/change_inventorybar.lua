@@ -495,7 +495,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		if active_item ~= nil and active_item.replica.inventoryitem == nil then
 			active_item = nil
 		end
-		if active_item ~= nil or inv_item ~= nil then
+		if active_item ~= nil or inv_item ~= nil and not CHANGE_HIDE_INVENTORY_BAR_HINT then
 			local controller_id = TheInput:GetControllerID()
 
 			if active_item ~= nil then

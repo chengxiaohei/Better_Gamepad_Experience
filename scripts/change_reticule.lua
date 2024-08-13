@@ -4,7 +4,7 @@ AddPrefabPostInitAny(function(inst)
         inst.components.reticule.origin_twinstickmode = inst.components.reticule.twinstickmode
         if not inst.components.reticule.twinstickrange then
             -- TODO: Maybe Need Optimize or Fill
-            if inst.prefab == "wortox" then inst.components.reticule.twinstickrange = 30  -- 灵魂跳跃
+            if inst.prefab == "wortox" then inst.components.reticule.twinstickrange = ACTIONS.BLINK.distance  -- 灵魂跳跃
             elseif inst.prefab == "orangestaff" then inst.components.reticule.twinstickrange = 30  -- 传送法杖
             elseif inst.prefab == "yellowstaff" then inst.components.reticule.twinstickrange = 20  -- 星杖
             elseif inst.prefab == "opalstaff" then inst.components.reticule.twinstickrange = 20  -- 月杖

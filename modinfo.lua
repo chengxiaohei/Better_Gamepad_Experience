@@ -1,4 +1,4 @@
-Language_En = locale ~= "zh" and locale ~= "zht" and locale ~= "zhr"
+local Language_En = locale ~= "zh" and locale ~= "zht" and locale ~= "zhr"
 
 local GamepadButtons = {
 	-- Digital

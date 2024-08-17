@@ -97,6 +97,16 @@ priority = 0
 configuration_options = {
 	{name = "Title", label = Language_En and "Display Settings" or "显示设置", options = {{description = "", data = ""}}, default = ""},
 	{
+		name = "language",
+		label = Language_En and "Language" or "语言",
+		hover = Language_En and "Setting Language." or "设置语言。",
+		options = {
+			{ description = "English", data = true,  hover = Language_En and "English." or "英文"},
+			{ description = "Chinese", data = false, hover = Language_En and "Chinese." or "中文"},
+		},
+		default = true
+	},
+	{
 		name = "show_map_widget",
 		label = Language_En and "Show Map Widget" or "显示地图按钮控件",
 		hover = Language_En and "Show Map Widget." or "显示地图按钮控件。",

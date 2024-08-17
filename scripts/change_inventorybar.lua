@@ -486,7 +486,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 	-- Numerous changes
 	self.UpdateCursorText = function (self, ...)
-		local Language_En = true
+		local Language_En = CHANGE_LANGUAGE_ENGLISH
 		local inv_item = self:GetCursorItem()
 		local slot_num, container = self:GetCursorSlot()
 		local active_item = self.cursortile ~= nil and self.cursortile.item or nil

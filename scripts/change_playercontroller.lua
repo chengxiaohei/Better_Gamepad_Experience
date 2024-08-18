@@ -863,13 +863,17 @@ AddComponentPostInit("playercontroller", function(self)
 
 								if isally then
 									score = score * .25
+								elseif CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_ATTACK and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
+									-- do nothing
 								elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
 									score = score * 5
 								elseif CheckControllerPriorityTagOrOverride(v, "monster", v.controller_priority_override_is_monster) then
 									score = score * 4
 								end
 
-								if v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
+								if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_ATTACK and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
+									-- do nothing
+								elseif v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
 									score = score * 6
 								end
 

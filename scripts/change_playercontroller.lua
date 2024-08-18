@@ -352,7 +352,12 @@ AddComponentPostInit("playercontroller", function(self)
 			self:CancelPlacement()
 			self:ControllerTargetLock(false)
 		elseif control == CONTROL_INSPECT then
-			self:DoInspectButton()
+			if not TryTriggerMappingKey(self.inst,
+				not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and CHANGE_IS_LOCK_TARGET_QUICKLY) and CHANGE_MAPPING_LB_Y or false,
+				not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and CHANGE_IS_LOCK_TARGET_QUICKLY) and CHANGE_MAPPING_RB_Y or false,
+				CHANGE_MAPPING_LB_RB_Y, false) then
+				self:DoInspectButton()
+			end
 		elseif control == CONTROL_CONTROLLER_ALTACTION then
 			self:DoControllerAltActionButton()
 		elseif control == CONTROL_CONTROLLER_ACTION then

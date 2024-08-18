@@ -389,160 +389,184 @@ configuration_options = {
 	{name = "Title", label = Language_En and "Shortcut Key Mappings" or "快捷键映射", options = {{description = "", data = ""}}, default = ""},
 	{
 		name = "MAPPING_LB_LT",
-		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
-							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Trigger.." to Quick Use"
+							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Trigger.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_RB_LT",
-		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
-							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
+		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.." to Quick Use"
+							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_RB_LT",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.." to Quick Use"
+							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Trigger.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_RB_RT",
-		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."to Quick Use"
-							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."快捷使用",
+		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.." to Quick Use"
+							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_RB_RT",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.." to Quick Use"
+							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Trigger.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_BACK",
-		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
-							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Back.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Back.." to Quick Use"
+							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Back.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_RB_BACK",
-		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
-							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."快捷使用",
+		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.." to Quick Use"
+							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_RB_BACK",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.." to Quick Use"
+							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Back.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_START",
-		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
-							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Start.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Start.." to Quick Use"
+							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Start.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_RB_START",
-		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
-							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."快捷使用",
+		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.." to Quick Use"
+							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_RB_START",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.." to Quick Use"
+							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Start.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_LSTICK",
-		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
-							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.." to Quick Use"
+							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_RB_LSTICK",
-		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
-							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
+		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.." to Quick Use"
+							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_RB_LSTICK",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.." to Quick Use"
+							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_RSTICK",
-		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
-							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.." to Quick Use"
+							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_RB_RSTICK",
-		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
-							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
+		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.." to Quick Use"
+							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_RB_RSTICK",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.." to Quick Use"
+							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_UP",
-		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
-							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.." to Quick Use"
+							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_RB_UP",
-		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
-							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
+		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.." to Quick Use"
+							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false
 	},
 	{
 		name = "MAPPING_LB_RB_UP",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.."快捷使用",
+		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.." to Quick Use"
+							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.DPad_Up.." 快捷使用",
+		hover = MappingHoverText,
+		options = MappingOptions,
+		default = false
+	},
+	{
+		name = "MAPPING_LB_Y",
+		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Button_Y.." to Quick Use"
+							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Button_Y.." 快捷使用",
+		hover = MappingHoverText,
+		options = MappingOptions,
+		default = false
+	},
+	{
+		name = "MAPPING_RB_Y",
+		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Button_Y.." to Quick Use"
+							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Button_Y.." 快捷使用",
+		hover = MappingHoverText,
+		options = MappingOptions,
+		default = false
+	},
+	{
+		name = "MAPPING_LB_RB_Y",
+		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Button_Y.." to Quick Use"
+							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Button_Y.." 快捷使用",
 		hover = MappingHoverText,
 		options = MappingOptions,
 		default = false

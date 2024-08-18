@@ -149,6 +149,19 @@ function GetQuickUseString(inv_slot, act)
         MAPPING_LB_RB_UP = {
             slot = GetModConfigData("MAPPING_LB_RB_UP"),
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_EXAMINE)
+        },
+
+        MAPPING_LB_Y = {
+            slot = not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and CHANGE_IS_LOCK_TARGET_QUICKLY) and GetModConfigData("MAPPING_LB_Y") or false,
+            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INSPECT)
+        },
+        MAPPING_RB_Y = {
+            slot = not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and CHANGE_IS_LOCK_TARGET_QUICKLY) and GetModConfigData("MAPPING_RB_Y") or false,
+            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INSPECT)
+        },
+        MAPPING_LB_RB_Y = {
+            slot = GetModConfigData("MAPPING_LB_RB_Y"),
+            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INSPECT)
         }
     }
     local t = {}

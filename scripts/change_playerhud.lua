@@ -18,23 +18,28 @@ AddClassPostConstruct("screens/playerhud", function(self)
 
         if down then
             if control == CONTROL_INSPECT then
-                if self.controls.votedialog:CheckControl(control, down) then
-                    return true
-                end
-                if self:IsVisible() and
-                    self:IsPlayerInfoPopUpOpen() and
-                    self.owner.components.playercontroller:IsEnabled() then
-                    self:TogglePlayerInfoPopup()
-                    return true
-                elseif self.controls.votedialog:CheckControl(control, down) then
-                    return true
-                elseif (not CHANGE_IS_FORBID_Y_INSPECT_SELF or
-                    (self.controls.skilltree_notification ~= nil and self.controls.skilltree_notification.controller_help ~= nil and self.controls.skilltree_notification.controller_help.shown))
-                    and self.owner.components.playercontroller:GetControllerTarget() == nil
-                    and self.owner.components.playercontroller:GetControllerAltTarget() == nil
-                    and self.owner.components.playercontroller:GetControllerAttackTarget() == nil
-                    and self:InspectSelf() then
-                    return true
+                if not TryTriggerMappingKey(self.owner,
+                    not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and CHANGE_IS_LOCK_TARGET_QUICKLY) and CHANGE_MAPPING_LB_Y or false,
+                    not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and CHANGE_IS_LOCK_TARGET_QUICKLY) and CHANGE_MAPPING_RB_Y or false,
+                    CHANGE_MAPPING_LB_RB_Y, true) then
+                    if self.controls.votedialog:CheckControl(control, down) then
+                        return true
+                    end
+                    if self:IsVisible() and
+                        self:IsPlayerInfoPopUpOpen() and
+                        self.owner.components.playercontroller:IsEnabled() then
+                        self:TogglePlayerInfoPopup()
+                        return true
+                    elseif self.controls.votedialog:CheckControl(control, down) then
+                        return true
+                    elseif (not CHANGE_IS_FORBID_Y_INSPECT_SELF or
+                        (self.controls.skilltree_notification ~= nil and self.controls.skilltree_notification.controller_help ~= nil and self.controls.skilltree_notification.controller_help.shown))
+                        and self.owner.components.playercontroller:GetControllerTarget() == nil
+                        and self.owner.components.playercontroller:GetControllerAltTarget() == nil
+                        and self.owner.components.playercontroller:GetControllerAttackTarget() == nil
+                        and self:InspectSelf() then
+                        return true
+                    end
                 end
             elseif control == CONTROL_INSPECT_SELF and self:InspectSelf() then
                 return true

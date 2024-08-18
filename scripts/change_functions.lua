@@ -100,11 +100,11 @@ function GetQuickUseString(inv_slot, act)
         },
 
         MAPPING_LB_START = {
-            slot = GetModConfigData("MAPPING_LB_START"),
+            slot = not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and CHANGE_IS_FORCE_PAUSE_QUICKLY) and GetModConfigData("MAPPING_LB_START") or false,
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_PAUSE)
         },
         MAPPING_RB_START = {
-            slot = GetModConfigData("MAPPING_RB_START"),
+            slot = not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and CHANGE_IS_FORCE_PAUSE_QUICKLY) and GetModConfigData("MAPPING_RB_START") or false,
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_PAUSE)
         },
         MAPPING_LB_RB_START = {

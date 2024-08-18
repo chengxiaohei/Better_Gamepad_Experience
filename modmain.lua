@@ -32,6 +32,7 @@ CHANGE_IS_FORCE_ATTACK        = CHANGE_FORCE_BUTTON and GetModConfigData("force_
 CHANGE_IS_LOCK_TARGET_QUICKLY = CHANGE_FORCE_BUTTON and GetModConfigData("force_lock_attack_target")  -- true or false
 CHANGE_IS_FORCE_PING_RETICULE = CHANGE_FORCE_BUTTON and GetModConfigData("force_ground_actions")  -- true or false
 CHANGE_IS_FORCE_SPACE_ACTION  = CHANGE_FORCE_BUTTON and GetModConfigData("force_space")
+CHANGE_IS_FORCE_PAUSE_QUICKLY = CHANGE_FORCE_BUTTON and GetModConfigData("force_pause")
 
 CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = GetModConfigData("change_craftingmenu")
 CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM = GetModConfigData("change_wheel")

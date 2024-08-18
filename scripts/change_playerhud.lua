@@ -158,6 +158,9 @@ AddClassPostConstruct("screens/playerhud", function(self)
 
     self.OnControl = function (self, control, down, ...)
         if TheInput:ControllerAttached() then
+            if control == CONTROL_PAUSE and CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_PAUSE_QUICKLY and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and not TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
+                control = CONTROL_SERVER_PAUSE
+            end
             return OnControl_New(self, control, down, ...)
         end
         return OnControl_Old(self, control, down, ...)

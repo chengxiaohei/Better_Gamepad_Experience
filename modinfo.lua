@@ -374,6 +374,17 @@ configuration_options = {
 		},
 		default = true
 	},
+	{
+		name = "force_pause",
+		label = Language_En and "Force Pause Server" or "强制暂停服务器",
+		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." ) and Press "..GamepadButtons.Start.." to Force Pause Server."
+							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." )，然后按下 "..GamepadButtons.Start.." 按钮强制暂停服务器。",
+		options = {
+			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用"},
+			{ description = "No",            data = false, hover = Language_En and "Disable." or "不启用"},
+		},
+		default = true
+	},
 
 	{name = "Title", label = Language_En and "Shortcut Key Mappings" or "快捷键映射", options = {{description = "", data = ""}}, default = ""},
 	{

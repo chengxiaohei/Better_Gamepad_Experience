@@ -594,12 +594,12 @@ AddComponentPostInit("playercontroller", function(self)
 					-- local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dx*dx + dz*dz) * math.sqrt(dirx*dirx + dirz*dirz))) / DEGREES or 0
 					local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dsq))) / DEGREES or 0
 
-					if (dsq < min_rad_sq) or
+					if ((dsq < min_rad_sq) or
 						(dsq <= target_rad_sq and v == self.controller_target and dx * dirx + dz * dirz > 0) or
 						(dsq <= alt_target_rad_sq and v == self.controller_alt_target and dx * dirx + dz * dirz > 0) or
 						(self.controller_target ~= nil and dsq <= target_rad_sq and included_angle < anglemax) or
 						(self.controller_alt_target ~= nil and dsq <= alt_target_rad_sq and included_angle < anglemax) or
-						(dsq <= max_rad_sq and included_angle < anglemax) and
+						(dsq <= max_rad_sq and included_angle < anglemax)) and
 						CanEntitySeePoint(self.inst, x1, y1, z1) then
 						-- Incorporate the y component after we've performed the inclusion radius test.
 						-- We wait until now because we might disqualify our controller_target if its transform has a y component,

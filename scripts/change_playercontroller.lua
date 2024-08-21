@@ -728,7 +728,8 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 
 		-- Optimize for staff tornado
-		if equiped_item and equiped_item.controller_should_use_attack_target and self.controller_attack_target ~= nil then
+		if equiped_item and equiped_item.controller_should_use_attack_target and self.controller_attack_target ~= nil and
+			(not CHANGE_FORCE_BUTTON or not TheInput:IsControlPressed(CHANGE_FORCE_BUTTON)) then
 			if self.controller_alt_target ~= self.controller_attack_target then
 				self.controller_alt_target = self.controller_attack_target
 				self.controller_alt_target_age = 0

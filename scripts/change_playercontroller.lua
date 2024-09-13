@@ -475,7 +475,7 @@ AddComponentPostInit("playercontroller", function(self)
 	self.controller_alt_target = nil
     self.controller_alt_target_age = math.huge
 
-	local TARGET_EXCLUDE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
+	local TARGET_EXCLUDE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "stealth"}
 	local REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS = TheSim:RegisterFindTags({ "_combat" }, TARGET_EXCLUDE_TAGS)
 
 	-- Numerous changes

@@ -407,6 +407,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_details", function(self)
         ["NEEDSLUNAR_FORGE"] = "NEEDSLUNARFORGING_TWO",
         ["NEEDSSHADOW_FORGE"] = "NEEDSSHADOWFORGING_TWO",
         ["NEEDSCARPENTRY_STATION"] = "NEEDSCARPENTRY_TWO",
+        ["NEEDSCARPENTRY_STATION_STONE"] = "NEEDSCARPENTRY_THREE",
     }
 
     local UpdateBuildButton_Old = self.UpdateBuildButton

@@ -194,6 +194,7 @@ function GetOtherModConfig(modname, configname)
 end
 
 function LoadGeometricPlacementCtrlOption()
+    if not IsOtherModEnabled("Geometric Placement") then return end
 	local config_options = KnownModIndex:LoadModConfigurationOptions(KnownModIndex:GetModActualName("Geometric Placement"), TheNet:GetIsClient())
     -- I don't Know Why, But Below Code is Necessary, Believe me.
     if type(config_options) == "table" then

@@ -82,7 +82,7 @@ description = Language_En and [[
 ]]
 
 author = "程小黑OvO"
-version = "0.1.10"
+version = "0.1.11"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
@@ -316,6 +316,27 @@ configuration_options = {
 			}
 		},
 		default = true
+	},
+	{
+		name = "interaction_target_detect_radius",
+		label = Language_En and "Detection Radius" or "检测半径",
+		hover = Language_En and "Adjust the Detection Radius of Interactable Items Detection."..
+							" Note: The Larger the Detection Radius, The Smaller the Detection Angle."
+							or "调整检测附近可交互物品时的检测半径。注意：检测半径越大，检测夹角越小。",
+		options = {
+			{ description = "6 (Default)", data = 6,  hover = ""},
+			{ description = "9",           data = 9,  hover = ""},
+			{ description = "12",          data = 12, hover = ""},
+			{ description = "15",          data = 15, hover = ""},
+			{ description = "18",          data = 18, hover = ""},
+			{ description = "21",          data = 21, hover = ""},
+			{ description = "24",          data = 24, hover = ""},
+			{ description = "27",          data = 27, hover = ""},
+			{ description = "30",          data = 30, hover = ""},
+			{ description = "33",          data = 33, hover = ""},
+			{ description = "36",          data = 36, hover = ""}
+		},
+		default = 6
 	},
 
 	{name = "Title", label = Language_En and "Force Control Settings" or "强制操作设置", options = {{description = "", data = ""}}, default = ""},

@@ -31,7 +31,7 @@ AddComponentPostInit("reticule", function(self)
 
     local OnCameraUpdate_Old = self.OnCameraUpdate
     self.OnCameraUpdate = function (self, dt, ...)
-        if not (self.inst:HasTag("boat") or self.inst:HasTag("boatcannon")) then
+        if not (self.inst:HasTag("boat") or self.inst:HasTag("boatcannon") or self.inst.prefab == "winona") then
             if not self.origin_twinstickmode and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                 self.twinstickmode = 1
                 self.twinstickrange = self.twinstickrange or 8  -- default is 8

@@ -19,8 +19,8 @@ AddClassPostConstruct("screens/playerhud", function(self)
         if down then
             if control == CONTROL_INSPECT then
                 if not TryTriggerMappingKey(self.owner,
-                    not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and CHANGE_IS_LOCK_TARGET_QUICKLY) and CHANGE_MAPPING_LB_Y or false,
-                    not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and CHANGE_IS_LOCK_TARGET_QUICKLY) and CHANGE_MAPPING_RB_Y or false,
+                    not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and (CHANGE_IS_FORCE_ATTACK or CHANGE_IS_LOCK_TARGET_QUICKLY)) and CHANGE_MAPPING_LB_Y or false,
+                    not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and (CHANGE_IS_FORCE_ATTACK or CHANGE_IS_LOCK_TARGET_QUICKLY)) and CHANGE_MAPPING_RB_Y or false,
                     CHANGE_MAPPING_LB_RB_Y, true) then
                     if self.controls.votedialog:CheckControl(control, down) then
                         return true

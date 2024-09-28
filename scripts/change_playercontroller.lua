@@ -278,14 +278,13 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 	end
 
-	local IsControllerTargetingModifierDown_Old = self.IsControllerTargetingModifierDown
-	self.IsControllerTargetingModifierDown = function (self, ...)
-		local result = IsControllerTargetingModifierDown_Old(self, ...)
-		if result and CHANGE_IS_LOCK_TARGET_QUICKLY and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) then
-			self.controller_targeting_lock_timer = self.controller_targeting_lock_timer and self.controller_targeting_lock_timer + 0.9 or 0.9
-			return result
+	local ControllerTargetLock_Old = self.ControllerTargetLock
+	self.ControllerTargetLock = function (self, ...)
+		if self:IsControllerTargetLockEnabled() then
+			ControllerTargetLock_Old(self, false)
+		else
+			ControllerTargetLock_Old(self, true)
 		end
-		return result
 	end
 
 	local GetInspectButtonAction_Old = self.GetInspectButtonAction
@@ -298,11 +297,16 @@ AddComponentPostInit("playercontroller", function(self)
 		-- do this first in order to not lose an up/down and get out of sync
 		if control == CONTROL_TARGET_MODIFIER then
 			self.controller_targeting_modifier_down = down
-			if down then
+			if down and not CHANGE_IS_LOCK_TARGET_QUICKLY then
 				self.controller_targeting_lock_timer = 0.0
 			else
 				self.controller_targeting_lock_timer = nil
 			end
+		end
+
+		if down and control == CONTROL_TARGET_MODIFIER and CHANGE_FORCE_BUTTON
+			and CHANGE_IS_LOCK_TARGET_QUICKLY and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
+			self:ControllerTargetLock()
 		end
 
 		if IsPaused() then
@@ -350,11 +354,10 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		elseif control == CONTROL_CANCEL then
 			self:CancelPlacement()
-			self:ControllerTargetLock(false)
 		elseif control == CONTROL_INSPECT then
 			if not TryTriggerMappingKey(self.inst,
-				not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and CHANGE_IS_LOCK_TARGET_QUICKLY) and CHANGE_MAPPING_LB_Y or false,
-				not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and CHANGE_IS_LOCK_TARGET_QUICKLY) and CHANGE_MAPPING_RB_Y or false,
+				not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and (CHANGE_IS_FORCE_ATTACK or CHANGE_IS_LOCK_TARGET_QUICKLY)) and CHANGE_MAPPING_LB_Y or false,
+				not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and (CHANGE_IS_FORCE_ATTACK or CHANGE_IS_LOCK_TARGET_QUICKLY)) and CHANGE_MAPPING_RB_Y or false,
 				CHANGE_MAPPING_LB_RB_Y, false) then
 				self:DoInspectButton()
 			end
@@ -371,8 +374,14 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif self.controller_targeting_modifier_down then
 			if control == CONTROL_TARGET_CYCLE_BACK then
 				self:CycleControllerAttackTargetBack()
+				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
+					self.controller_targeting_lock_timer = 0.0
+				end
 			elseif control == CONTROL_TARGET_CYCLE_FORWARD then
 				self:CycleControllerAttackTargetForward()
+				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
+					self.controller_targeting_lock_timer = 0.0
+				end
 			end
 		elseif self.inst.replica.inventory:IsVisible() then
 			local inv_obj = self:GetCursorInventoryObject()
@@ -524,7 +533,7 @@ AddComponentPostInit("playercontroller", function(self)
 		local ocean_fishing_target = (equiped_item ~= nil and equiped_item.replica.oceanfishingrod ~= nil) and equiped_item.replica.oceanfishingrod:GetTarget() or nil
 
 		local min_rad = 1.5
-		local max_rad = 6
+		local max_rad = CHANGE_INTERACTION_TARGET_DETECT_RADIUS  -- default: 6
 		local min_rad_sq = min_rad * min_rad
 		local max_rad_sq = max_rad * max_rad
 
@@ -609,8 +618,12 @@ AddComponentPostInit("playercontroller", function(self)
 						local dist = dsq > 0 and math.sqrt(dsq) or 0
 						local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
 
-						--keep the angle component between [0..1]
-						local angle_component = (dot + 1) / 2
+						local _k = (1/4) * max_rad - 1
+						local _y = _k * (dot - 1) + 1
+						local angle_component = _y > 0 and _y or 0   -- finally, angle component still between [0..1]
+
+						-- --keep the angle component between [0..1]
+						-- local angle_component = (dot + 1) / 2
 
 						--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
 						local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
@@ -1063,9 +1076,6 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif self:IsAOETargeting() then
 			self:CancelAOETargeting()
 			return
-		elseif self:IsControllerTargetLockEnabled() then
-			self:ControllerTargetLock(false)
-			return
 		end
 
 		self.actionholdtime = GetTime()
@@ -1173,7 +1183,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 	local DoControllerAltActionButton_New_Old = DoControllerAltActionButton_New
 	self.DoControllerAltActionButton = function (self, ...)
-		if TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) and self:TryWidgetButtonFunction(true) then
+		if CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and self:TryWidgetButtonFunction(true) then
 			return
 		end
 		DoControllerAltActionButton_New_Old(self, ...)
@@ -1398,4 +1408,5 @@ AddComponentPostInit("playercontroller", function(self)
 		ToggleController_Old(self, val, ...)
 		self.inst.HUD.controls.inv.rebuild_pending = true
 	end
+
 end)

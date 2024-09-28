@@ -138,6 +138,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             local Y_shown = false
             local B_shown = false
             local X_shown = false
+            local Unlock_shown = false
             local not_force = CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_PING_RETICULE and not TheInput:IsControlPressed(CHANGE_FORCE_BUTTON)
             local playercontroller_reticule = self.owner.components.playercontroller.reticule
             local is_reticule = playercontroller_reticule ~= nil and playercontroller_reticule.reticule ~= nil and playercontroller_reticule.reticule.entity:IsVisible()
@@ -166,7 +167,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             else
                 local aoetargeting = self.owner.components.playercontroller:IsAOETargeting()
                 if ground_r ~= nil then
-                    if ground_r.action ~= ACTIONS.CASTAOE and not self.owner.components.playercontroller:IsControllerTargetLocked() and not (not_force and is_reticule) then
+                    if ground_r.action ~= ACTIONS.CASTAOE and not (not_force and is_reticule) then
                         table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                         B_shown = true
                     elseif aoetargeting then
@@ -215,7 +216,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 local widget = cooker_type_container.replica.container:GetWidget()
                 local cooker_type_container_widget = self.containers[cooker_type_container]
                 if cooker_type_container_widget ~= nil and cooker_type_container_widget.button ~= nil then
-                    if TheInput:IsControlPressed(CHANGE_FORCE_BUTTON or CHANGE_CONTROL_LEFT) and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    if CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
                         B_shown = true
                         cooker_type_container_widget.button:Show()
                         cooker_type_container_widget.button.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. widget.buttoninfo.text)
@@ -237,7 +238,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
             if not isplacing and r == nil and alt_r == nil and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
-                if not B_shown and ground_r ~= nil and not self.owner.components.playercontroller:IsControllerTargetLocked() and not (not_force and is_reticule)then
+                if not B_shown and ground_r ~= nil and not (not_force and is_reticule)then
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                     B_shown = true
                     self.groundactionhint:Show()
@@ -278,13 +279,15 @@ AddClassPostConstruct("widgets/controls", function(self)
                     table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. action_string_from_keyboard .. l:GetActionString())
                     A_shown = true
                 end
-                if not B_shown and controller_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
-                    B_shown = true
-                end
-                if not B_shown and r ~= nil and controller_target == controller_alt_target and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+                if not B_shown and r ~= nil and controller_target == controller_alt_target then
                     table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. r:GetActionString())
                     B_shown = true
+                end
+                if not Unlock_shown and controller_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    table.insert(cmds, CHANGE_IS_LOCK_TARGET_QUICKLY
+                        and TheInput:GetLocalizedControl(controller_id, CHANGE_FORCE_BUTTON) .."+".. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET
+                        or STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    Unlock_shown = true
                 end
                 if controller_target.quagmire_shoptab ~= nil then
                     for k, v in pairs(self.craftingmenu.tabs.shown) do
@@ -323,7 +326,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
                     controller_alt_target:HasTag("inspectable") then
                     local actionstr =
-                        CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_target) and
+                        CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_alt_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
                         STRINGS.UI.HUD.INSPECT
                     table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
@@ -334,13 +337,15 @@ AddClassPostConstruct("widgets/controls", function(self)
                     table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
                     X_shown = true
                 end
-                if not B_shown and controller_alt_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
-                    B_shown = true
-                end
-                if not B_shown and alt_r ~= nil and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+                if not B_shown and alt_r ~= nil then
                     table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. alt_r:GetActionString())
                     B_shown = true
+                end
+                if not Unlock_shown and controller_alt_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    table.insert(alt_cmds, CHANGE_IS_LOCK_TARGET_QUICKLY
+                        and TheInput:GetLocalizedControl(controller_id, CHANGE_FORCE_BUTTON) .."+".. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET
+                        or STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    Unlock_shown = true
                 end
 
                 if #alt_cmds > 1 then
@@ -356,7 +361,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 self.playeraltactionhint:SetTarget(nil)
             end
 
-            if not B_shown and not self.groundactionhint.shown and not self.owner.components.playercontroller:IsControllerTargetLocked() then
+            if not B_shown and not self.groundactionhint.shown then
                 if self.dismounthintdelay <= 0
                     and self.owner.replica.rider ~= nil
                     and self.owner.replica.rider:IsRiding() then
@@ -386,7 +391,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
                     controller_attack_target:HasTag("inspectable") then
                     local actionstr =
-                        CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_target) and
+                        CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_attack_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
                         STRINGS.UI.HUD.INSPECT
                     table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
@@ -396,9 +401,11 @@ AddClassPostConstruct("widgets/controls", function(self)
                     table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
                     X_shown = true
                 end
-                if not B_shown and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
-                    B_shown = true
+                if not Unlock_shown and self.owner.components.playercontroller:IsControllerTargetLocked() then
+                    table.insert(attack_cmds, CHANGE_IS_LOCK_TARGET_QUICKLY
+                        and TheInput:GetLocalizedControl(controller_id, CHANGE_FORCE_BUTTON) .."+".. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET
+                        or STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    Unlock_shown = true
                 end
 
                 if #attack_cmds > 1 then

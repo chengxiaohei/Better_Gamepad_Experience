@@ -38,6 +38,7 @@ CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = GetModConfigData("change_craftingmenu
 CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM = GetModConfigData("change_wheel")
 CHANGE_IS_FORBID_Y_INSPECT_SELF = GetModConfigData("forbid_inspect_self")
 CHANGE_IS_ATTACK_ALL_DIRECTION = GetModConfigData("attack_all_direction")
+CHANGE_INTERACTION_TARGET_DETECT_RADIUS = GetModConfigData("interaction_target_detect_radius")
 
 CHANGE_IS_REVERSE_CAMERA_ROTATION = GetModConfigData("reverse_rotation")
 CHANGE_IS_REVERSE_CAMERA_ZOOM     = GetModConfigData("reverse_zoom")

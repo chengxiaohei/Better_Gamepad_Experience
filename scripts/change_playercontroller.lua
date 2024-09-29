@@ -340,6 +340,20 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
+		if self.controller_targeting_modifier_down then
+			if control == CONTROL_TARGET_CYCLE_BACK then
+				self:CycleControllerAttackTargetBack()
+				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
+					self.controller_targeting_lock_timer = 0.0
+				end
+			elseif control == CONTROL_TARGET_CYCLE_FORWARD then
+				self:CycleControllerAttackTargetForward()
+				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
+					self.controller_targeting_lock_timer = 0.0
+				end
+			end
+		end
+
 		if not isenabled then
 			return
 		end
@@ -370,18 +384,6 @@ AddComponentPostInit("playercontroller", function(self)
 				self.attack_buffer = CONTROL_CONTROLLER_ATTACK
 			else
 				self:DoControllerAttackButton()
-			end
-		elseif self.controller_targeting_modifier_down then
-			if control == CONTROL_TARGET_CYCLE_BACK then
-				self:CycleControllerAttackTargetBack()
-				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
-					self.controller_targeting_lock_timer = 0.0
-				end
-			elseif control == CONTROL_TARGET_CYCLE_FORWARD then
-				self:CycleControllerAttackTargetForward()
-				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
-					self.controller_targeting_lock_timer = 0.0
-				end
 			end
 		elseif self.inst.replica.inventory:IsVisible() then
 			local inv_obj = self:GetCursorInventoryObject()

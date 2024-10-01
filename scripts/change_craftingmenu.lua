@@ -135,11 +135,11 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
                     control = CONTROL_ACCEPT
                 end
             end
-            if down and control == CONTROL_INVENTORY_USEONSCENE and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+            if down and control == CONTROL_INVENTORY_USEONSCENE and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                 self:GoToPrevPage()
                 return true
             end
-            if down and control == CONTROL_INVENTORY_USEONSELF and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT)  then
+            if down and control == CONTROL_INVENTORY_USEONSELF and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)  then
                 self:GoToNextPage()
                 return true
             end
@@ -290,7 +290,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
                                 self:SetRecipe(recipe_name, skin_name)
                                 self.craftingmenu.craftingmenu.details_root:UpdateBuildButton(self)
                                 return true 
-                            elseif control == CONTROL_INVENTORY_USEONSELF and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+                            elseif control == CONTROL_INVENTORY_USEONSELF and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                                 if self.recipe_name ~= nil then
                                     local new_skin = self:GetPrevSkin(self.skin_name)
                                     if new_skin ~= self.skin_name then
@@ -301,7 +301,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
                                     end
                                     return true
                                 end
-                            elseif control == CONTROL_INVENTORY_USEONSCENE and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+                            elseif control == CONTROL_INVENTORY_USEONSCENE and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                                 if self.recipe_name ~= nil then
                                     local new_skin = self:GetNextSkin(self.skin_name)
                                     if new_skin ~= self.skin_name then
@@ -324,12 +324,12 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
     local RefreshCraftingHelpText_Old = self.RefreshCraftingHelpText
     local RefreshCraftingHelpText_New = function(self, controller_id, ...)
         local t = {}
-        if self.recipe_name ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+        if self.recipe_name ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
             local prev_skin = self:GetPrevSkin(self.skin_name)
             if prev_skin ~= self.skin_name then
                 table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.TOGGLE.." "..STRINGS.UI.LOBBYSCREEN.SKINS)
             end
-        elseif TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+        elseif TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
             table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..STRINGS.UI.HELP.PREVPAGE)
             table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.NEXTPAGE)
         end
@@ -348,12 +348,12 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
             return RefreshCraftingHelpText_New(self, controller_id, ...)
         else
             local t = {}
-            if self.recipe_name ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+            if self.recipe_name ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                 local prev_skin = self:GetPrevSkin(self.skin_name)
                 if prev_skin ~= self.skin_name then
                     table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.TOGGLE.." "..STRINGS.UI.LOBBYSCREEN.SKINS)
                 end
-            elseif TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+            elseif TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                 table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE).." "..STRINGS.UI.HELP.PREVPAGE)
                 table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF).." "..STRINGS.UI.HELP.NEXTPAGE)
             end

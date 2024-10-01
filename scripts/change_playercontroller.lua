@@ -341,7 +341,9 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 
 		if self.controller_targeting_modifier_down then
-			if control == CONTROL_TARGET_CYCLE_BACK then
+			if not down then
+				-- do nothing
+			elseif control == CONTROL_TARGET_CYCLE_BACK then
 				self:CycleControllerAttackTargetBack()
 				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
 					self.controller_targeting_lock_timer = 0.0

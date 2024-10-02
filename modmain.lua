@@ -42,7 +42,6 @@ CHANGE_INTERACTION_TARGET_DETECT_RADIUS = GetModConfigData("interaction_target_d
 
 CHANGE_IS_REVERSE_CAMERA_ROTATION = GetModConfigData("reverse_rotation")
 CHANGE_IS_REVERSE_CAMERA_ZOOM     = GetModConfigData("reverse_zoom")
-CHANGE_IS_REVERSE_CAMERA_ROTATION_MINIMAP = GetModConfigData("reverse_rotation_minimap")
 
 CHANGE_MAPPING_LB_LT = GetModConfigData("MAPPING_LB_LT")
 CHANGE_MAPPING_RB_LT = GetModConfigData("MAPPING_RB_LT")

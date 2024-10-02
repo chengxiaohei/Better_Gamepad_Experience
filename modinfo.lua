@@ -201,39 +201,6 @@ configuration_options = {
 		},
 		default = false
 	},
-	{
-		name = "reverse_rotation_minimap",
-		label = Language_En and "Reverse Map Rotation" or "反转地图旋转",
-		hover = Language_En and "Reverse Map Rotation" or "反转地图旋转",
-		options = {
-			{
-				description = "No (Default)",
-				data = false,
-				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.." Rotate Map Left, Use "..GamepadButtons.Right_Bumper.." Rotate Map Right."
-									or "使用 "..GamepadButtons.Left_Bumper.." 向左旋转地图，使用 "..GamepadButtons.Right_Bumper.." 向右旋转地图。"
-			},
-			{
-				description = "Yes",
-				data = true,
-				hover = Language_En and "Use "..GamepadButtons.Right_Bumper.." Rotate Map Left, Use "..GamepadButtons.Left_Bumper.." Rotate Map Right."
-									or "使用 "..GamepadButtons.Right_Bumper.." 向左旋转地图，使用 "..GamepadButtons.Left_Bumper.." 向右旋转地图。"
-			},
-		},
-		default = false
-	},
-	{
-		name = "reverse_zoom_minimap",
-		label = Language_En and "Reverse Map Zoom" or "反转地图缩放",
-		hover = Language_En and "Setting \"Map Zoom In\" and \"Map Zoom Out\" Control Button in Control Settings Page of Original Game." or "在原版游戏的控制设置页面设置\"地图放大\"和\"地图缩小\"按键映射即可。",
-		options = {
-			{
-				description = "None (Default)",
-				data = false,
-				hover = ""
-			},
-		},
-		default = false
-	},
 
 	{name = "Title", label = Language_En and "Player Control Settings" or "角色控制设置", options = {{description = "", data = ""}}, default = ""},
 	{

@@ -382,10 +382,24 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif control == CONTROL_CONTROLLER_ACTION then
 			self:DoControllerActionButton()
 		elseif control == CONTROL_CONTROLLER_ATTACK then
-			if self.ismastersim then
-				self.attack_buffer = CONTROL_CONTROLLER_ATTACK
+			local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			local attack_target = self:GetControllerAttackTarget()
+			if attack_target and equiped_item and equiped_item.controller_should_use_attack_target then
+				if CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
+					if self.ismastersim then
+						self.attack_buffer = CONTROL_CONTROLLER_ATTACK
+					else
+						self:DoControllerAttackButton()
+					end
+				else
+					self:DoControllerAltActionButton(attack_target)
+				end
 			else
-				self:DoControllerAttackButton()
+				if self.ismastersim then
+					self.attack_buffer = CONTROL_CONTROLLER_ATTACK
+				else
+					self:DoControllerAttackButton()
+				end
 			end
 		elseif self.inst.replica.inventory:IsVisible() then
 			local inv_obj = self:GetCursorInventoryObject()
@@ -1067,8 +1081,7 @@ AddComponentPostInit("playercontroller", function(self)
 		return self.controller_alt_target ~= nil and self.controller_alt_target:IsValid() and self.controller_alt_target or nil
 	end
 
-	-- Only Change One Line
-	local DoControllerAltActionButton_New = function (self, ...)
+	local DoControllerAltActionButton_New = function (self, target, ...)
 		self:ClearActionHold()
 
 		if self.placer_recipe ~= nil then
@@ -1092,7 +1105,7 @@ AddComponentPostInit("playercontroller", function(self)
 		if act == nil or (act ~= nil and obj == nil and not_force and is_reticule) then
 			-- ========================================================================= --
 			-- obj = self:GetControllerTarget()
-			obj = self:GetControllerAltTarget()
+			obj = target or self:GetControllerAltTarget()
 			-- ========================================================================= --
 			if obj ~= nil then
 				lmb, act = self:GetSceneItemControllerAction(obj)

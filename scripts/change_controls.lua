@@ -195,6 +195,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             local controller_target = self.owner.components.playercontroller:GetControllerTarget()
             local controller_alt_target = self.owner.components.playercontroller:GetControllerAltTarget()
             local controller_attack_target = self.owner.components.playercontroller:GetControllerAttackTarget()
+            local equiped_item = self.owner.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
             local l, r
             if controller_target ~= nil then
                 l, r = self.owner.components.playercontroller:GetSceneItemControllerAction(controller_target)
@@ -208,6 +209,11 @@ AddClassPostConstruct("widgets/controls", function(self)
             local alt_l, alt_r
             if controller_alt_target ~= nil then
                 alt_l, alt_r = self.owner.components.playercontroller:GetSceneItemControllerAction(controller_alt_target)
+            end
+
+            local atk_l, atk_r
+            if controller_attack_target ~= nil then
+                atk_l, atk_r = self.owner.components.playercontroller:GetSceneItemControllerAction(controller_attack_target)
             end
 
             -- Show cooker type container force interaction
@@ -272,7 +278,12 @@ AddClassPostConstruct("widgets/controls", function(self)
                     Y_shown = true
                 end
                 if not X_shown and controller_target == controller_attack_target then
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and
+                        not (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2)) then
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. r:GetActionString())
+                    else
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    end
                     X_shown = true
                 end
                 if not A_shown and l ~= nil then
@@ -334,7 +345,12 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
 
                 if not X_shown and controller_alt_target == controller_attack_target then
-                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and
+                        not (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2)) then
+                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. alt_r:GetActionString())
+                    else
+                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    end
                     X_shown = true
                 end
                 if not B_shown and alt_r ~= nil then
@@ -398,7 +414,12 @@ AddClassPostConstruct("widgets/controls", function(self)
                     Y_shown = true
                 end
                 if not X_shown then
-                    table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and
+                        not (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2)) then
+                        table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. atk_r:GetActionString())
+                    else
+                        table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                    end
                     X_shown = true
                 end
                 if not Unlock_shown and self.owner.components.playercontroller:IsControllerTargetLocked() then

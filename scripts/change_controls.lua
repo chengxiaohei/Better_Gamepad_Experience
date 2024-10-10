@@ -149,33 +149,39 @@ AddClassPostConstruct("widgets/controls", function(self)
                     self.groundactionhint:Show()
                     self.groundactionhint:SetTarget(self.owner.components.playercontroller.deployplacer)
 
-                    if self.owner.components.playercontroller.deployplacer.components.placer.can_build then
+                    if not A_shown and self.owner.components.playercontroller.deployplacer.components.placer.can_build then
                         self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. self.owner.components.playercontroller.deployplacer.components.placer:GetDeployAction():GetActionString().."\n"..TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
-                    else
+                        A_shown = true
+                    elseif not B_shown then
                         self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                        B_shown = true
                     end
 
                 elseif self.owner.components.playercontroller.placer ~= nil then
                     self.groundactionhint:Show()
                     self.groundactionhint:SetTarget(self.owner.components.playercontroller.placer)
-                    if self.owner.components.playercontroller.placer.components.placer.can_build then
+                    if not A_shown and self.owner.components.playercontroller.placer.components.placer.can_build then
                         self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. STRINGS.UI.HUD.BUILD.."\n" .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. STRINGS.UI.HUD.CANCEL.."\n")
-                    else
+                        A_shown = true
+                    elseif not B_shown then
                         self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. STRINGS.UI.HUD.CANCEL.."\n")
+                        B_shown = true
                     end
                 end
             else
                 local aoetargeting = self.owner.components.playercontroller:IsAOETargeting()
                 if ground_r ~= nil then
-                    if ground_r.action ~= ACTIONS.CASTAOE and not (not_force and is_reticule) then
+                    if not B_shown and ground_r.action ~= ACTIONS.CASTAOE and self.owner.replica.inventory:GetActiveItem() == nil and not (not_force and is_reticule) then
                         table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                         B_shown = true
-                    elseif aoetargeting then
+                    elseif not A_shown and aoetargeting then
                         table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_r:GetActionString())
+                        A_shown = true
                     end
                 end
-                if aoetargeting then
+                if not B_shown and aoetargeting then
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                    B_shown = true
                 end
                 if #ground_cmds > 0 then
                     self.groundactionhint:Show()
@@ -222,7 +228,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 local widget = cooker_type_container.replica.container:GetWidget()
                 local cooker_type_container_widget = self.containers[cooker_type_container]
                 if cooker_type_container_widget ~= nil and cooker_type_container_widget.button ~= nil then
-                    if CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
+                    if not B_shown and CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
                         B_shown = true
                         cooker_type_container_widget.button:Show()
                         cooker_type_container_widget.button.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. widget.buttoninfo.text)
@@ -234,7 +240,7 @@ AddClassPostConstruct("widgets/controls", function(self)
 
             if not isplacing and l == nil and alt_l == nil and ground_l == nil then
                 ground_l = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, false)
-                if ground_l ~= nil then
+                if not A_shown and ground_l ~= nil then
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_l:GetActionString())
                     A_shown = true
                     self.groundactionhint:Show()
@@ -244,7 +250,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
             if not isplacing and r == nil and alt_r == nil and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
-                if not B_shown and ground_r ~= nil and not (not_force and is_reticule)then
+                if not B_shown and ground_r ~= nil and self.owner.replica.inventory:GetActiveItem() == nil and not (not_force and is_reticule) then
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                     B_shown = true
                     self.groundactionhint:Show()
@@ -264,11 +270,13 @@ AddClassPostConstruct("widgets/controls", function(self)
                 local adjective = controller_target:GetAdjective()
                 table.insert(cmds, adjective ~= nil and (adjective.." "..controller_target:GetDisplayName()) or controller_target:GetDisplayName())
 
-                if (self.owner.CanExamine == nil or self.owner:CanExamine()) and
+                if not Y_shown and (self.owner.CanExamine == nil or self.owner:CanExamine()) and
                     --V2C: Closing the avatar popup takes priority
                     not self.owner.HUD:IsPlayerAvatarPopUpOpen() and
-                    (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
-                    (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
+                    (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle")
+                        or self.owner.sg:HasStateTag("attack") or self.owner.sg:HasStateTag("doing") or self.owner.sg:HasStateTag("working") or self.owner.sg:HasStateTag("channeling")) and
+                    (self.owner:HasTag("moving") or self.owner:HasTag("idle")
+                        or self.owner:HasTag("attack") or self.owner:HasTag("doing") or self.owner:HasTag("working") or self.owner:HasTag("channeling")) and
                     controller_target:HasTag("inspectable") then
                     local actionstr =
                         CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_target) and
@@ -333,9 +341,11 @@ AddClassPostConstruct("widgets/controls", function(self)
                 if not Y_shown and (self.owner.CanExamine == nil or self.owner:CanExamine()) and
                     --V2C: Closing the avatar popup takes priority
                     not self.owner.HUD:IsPlayerAvatarPopUpOpen() and
-                    (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
-                    (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
-                    controller_alt_target:HasTag("inspectable") then
+                    (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle")
+                        or self.owner.sg:HasStateTag("attack") or self.owner.sg:HasStateTag("doing") or self.owner.sg:HasStateTag("working") or self.owner.sg:HasStateTag("channeling")) and
+                    (self.owner:HasTag("moving") or self.owner:HasTag("idle")
+                        or self.owner:HasTag("attack") or self.owner:HasTag("doing") or self.owner:HasTag("working") or self.owner:HasTag("channeling")) and
+                    controller_target:HasTag("inspectable") then
                     local actionstr =
                         CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_alt_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
@@ -403,9 +413,11 @@ AddClassPostConstruct("widgets/controls", function(self)
                 if not Y_shown and (self.owner.CanExamine == nil or self.owner:CanExamine()) and
                     --V2C: Closing the avatar popup takes priority
                     not self.owner.HUD:IsPlayerAvatarPopUpOpen() and
-                    (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle") or self.owner.sg:HasStateTag("channeling")) and
-                    (self.owner:HasTag("moving") or self.owner:HasTag("idle") or self.owner:HasTag("channeling")) and
-                    controller_attack_target:HasTag("inspectable") then
+                    (self.owner.sg == nil or self.owner.sg:HasStateTag("moving") or self.owner.sg:HasStateTag("idle")
+                        or self.owner.sg:HasStateTag("attack") or self.owner.sg:HasStateTag("doing") or self.owner.sg:HasStateTag("working") or self.owner.sg:HasStateTag("channeling")) and
+                    (self.owner:HasTag("moving") or self.owner:HasTag("idle")
+                        or self.owner:HasTag("attack") or self.owner:HasTag("doing") or self.owner:HasTag("working") or self.owner:HasTag("channeling")) and
+                    controller_target:HasTag("inspectable") then
                     local actionstr =
                         CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_attack_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or

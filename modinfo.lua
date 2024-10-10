@@ -82,7 +82,7 @@ description = Language_En and [[
 ]]
 
 author = "程小黑OvO"
-version = "0.1.12"
+version = "0.1.13"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"

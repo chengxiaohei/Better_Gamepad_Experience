@@ -287,9 +287,17 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 	end
 
-	local GetInspectButtonAction_Old = self.GetInspectButtonAction
 	self.GetInspectButtonAction = function (self, target, ...)
-		return GetInspectButtonAction_Old(self, target or self:GetControllerAltTarget() or self:GetControllerAttackTarget(), ...)
+		target = target or self:GetControllerAltTarget() or self:GetControllerAttackTarget()
+		return target ~= nil and
+			target:HasTag("inspectable") and
+			(self.inst.CanExamine == nil or self.inst:CanExamine()) and
+			(self.inst.sg == nil or self.inst.sg:HasStateTag("moving") or self.inst.sg:HasStateTag("idle")
+				or self.inst.sg:HasStateTag("attack") or self.inst.sg:HasStateTag("doing") or self.inst.sg:HasStateTag("working") or self.inst.sg:HasStateTag("channeling")) and
+			(self.inst:HasTag("moving") or self.inst:HasTag("idle")
+				or self.inst:HasTag("attack") or self.inst:HasTag("doing") or self.inst:HasTag("working") or self.inst:HasTag("channeling")) and
+			BufferedAction(self.inst, target, ACTIONS.LOOKAT) or
+			nil
 	end
 
 	local OnControl_Old = self.OnControl
@@ -570,8 +578,10 @@ AddComponentPostInit("playercontroller", function(self)
 		local target_score = 0
 		local canexamine = (self.inst.CanExamine == nil or self.inst:CanExamine())
 					and (not self.inst.HUD:IsPlayerAvatarPopUpOpen())
-					and (self.inst.sg == nil or self.inst.sg:HasStateTag("moving") or self.inst.sg:HasStateTag("idle") or self.inst.sg:HasStateTag("channeling"))
-					and (self.inst:HasTag("moving") or self.inst:HasTag("idle") or self.inst:HasTag("channeling"))
+					and (self.inst.sg == nil or self.inst.sg:HasStateTag("moving") or self.inst.sg:HasStateTag("idle") or
+						self.inst.sg:HasStateTag("attack") or self.inst.sg:HasStateTag("doing") or self.inst.sg:HasStateTag("working") or self.inst.sg:HasStateTag("channeling"))
+					and (self.inst:HasTag("moving") or self.inst:HasTag("idle") or
+						self.inst:HasTag("attack") or self.inst:HasTag("doing") or self.inst:HasTag("working") or self.inst:HasTag("channeling"))
 
 		local onboat = self.inst:GetCurrentPlatform() ~= nil
 		local anglemax = onboat and TUNING.CONTROLLER_BOATINTERACT_ANGLE or TUNING.CONTROLLER_INTERACT_ANGLE

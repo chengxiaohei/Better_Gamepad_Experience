@@ -505,13 +505,21 @@ AddComponentPostInit("playercontroller", function(self)
 	local TARGET_EXCLUDE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "stealth"}
 	local REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS = TheSim:RegisterFindTags({ "_combat" }, TARGET_EXCLUDE_TAGS)
 
-	-- Numerous changes
 	local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
 		if self.placer ~= nil or (self.deployplacer ~= nil and self.deploy_mode) or self.inst:HasTag("usingmagiciantool") then
 			self.controller_target = nil
+			self.controller_target_action = nil
 			self.controller_target_age = 0
-			self.controller_alt_target = nil
-			self.controller_alt_target_age = 0
+			return
+		end
+
+		if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
+			local action = self:GetActionButtonAction()
+			if action ~= nil and action.target ~= nil then
+				self.controller_target = action.target
+				self.controller_target_action = action
+				self.controller_target_age = 0
+			end
 			return
 		end
 
@@ -525,19 +533,8 @@ AddComponentPostInit("playercontroller", function(self)
 			--it went invalid, but we're not resetting the age yet
 		end
 
-		if self.controller_alt_target ~= nil
-			and (not self.controller_alt_target:IsValid() or
-				self.controller_alt_target:HasTag("INLIMBO") or
-				self.controller_alt_target:HasTag("NOCLICK") or
-				not CanEntitySeeTarget(self.inst, self.controller_alt_target)) then
-			--"FX" and "DECOR" tag should never change, should be safe to skip that check
-			self.controller_alt_target = nil
-			--it went invalid, but we're not resetting the age yet
-		end
-
 		self.controller_target_age = self.controller_target_age + dt
-		self.controller_alt_target_age = self.controller_alt_target_age + dt
-		if self.controller_target_age < .2 and self.controller_alt_target_age < .2 then
+		if self.controller_target_age < .2 then
 			--prevent target flickering
 			return
 		end
@@ -556,36 +553,21 @@ AddComponentPostInit("playercontroller", function(self)
 		local max_rad_sq = max_rad * max_rad
 
 		local target_rad =
-				self.controller_target ~= nil and
+				self.controller_target ~= nil and self.controller_target_action ~= nil and
 				math.max(min_rad, math.min(max_rad, math.sqrt(self.inst:GetDistanceSqToInst(self.controller_target)))) or
 				max_rad
-		local alt_target_rad =
-				self.controller_alt_target ~= nil and
-				math.max(min_rad, math.min(max_rad, math.sqrt(self.inst:GetDistanceSqToInst(self.controller_alt_target)))) or
-				max_rad
 		local target_rad_sq = target_rad * target_rad + .1 --allow small error
-		local alt_target_rad_sq = alt_target_rad * alt_target_rad + .1 --allow small error
 
-		local nearby_ents = TheSim:FindEntities(x, y, z, fishing and max_rad or math.max(target_rad, alt_target_rad), nil, TARGET_EXCLUDE_TAGS)
-
-		--Note: it may already contain controller_target,
-		--      so make sure to handle it only once later
-		if self.controller_target ~= nil and self.controller_alt_target ~= nil then
-			if self.controller_target ~= self.controller_alt_target then
-				table.insert(nearby_ents, 1, self.controller_alt_target)
-			end
+		local nearby_ents = TheSim:FindEntities(x, y, z, fishing and max_rad or target_rad, nil, TARGET_EXCLUDE_TAGS)
+		if self.controller_target ~= nil then
+			--Note: it may already contain controller_target,
+			--      so make sure to handle it only once later
 			table.insert(nearby_ents, 1, self.controller_target)
-		elseif self.controller_target ~= nil or self.controller_alt_target ~= nil then
-			table.insert(nearby_ents, 1, self.controller_target or self.controller_alt_target)
 		end
 
 		local target = nil
+		local target_action = nil
 		local target_score = 0
-		local alt_target = nil
-		local alt_target_score = 0
-		local examine_target = nil
-		local examine_target_score = 0
-		local alt_target_has_found = false
 		local canexamine = (self.inst.CanExamine == nil or self.inst:CanExamine())
 					and (not self.inst.HUD:IsPlayerAvatarPopUpOpen())
 					and (self.inst.sg == nil or self.inst.sg:HasStateTag("moving") or self.inst.sg:HasStateTag("idle") or self.inst.sg:HasStateTag("channeling"))
@@ -598,11 +580,181 @@ AddComponentPostInit("playercontroller", function(self)
 			if v ~= ocean_fishing_target then
 
 				--Only handle controller_target if it's the one we added at the front
-				if v ~= self.inst and (v ~= self.controller_target or i == 1) and (v ~= self.controller_alt_target or i == 1 or i == 2) and v.entity:IsVisible() then
+				if v ~= self.inst and (v ~= self.controller_target or i == 1) and v.entity:IsVisible() then
+
+					-- Calculate the dsq to filter out objects, ignoring the y component for now.
+					local x1, y1, z1 = v.Transform:GetWorldPosition()
+					local dx, dy, dz = x1 - x, y1 - y, z1 - z
+					local dsq = dx * dx + dz * dz
+
+					if fishing and v:HasTag("fishable") then
+						local r = v:GetPhysicsRadius(0)
+						if dsq <= r * r then
+							dsq = 0
+						end
+					end
+
+					if (dsq < min_rad_sq
+						or (dsq <= target_rad_sq
+							and (v == self.controller_target or
+								v == self.controller_attack_target or
+								dx * dirx + dz * dirz > 0))) and
+						CanEntitySeePoint(self.inst, x1, y1, z1) then
+						local shouldcheck = dsq < 1 -- Do not skip really close entities.
+						if not shouldcheck then
+							local epos = v:GetPosition()
+							local angletoepos = self.inst:GetAngleToPoint(epos)
+							local angleto = math.abs(anglediff(-heading_angle, angletoepos))
+							shouldcheck = angleto < anglemax
+						end
+						if shouldcheck then
+							-- Incorporate the y component after we've performed the inclusion radius test.
+							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
+							-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
+							dsq = dsq + (dy * dy)
+
+							local dist = dsq > 0 and math.sqrt(dsq) or 0
+							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
+
+							local _k = (1/4) * max_rad - 1
+							local _y = _k * (dot - 1) + 1
+							local angle_component = _y > 0 and _y or 0   -- finally, angle component still between [0..1]
+
+							-- --keep the angle component between [0..1]
+							-- local angle_component = (dot + 1) / 2
+
+							--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
+							local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
+
+							--for stuff that's *really* close - ie, just dropped
+							local add = dsq < .0625 --[[.25 * .25]] and 1 or 0
+
+							--just a little hysteresis
+							local mult = v == self.controller_target and not v:HasTag("wall") and 1.5 or 1
+
+							local score = angle_component * dist_component * mult + add
+
+							--make it easier to target stuff dropped inside the portal when alive
+							--make it easier to haunt the portal for resurrection in endless mode
+							if v:HasTag("portal") then
+								score = score * (self.inst:HasTag("playerghost") and GetPortalRez() and 1.1 or .9)
+							end
+
+							if v:HasTag("hasfurnituredecoritem") then
+								score = score * 0.5
+							end
+
+							-- print(v, angle_component, dist_component, mult, add, score)
+
+							local lmb, _ = self:GetSceneItemControllerAction(v)
+
+							if lmb ~= nil then
+								score = score * 10
+							end
+
+							if CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen() then
+								if score < target_score or
+									(   score == target_score and
+										(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or
+											(v.CanMouseThrough ~= nil and v:CanMouseThrough())
+										)
+									) then
+									--skip
+								elseif lmb ~= nil then
+									target = v
+									target_score = score
+									target_action = lmb
+								else
+									local inv_obj = self:GetCursorInventoryObject()
+									local act = inv_obj ~= nil and self:GetItemUseAction(inv_obj, v) or nil
+									if act ~= nil and act.target == v then
+										target = v
+										target_score = score
+										target_action = act
+									elseif canexamine and v:HasTag("inspectable") then
+										target = v
+										target_score = score
+										target_action = nil
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+		if target ~= self.controller_target then
+			self.controller_target = target
+			self.target_action = target_action
+			self.controller_target_age = 0
+			-- print("****** change target to: ", target)
+		end
+	end
+
+	local function UpdateControllerInteractionAltTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
+		if self.placer ~= nil or (self.deployplacer ~= nil and self.deploy_mode) or self.inst:HasTag("usingmagiciantool") then
+			self.controller_alt_target = nil
+			self.controller_alt_target_age = 0
+			return
+		end
+
+		if self.controller_alt_target ~= nil
+			and (not self.controller_alt_target:IsValid() or
+				self.controller_alt_target:HasTag("INLIMBO") or
+				self.controller_alt_target:HasTag("NOCLICK") or
+				not CanEntitySeeTarget(self.inst, self.controller_alt_target)) then
+			--"FX" and "DECOR" tag should never change, should be safe to skip that check
+			self.controller_alt_target = nil
+			--it went invalid, but we're not resetting the age yet
+		end
+
+		self.controller_alt_target_age = self.controller_alt_target_age + dt
+		if self.controller_alt_target_age < .2 then
+			--prevent target flickering
+			return
+		end
+
+		local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+		--Fishing targets may have large radius, making it hard to target with normal priority
+		local fishing = equiped_item ~= nil and equiped_item:HasTag("fishingrod")
+
+		-- we want to never target our fishing hook, but others can
+		local ocean_fishing_target = (equiped_item ~= nil and equiped_item.replica.oceanfishingrod ~= nil) and equiped_item.replica.oceanfishingrod:GetTarget() or nil
+
+		local min_rad = 1.5
+		local max_rad = CHANGE_INTERACTION_TARGET_DETECT_RADIUS  -- default: 6
+		local min_rad_sq = min_rad * min_rad
+		local max_rad_sq = max_rad * max_rad
+
+		local alt_target_rad =
+				self.controller_alt_target ~= nil and
+				math.max(min_rad, math.min(max_rad, math.sqrt(self.inst:GetDistanceSqToInst(self.controller_alt_target)))) or
+				max_rad
+		local alt_target_rad_sq = alt_target_rad * alt_target_rad + .1 --allow small error
+
+		local nearby_ents = TheSim:FindEntities(x, y, z, fishing and max_rad or alt_target_rad, nil, TARGET_EXCLUDE_TAGS)
+
+		if self.controller_alt_target ~= nil then
+			--Note: it may already contain controller_target,
+			--      so make sure to handle it only once later
+			table.insert(nearby_ents, 1, self.controller_alt_target)
+		end
+
+		local alt_target = nil
+		local alt_target_score = 0
+		local onboat = self.inst:GetCurrentPlatform() ~= nil
+		local anglemax = onboat and TUNING.CONTROLLER_BOATINTERACT_ANGLE or TUNING.CONTROLLER_INTERACT_ANGLE
+		for i, v in ipairs(nearby_ents) do
+			v = v.client_forward_target or v
+			if v ~= ocean_fishing_target then
+
+				--Only handle controller_target if it's the one we added at the front
+				if v ~= self.inst and (v ~= self.controller_alt_target or i == 1) and v.entity:IsVisible() then
 					if v.entity:GetParent() == self.inst and v:HasTag("bundle") then
 						--bundling or constructing
 						alt_target = v
-						alt_target_has_found = true
 						break
 					end
 
@@ -618,120 +770,72 @@ AddComponentPostInit("playercontroller", function(self)
 						end
 					end
 
-					-- local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dx*dx + dz*dz) * math.sqrt(dirx*dirx + dirz*dirz))) / DEGREES or 0
-					local included_angle = dsq > 0 and math.acos((dx*dirx + dz*dirz) / (math.sqrt(dsq))) / DEGREES or 0
-
-					if ((dsq < min_rad_sq) or
-						(dsq <= target_rad_sq and v == self.controller_target and dx * dirx + dz * dirz > 0) or
-						(dsq <= alt_target_rad_sq and v == self.controller_alt_target and dx * dirx + dz * dirz > 0) or
-						(self.controller_target ~= nil and dsq <= target_rad_sq and included_angle < anglemax) or
-						(self.controller_alt_target ~= nil and dsq <= alt_target_rad_sq and included_angle < anglemax) or
-						(dsq <= max_rad_sq and included_angle < anglemax)) and
+					if (dsq < min_rad_sq
+						or (dsq <= alt_target_rad_sq
+							and (v == self.controller_target or
+								v == self.controller_attack_target or
+								dx * dirx + dz * dirz > 0))) and
 						CanEntitySeePoint(self.inst, x1, y1, z1) then
-						-- Incorporate the y component after we've performed the inclusion radius test.
-						-- We wait until now because we might disqualify our controller_target if its transform has a y component,
-						-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
-						dsq = dsq + (dy * dy)
-
-						local dist = dsq > 0 and math.sqrt(dsq) or 0
-						local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
-
-						local _k = (1/4) * max_rad - 1
-						local _y = _k * (dot - 1) + 1
-						local angle_component = _y > 0 and _y or 0   -- finally, angle component still between [0..1]
-
-						-- --keep the angle component between [0..1]
-						-- local angle_component = (dot + 1) / 2
-
-						--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
-						local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
-
-						--for stuff that's *really* close - ie, just dropped
-						local add = dsq < .0625 --[[.25 * .25]] and 1 or 0
-
-						--just a little hysteresis
-						local mult = v == self.controller_target and not v:HasTag("wall") and 1.5 or 1
-						local alt_mult = v == self.controller_alt_target and not v:HasTag("wall") and 1.5 or 1
-
-						local score = angle_component * dist_component * mult * alt_mult + add
-
-						--make it easier to target stuff dropped inside the portal when alive
-						--make it easier to haunt the portal for resurrection in endless mode
-						if v:HasTag("portal") then
-							score = score * (self.inst:HasTag("playerghost") and GetPortalRez() and 1.1 or .9)
+						local shouldcheck = dsq < 1 -- Do not skip really close entities.
+						if not shouldcheck then
+							local epos = v:GetPosition()
+							local angletoepos = self.inst:GetAngleToPoint(epos)
+							local angleto = math.abs(anglediff(-heading_angle, angletoepos))
+							shouldcheck = angleto < anglemax
 						end
+						if shouldcheck then
+							-- Incorporate the y component after we've performed the inclusion radius test.
+							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
+							-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
+							dsq = dsq + (dy * dy)
 
-						if v:HasTag("hasfurnituredecoritem") then
-							score = score * 0.5
-						end
+							local dist = dsq > 0 and math.sqrt(dsq) or 0
+							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
 
-						-- print(v, angle_component, dist_component, mult, add, score)
+							local _k = (1/4) * max_rad - 1
+							local _y = _k * (dot - 1) + 1
+							local angle_component = _y > 0 and _y or 0   -- finally, angle component still between [0..1]
 
-						local lmb, rmb = self:GetSceneItemControllerAction(v)
+							-- --keep the angle component between [0..1]
+							-- local angle_component = (dot + 1) / 2
 
-						local forbid_a = false
-						local forbid_b = false
-						local forbid_ab = false
+							--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
+							local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
 
-						if not CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM and self.inst.HUD:IsSpellWheelOpen() then
-							forbid_ab = true
-						end
-						if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
-							forbid_a = true
-						end
-						
-						-- if score ~= -1 and score ~= -3 then
-						if not forbid_a and not forbid_ab then
-							if score < target_score or
-								(   score == target_score and
-									(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or
-										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
-									)
-								) then
-								--skip
-							elseif lmb ~= nil then
-								target = v
-								target_score = score
-							else
-								local inv_obj = self:GetCursorInventoryObject()
-								if inv_obj ~= nil then
-									local act = self:GetItemUseAction(inv_obj, v)
-									if act ~= nil and act.target == v then
-										target = v
-										target_score = score
-									end
+							--for stuff that's *really* close - ie, just dropped
+							local add = dsq < .0625 --[[.25 * .25]] and 1 or 0
+
+							--just a little hysteresis
+							local alt_mult = v == self.controller_alt_target and not v:HasTag("wall") and 1.5 or 1
+
+							local score = angle_component * dist_component * alt_mult + add
+
+							--make it easier to target stuff dropped inside the portal when alive
+							--make it easier to haunt the portal for resurrection in endless mode
+							if v:HasTag("portal") then
+								score = score * (self.inst:HasTag("playerghost") and GetPortalRez() and 1.1 or .9)
+							end
+
+							if v:HasTag("hasfurnituredecoritem") then
+								score = score * 0.5
+							end
+
+							-- print(v, angle_component, dist_component, alt_mult, add, score)
+
+							local _, rmb = self:GetSceneItemControllerAction(v)
+
+							if rmb ~= nil and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) then
+								if score < alt_target_score or
+									(   score == alt_target_score and
+										(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or
+											(v.CanMouseThrough ~= nil and v:CanMouseThrough())
+										)
+									) then
+									--skip
+								else
+									alt_target = v
+									alt_target_score = score
 								end
-							end
-						end
-
-						-- if score ~= -2 and score ~= -3 then
-						if not forbid_b and not forbid_ab then
-							if score < alt_target_score or
-								(   score == alt_target_score and
-									(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or
-										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
-									)
-								) then
-								--skip
-							elseif rmb ~= nil and not alt_target_has_found then
-								alt_target = v
-								alt_target_score = score
-							end
-						end
-
-						-- if score ~= -1 and score ~= -2 and score ~= -3 then
-						if not forbid_a and not forbid_b and not forbid_ab then
-							-- find examine_target
-							if score < examine_target_score or
-								(   score == examine_target_score and
-									(   (examine_target ~= nil and not (examine_target.CanMouseThrough ~= nil and examine_target:CanMouseThrough())) or
-										(v.CanMouseThrough ~= nil and v:CanMouseThrough())
-									)
-								) then
-								--skip
-							elseif canexamine and v:HasTag("inspectable") then
-								examine_target = v
-								examine_target_score = score
 							end
 						end
 					end
@@ -739,33 +843,7 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
-		if target == nil then
-			target = examine_target
-		end
-		if alt_target == nil then
-			alt_target = examine_target
-		end
-
-		if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
-			local action = self:GetActionButtonAction()
-			if action ~= nil and action.target ~= nil then
-				self.controller_target = action.target
-				self.controller_target_age = 0
-			end
-		elseif target ~= self.controller_target then
-			self.controller_target = target
-			self.controller_target_age = 0
-			-- print("****** change target to: ", target)
-		end
-
-		-- Optimize for staff tornado and telestaff
-		if equiped_item and equiped_item.controller_should_use_attack_target and self.controller_attack_target ~= nil and
-			CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and not self:TryWidgetButtonFunction(false) then
-			if self.controller_alt_target ~= self.controller_attack_target then
-				self.controller_alt_target = self.controller_attack_target
-				self.controller_alt_target_age = 0
-			end
-		elseif alt_target ~= self.controller_alt_target then
+		if alt_target ~= self.controller_alt_target then
 			self.controller_alt_target = alt_target
 			self.controller_alt_target_age = 0
 			-- print("****** change alt_target to: ", alt_target)
@@ -1028,6 +1106,7 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		else
 			UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
+			UpdateControllerInteractionAltTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
 			UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 		end
 	end

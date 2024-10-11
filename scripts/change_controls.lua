@@ -345,7 +345,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                         or self.owner.sg:HasStateTag("attack") or self.owner.sg:HasStateTag("doing") or self.owner.sg:HasStateTag("working") or self.owner.sg:HasStateTag("channeling")) and
                     (self.owner:HasTag("moving") or self.owner:HasTag("idle")
                         or self.owner:HasTag("attack") or self.owner:HasTag("doing") or self.owner:HasTag("working") or self.owner:HasTag("channeling")) and
-                    controller_target:HasTag("inspectable") then
+                    controller_alt_target:HasTag("inspectable") then
                     local actionstr =
                         CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_alt_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
@@ -417,7 +417,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                         or self.owner.sg:HasStateTag("attack") or self.owner.sg:HasStateTag("doing") or self.owner.sg:HasStateTag("working") or self.owner.sg:HasStateTag("channeling")) and
                     (self.owner:HasTag("moving") or self.owner:HasTag("idle")
                         or self.owner:HasTag("attack") or self.owner:HasTag("doing") or self.owner:HasTag("working") or self.owner:HasTag("channeling")) and
-                    controller_target:HasTag("inspectable") then
+                    controller_attack_target:HasTag("inspectable") then
                     local actionstr =
                         CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_attack_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or

@@ -657,8 +657,10 @@ AddComponentPostInit("playercontroller", function(self)
 							-- print(v, angle_component, dist_component, mult, add, score)
 
 							local lmb, _ = self:GetSceneItemControllerAction(v)
+							local inv_obj = self:GetCursorInventoryObject()
+							local inv_act = inv_obj ~= nil and self:GetItemUseAction(inv_obj, v) or nil
 
-							if lmb ~= nil then
+							if lmb ~= nil or (inv_act ~= nil and inv_act.target == v) then
 								score = score * 10
 							end
 
@@ -675,12 +677,10 @@ AddComponentPostInit("playercontroller", function(self)
 									target_score = score
 									target_action = lmb
 								else
-									local inv_obj = self:GetCursorInventoryObject()
-									local act = inv_obj ~= nil and self:GetItemUseAction(inv_obj, v) or nil
-									if act ~= nil and act.target == v then
+									if inv_act ~= nil and inv_act.target == v then
 										target = v
 										target_score = score
-										target_action = act
+										target_action = inv_act
 									elseif canexamine and v:HasTag("inspectable") then
 										target = v
 										target_score = score

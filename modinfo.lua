@@ -60,11 +60,10 @@ description = Language_En and [[
 * Move Action Point with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 
 * Select Items in the Inventroy Bar with ]]..GamepadButtons.Right_Trigger..[[ 
 * Move Items Between Opened Containers with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 
-* Lock Attack Target with Force Button ]]..GamepadButtons.Left_Bumper..[[ and Examine Button ]]..GamepadButtons.Button_Y..[[ 
 * Attack Friendly Creatures with Force Button ]]..GamepadButtons.Left_Bumper..[[ and Attack Button ]]..GamepadButtons.Button_X..[[ 
 * Trigger the Same Function as the Space Bar on the Keyboard with ]]..GamepadButtons.Left_Bumper..[[ ]]..GamepadButtons.Right_Bumper..[[ and Action Button ]]..GamepadButtons.Button_A..[[ 
 * Teleport with Force Button ]]..GamepadButtons.Left_Bumper..[[ and AltAction Button ]]..GamepadButtons.Button_B..[[ 
-* While Focus on Crafting Menu Pinbar, Use ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Skins and Use ]]..GamepadButtons.Left_Bumper..[[ + ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Pages
+* While Focus on Crafting Menu Pinbar, Use ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Skins and Use ]]..GamepadButtons.Right_Bumper..[[ + ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Pages
 * Customize your Shortcut Key Mapping
 ]] or [[
 * 开启本Mod后，最好将系统设置中的控制器设置保持默认。
@@ -73,16 +72,15 @@ description = Language_En and [[
 * 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动操作目标点
 * 使用 ]]..GamepadButtons.Right_Trigger..[[ 从物品栏中选取物品
 * 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 在打开的容器之间移动物品
-* 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加检查按钮 ]]..GamepadButtons.Button_Y..[[ 锁定攻击目标
 * 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加攻击按钮 ]]..GamepadButtons.Button_X..[[ 攻击友好生物
 * 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Bumper..[[ 加动作按钮 ]]..GamepadButtons.Button_A..[[ 实现与按下键盘空格键一样的功能
 * 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加副动作按钮 ]]..GamepadButtons.Button_B..[[ 进行传送等操作
-* 当光标在左侧的快捷制作栏上时，使用]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换皮肤，使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换页面
+* 当光标在左侧的快捷制作栏上时，使用]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换皮肤，使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换页面
 * 自定义快捷键映射
 ]]
 
 author = "程小黑OvO"
-version = "0.1.13"
+version = "0.1.14"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
@@ -309,14 +307,13 @@ configuration_options = {
 	{name = "Title", label = Language_En and "Force Control Settings" or "强制操作设置", options = {{description = "", data = ""}}, default = ""},
 	{
 		name = "enable_force_control",
-		label = Language_En and "Force Control Button" or "强制操作按钮",
-		hover = Language_En and "Setting Force Control Button." or "设置强制操作按钮。",
+		label = Language_En and "Enable Force Control" or "强制操作",
+		hover = Language_En and "Setting Force Control Button to "..GamepadButtons.Left_Bumper or "设置 "..GamepadButtons.Left_Bumper.." 为强制操作按钮。",
 		options = {
-			{ description = GamepadButtons.Left_Bumper.." (Default)", data = "left",  hover = Language_En and "Setting "..GamepadButtons.Left_Bumper.." as Force Control Button." or "设置 "..GamepadButtons.Left_Bumper.." 作为强制操作按键"},
-			{ description = GamepadButtons.Right_Bumper,              data = "right", hover = Language_En and "Setting "..GamepadButtons.Right_Bumper.." as Force Control Button." or "设置 "..GamepadButtons.Right_Bumper.." 作为强制操作按键"},
-			{ description = "None",                                   data = false,   hover = Language_En and "Disable Force Control." or "关闭强制操作功能"},
+			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用。"},
+			{ description = "No"           , data = false, hover = Language_En and "Disable." or "不启用。"},
 		},
-		default = "left"
+		default = true
 	},
 	{
 		name = "force_attack_target",
@@ -326,17 +323,6 @@ configuration_options = {
 		options = {
 			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用。"},
 			{ description = "No",            data = false, hover = Language_En and "Just Attack Every Creatures or Wall as Before." or "像之前一样直接攻击生物或墙。"},
-		},
-		default = true
-	},
-	{
-		name = "force_lock_attack_target",
-		label = Language_En and "Force Lock Attack Target" or "强制锁定攻击目标",
-		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." ) and Press "..GamepadButtons.Button_Y.." to Force Lock Attackable Target."
-							or  "按住强制操作按钮 ( "..GamepadButtons.Left_Bumper.." )，然后按下 "..GamepadButtons.Button_Y.." 按钮强制锁定攻击目标。",
-		options = {
-			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用"},
-			{ description = "No",            data = false, hover = Language_En and "Lock Attack Target by Holding "..GamepadButtons.Button_Y.." as Before." or "像之前一样长按 "..GamepadButtons.Button_Y.." 按键锁定攻击目标。"},
 		},
 		default = true
 	},

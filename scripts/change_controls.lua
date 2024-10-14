@@ -286,8 +286,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     Y_shown = true
                 end
                 if not X_shown and controller_target == controller_attack_target then
-                    if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and
-                        not (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2)) then
+                    if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
                         table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. r:GetActionString())
                     else
                         table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
@@ -303,9 +302,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     B_shown = true
                 end
                 if not Unlock_shown and controller_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(cmds, CHANGE_IS_LOCK_TARGET_QUICKLY
-                        and TheInput:GetLocalizedControl(controller_id, CHANGE_FORCE_BUTTON) .."+".. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET
-                        or STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    table.insert(cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
                     Unlock_shown = true
                 end
                 if controller_target.quagmire_shoptab ~= nil then
@@ -355,8 +352,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
 
                 if not X_shown and controller_alt_target == controller_attack_target then
-                    if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and
-                        not (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2)) then
+                    if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
                         table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. alt_r:GetActionString())
                     else
                         table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
@@ -368,9 +364,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     B_shown = true
                 end
                 if not Unlock_shown and controller_alt_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(alt_cmds, CHANGE_IS_LOCK_TARGET_QUICKLY
-                        and TheInput:GetLocalizedControl(controller_id, CHANGE_FORCE_BUTTON) .."+".. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET
-                        or STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    table.insert(alt_cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
                     Unlock_shown = true
                 end
 
@@ -426,8 +420,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     Y_shown = true
                 end
                 if not X_shown then
-                    if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and
-                        not (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2)) then
+                    if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
                         table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. atk_r:GetActionString())
                     else
                         table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
@@ -435,9 +428,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     X_shown = true
                 end
                 if not Unlock_shown and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(attack_cmds, CHANGE_IS_LOCK_TARGET_QUICKLY
-                        and TheInput:GetLocalizedControl(controller_id, CHANGE_FORCE_BUTTON) .."+".. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET
-                        or STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    table.insert(attack_cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
                     Unlock_shown = true
                 end
 

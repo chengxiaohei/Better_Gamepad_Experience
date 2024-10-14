@@ -11,6 +11,7 @@ CHANGE_CONTROL_LEFT = CONTROL_ROTATE_LEFT
 CHANGE_CONTROL_RIGHT = CONTROL_ROTATE_RIGHT
 CHANGE_CONTROL_CAMERA = CHANGE_CONTROL_LEFT
 CHANGE_CONTROL_HOVER = CONTROL_OPEN_INVENTORY
+CHANGE_CONTROL_OPTION = CHANGE_CONTROL_RIGHT
 
 CHANGE_LANGUAGE_ENGLISH = GetModConfigData("language")
 CHANGE_ALWAYS_SHOW_MAP_CONTROL_WIDGET = GetModConfigData("show_map_widget")
@@ -18,18 +19,10 @@ CHANGE_SHOW_SELF_INSPECT_BUTTON = GetModConfigData("show_self_inspect")
 CHANGE_HIDE_INVENTORY_BAR_HINT = GetModConfigData("hide_inventory_hint")
 CHANGE_HIDE_THEWORLD_ITEM_HINT = GetModConfigData("hide_world_item_hint")
 
-local force = GetModConfigData("enable_force_control")
-if force == "left" then
-	CHANGE_FORCE_BUTTON = CHANGE_CONTROL_LEFT
-elseif force == "right" then
-	CHANGE_FORCE_BUTTON = CHANGE_CONTROL_RIGHT
-else
-	CHANGE_FORCE_BUTTON = nil
-end
-CHANGE_FORCE_BUTTON_LEVEL2 = CHANGE_FORCE_BUTTON and (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and CHANGE_CONTROL_RIGHT or CHANGE_CONTROL_LEFT) or nil
+CHANGE_FORCE_BUTTON = GetModConfigData("enable_force_control") and CHANGE_CONTROL_LEFT
+CHANGE_FORCE_BUTTON_LEVEL2 = GetModConfigData("enable_force_control") and CHANGE_CONTROL_RIGHT
 
 CHANGE_IS_FORCE_ATTACK        = CHANGE_FORCE_BUTTON and GetModConfigData("force_attack_target")  -- true or false
-CHANGE_IS_LOCK_TARGET_QUICKLY = CHANGE_FORCE_BUTTON and GetModConfigData("force_lock_attack_target")  -- true or false
 CHANGE_IS_FORCE_PING_RETICULE = CHANGE_FORCE_BUTTON and GetModConfigData("force_ground_actions")  -- true or false
 CHANGE_IS_FORCE_SPACE_ACTION  = CHANGE_FORCE_BUTTON and GetModConfigData("force_space")
 CHANGE_IS_FORCE_PAUSE_QUICKLY = CHANGE_FORCE_BUTTON and GetModConfigData("force_pause")

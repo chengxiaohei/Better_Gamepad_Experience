@@ -305,16 +305,11 @@ AddComponentPostInit("playercontroller", function(self)
 		-- do this first in order to not lose an up/down and get out of sync
 		if control == CONTROL_TARGET_MODIFIER then
 			self.controller_targeting_modifier_down = down
-			if down and not CHANGE_IS_LOCK_TARGET_QUICKLY then
+			if down then
 				self.controller_targeting_lock_timer = 0.0
 			else
 				self.controller_targeting_lock_timer = nil
 			end
-		end
-
-		if down and control == CONTROL_TARGET_MODIFIER and CHANGE_FORCE_BUTTON
-			and CHANGE_IS_LOCK_TARGET_QUICKLY and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
-			self:ControllerTargetLock()
 		end
 
 		if IsPaused() then
@@ -353,14 +348,10 @@ AddComponentPostInit("playercontroller", function(self)
 				-- do nothing
 			elseif control == CONTROL_TARGET_CYCLE_BACK then
 				self:CycleControllerAttackTargetBack()
-				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
-					self.controller_targeting_lock_timer = 0.0
-				end
+				self.controller_targeting_lock_timer = 0.0
 			elseif control == CONTROL_TARGET_CYCLE_FORWARD then
 				self:CycleControllerAttackTargetForward()
-				if not CHANGE_IS_LOCK_TARGET_QUICKLY then
-					self.controller_targeting_lock_timer = 0.0
-				end
+				self.controller_targeting_lock_timer = 0.0
 			end
 		end
 
@@ -379,10 +370,7 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif control == CONTROL_CANCEL then
 			self:CancelPlacement()
 		elseif control == CONTROL_INSPECT then
-			if not TryTriggerMappingKey(self.inst,
-				not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_LEFT and (CHANGE_IS_FORCE_ATTACK or CHANGE_IS_LOCK_TARGET_QUICKLY)) and CHANGE_MAPPING_LB_Y or false,
-				not (CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT and (CHANGE_IS_FORCE_ATTACK or CHANGE_IS_LOCK_TARGET_QUICKLY)) and CHANGE_MAPPING_RB_Y or false,
-				CHANGE_MAPPING_LB_RB_Y, false) then
+			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false) then
 				self:DoInspectButton()
 			end
 		elseif control == CONTROL_CONTROLLER_ALTACTION then
@@ -392,16 +380,10 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif control == CONTROL_CONTROLLER_ATTACK then
 			local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 			local attack_target = self:GetControllerAttackTarget()
-			if attack_target and equiped_item and equiped_item.controller_should_use_attack_target then
-				if CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
-					if self.ismastersim then
-						self.attack_buffer = CONTROL_CONTROLLER_ATTACK
-					else
-						self:DoControllerAttackButton()
-					end
-				else
-					self:DoControllerAltActionButton(attack_target)
-				end
+			local _, attack_target_alt_action = self:GetSceneItemControllerAction(attack_target)
+			if equiped_item and equiped_item.controller_should_use_attack_target and attack_target_alt_action
+				and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+				self:DoControllerAltActionButton(attack_target)
 			else
 				if self.ismastersim then
 					self.attack_buffer = CONTROL_CONTROLLER_ATTACK
@@ -447,12 +429,7 @@ AddComponentPostInit("playercontroller", function(self)
 		local time = GetStaticTime()
 
 		if self.lastrottime == nil or time - self.lastrottime > CHANGE_ROT_REPEAT then
-			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (
-					self.reticule == nil or
-					CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT or
-					CHANGE_FORCE_BUTTON == nil or
-					not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
-				) then
+			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (self.reticule == nil or not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
 				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION and CONTROL_INVENTORY_LEFT or CONTROL_INVENTORY_RIGHT) then
 					self:RotLeft()
 					self.lastrottime = time
@@ -464,12 +441,7 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 
 		if self.lastzoomtime == nil or time - self.lastzoomtime > CHANGE_ZOOM_REPEAT then
-			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (
-					self.reticule == nil or
-					CHANGE_FORCE_BUTTON == CHANGE_CONTROL_RIGHT or
-					CHANGE_FORCE_BUTTON == nil or
-					not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
-				) then
+			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (self.reticule == nil or not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
 				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ZOOM and CONTROL_INVENTORY_DOWN or CONTROL_INVENTORY_UP) then
 					TheCamera:ZoomIn()
 					self.lastzoomtime = time
@@ -660,7 +632,7 @@ AddComponentPostInit("playercontroller", function(self)
 							local inv_obj = self:GetCursorInventoryObject()
 							local inv_act = inv_obj ~= nil and self:GetItemUseAction(inv_obj, v) or nil
 
-							if lmb ~= nil or (inv_act ~= nil and inv_act.target == v) then
+							if (lmb ~= nil or (inv_act ~= nil and inv_act.target == v)) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								score = score * 10
 							end
 
@@ -696,7 +668,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 		if target ~= self.controller_target then
 			self.controller_target = target
-			self.target_action = target_action
+			self.controller_target_action = target_action
 			self.controller_target_age = 0
 			-- print("****** change target to: ", target)
 		end
@@ -983,7 +955,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 								if isally then
 									score = score * .25
-								elseif CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_ATTACK and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
+								elseif TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 									-- do nothing
 								elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
 									score = score * 5
@@ -991,7 +963,7 @@ AddComponentPostInit("playercontroller", function(self)
 									score = score * 4
 								end
 
-								if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_ATTACK and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) then
+								if TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 									-- do nothing
 								elseif v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
 									score = score * 6

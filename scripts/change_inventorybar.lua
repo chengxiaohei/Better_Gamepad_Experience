@@ -484,6 +484,21 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		return BufferedAction(doer, nil, ACTIONS.DROP, item, doer:GetPosition()):GetActionString()
 	end
 
+	local SetHUD_Local = function(obj, hud)
+		if not obj.hashud then
+			obj.hashud = true
+			obj:SetScale(TheFrontEnd:GetHUDScale())
+			--listen for events (these are not commonly triggered)
+			--better than polling update, because GetHUDScale() isn't super cheap
+			obj.inst:ListenForEvent("continuefrompause", function() obj:SetScale(TheFrontEnd:GetHUDScale()) end, hud)
+			obj.inst:ListenForEvent("refreshhudsize", function(hud, scale) obj:SetScale(scale) end, hud)
+		end
+	end
+
+	SetHUD_Local(self.actionstring, self.owner.HUD.inst)
+	SetHUD_Local(self.actionstringtitle, self.owner.HUD.inst)
+	SetHUD_Local(self.actionstringbody, self.owner.HUD.inst)
+
 	-- Numerous changes
 	self.UpdateCursorText = function (self, ...)
 		local Language_En = CHANGE_LANGUAGE_ENGLISH

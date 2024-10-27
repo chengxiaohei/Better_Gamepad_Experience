@@ -484,20 +484,27 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		return BufferedAction(doer, nil, ACTIONS.DROP, item, doer:GetPosition()):GetActionString()
 	end
 
-	local SetHUD_Local = function(obj, hud)
-		if not obj.hashud then
-			obj.hashud = true
-			obj:SetScale(TheFrontEnd:GetHUDScale())
-			--listen for events (these are not commonly triggered)
-			--better than polling update, because GetHUDScale() isn't super cheap
-			obj.inst:ListenForEvent("continuefrompause", function() obj:SetScale(TheFrontEnd:GetHUDScale()) end, hud)
-			obj.inst:ListenForEvent("refreshhudsize", function(hud, scale) obj:SetScale(scale) end, hud)
-		end
+	local SetActionStringSize = function(obj, size, hud)
+		obj:SetSize(size * TheFrontEnd:GetHUDScale())
+		obj.inst:ListenForEvent("continuefrompause", function() obj:SetSize(size * TheFrontEnd:GetHUDScale()) end, hud)
+		obj.inst:ListenForEvent("refreshhudsize", function(hud, scale) obj:SetSize(size * scale) end, hud)
 	end
+	SetActionStringSize(self.actionstringtitle, 24, self.owner.HUD.inst)
+	SetActionStringSize(self.actionstringbody, 18, self.owner.HUD.inst)
 
-	SetHUD_Local(self.actionstring, self.owner.HUD.inst)
-	SetHUD_Local(self.actionstringtitle, self.owner.HUD.inst)
-	SetHUD_Local(self.actionstringbody, self.owner.HUD.inst)
+	self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 24))
+    self.actionstringtitle_below:SetColour(204/255, 180/255, 154/255, 1)
+    self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 18))
+    self.actionstringbody_below:EnableWordWrap(true)
+
+	SetActionStringSize(self.actionstringtitle_below, 24, self.owner.HUD.inst)
+	SetActionStringSize(self.actionstringbody_below, 18, self.owner.HUD.inst)
+
+	SetTooltipColour_Old = self.SetTooltipColour
+	self.SetTooltipColour = function (self, ...)
+		SetTooltipColour_Old(self, ...)
+		self.actionstringtitle_below:SetColour(...)
+	end
 
 	-- Numerous changes
 	self.UpdateCursorText = function (self, ...)
@@ -514,26 +521,47 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		if active_item ~= nil or inv_item ~= nil and not CHANGE_HIDE_INVENTORY_BAR_HINT then
 			local controller_id = TheInput:GetControllerID()
 
-			if active_item ~= nil then
+			if active_item ~= nil and inv_item ~= nil then
 				local itemname = self:GetDescriptionString(active_item)
 				self.actionstringtitle:SetString(itemname)
 				if active_item:GetIsWet() then
 					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
 				else
-					self:SetTooltipColour(unpack(NORMAL_TEXT_COLOUR))
+					self:SetTooltipColour(unpack(RGB(204, 180, 154)))
 				end
+				itemname = self:GetDescriptionString(inv_item)
+				self.actionstringtitle_below:SetString(itemname)
+				if inv_item:GetIsWet() then
+					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
+				else
+					self:SetTooltipColour(unpack(RGB(204, 180, 154)))
+				end
+			elseif active_item ~= nil then
+				local itemname = self:GetDescriptionString(active_item)
+				self.actionstringtitle:SetString(itemname)
+				if active_item:GetIsWet() then
+					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
+				else
+					self:SetTooltipColour(unpack(RGB(204, 180, 154)))
+				end
+				self.actionstringtitle_below:SetString("")
 			elseif inv_item ~= nil then
 				local itemname = self:GetDescriptionString(inv_item)
 				self.actionstringtitle:SetString(itemname)
 				if inv_item:GetIsWet() then
 					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
 				else
-					self:SetTooltipColour(unpack(NORMAL_TEXT_COLOUR))
+					self:SetTooltipColour(unpack(RGB(204, 180, 154)))
 				end
+				self.actionstringtitle_below:SetString("")
+			else
+				self.actionstringtitle:SetString("")
+				self.actionstringtitle_below:SetString("")
 			end
 
 			local is_equip_slot = self.active_slot and self.active_slot.equipslot
 			local str = {}
+			local str_below = {}
 
 			local left = TheInput:IsControlPressed(CHANGE_CONTROL_LEFT)
 			local right = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
@@ -610,22 +638,20 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 
 				if always_show_inv or changebox_flag or drop_inv_flag or quick_use_flag then
-					help_string = self:GetDescriptionString(inv_item)
-					table.insert(str, help_string)
 					if changebox_flag then
 						help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.CHANGEBOX
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.CHANGEBOX
-						table.insert(str, help_string)
+						table.insert(str_below, help_string)
 					end
 					if drop_inv_flag then
 						help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
 						if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
-						table.insert(str, help_string)
+						table.insert(str_below, help_string)
 					end
 					if quick_use_flag then
-						table.insert(str, quick_act_string)
+						table.insert(str_below, quick_act_string)
 					end
 				end
 
@@ -720,17 +746,27 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 			local was_shown = self.actionstring.shown
 			local old_string = self.actionstringbody:GetString()
+			local old_string_below = self.actionstringbody_below:GetString()
 			local new_string = table.concat(str, '\n')
-			if old_string ~= new_string then
+			local new_string_below = table.concat(str_below, '\n')
+			if old_string ~= new_string or old_string_below ~= new_string_below then
 				self.actionstringbody:SetString(new_string)
+				self.actionstringbody_below:SetString(new_string_below)
 				self.actionstringtime = CURSOR_STRING_DELAY
 				self.actionstring:Show()
 			end
 
 			local w0, h0 = self.actionstringtitle:GetRegionSize()
 			local w1, h1 = self.actionstringbody:GetRegionSize()
+			local w2, h2 = self.actionstringtitle_below:GetRegionSize()
+			local w3, h3 = self.actionstringbody_below:GetRegionSize()
 
-			local wmax = math.max(w0, w1)
+			if self.actionstringtitle:GetString() == "" then w0 = 0; h0 = 0 end
+			if self.actionstringbody:GetString() == "" then w1 = 0; h1 = 0 end
+			if self.actionstringtitle_below:GetString() == "" then w2 = 0; h2 = 0 end
+			if self.actionstringbody_below:GetString() == "" then w3 = 0; h3 = 0 end
+
+			local wmax = math.max(w0, w1, w2, w3)
 
 			local dest_pos = self.active_slot:GetWorldPosition()
 
@@ -740,39 +776,58 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				-- backpack
 				self.actionstringtitle:SetPosition(-wmax/2, h0/2)
 				self.actionstringbody:SetPosition(-wmax/2, -h1/2)
-
+				self.actionstringtitle_below:SetPosition(-wmax/2, -h2/2 - h1)
+				self.actionstringbody_below:SetPosition(-wmax/2, -h3/2 - h2 - h1)
 				dest_pos.x = dest_pos.x + ((-240) - self.active_slot.container.widget.slotpos[self.active_slot.num].x) * xscale
-			elseif self.active_slot.container ~= nil and self.active_slot.container.type == "side_inv_behind" and not Profile:GetIntegratedBackpack() then
+
+			elseif self.active_slot.container ~= nil and self.active_slot.container.type == "side_inv_behind" then
 				-- beard
 				self.actionstringtitle:SetPosition(-wmax/2, h0/2)
 				self.actionstringbody:SetPosition(-wmax/2, -h1/2)
-
+				self.actionstringtitle_below:SetPosition(-wmax/2, -h2/2 - h1)
+				self.actionstringbody_below:SetPosition(-wmax/2, -h3/2 - h2 - h1)
 				local degree_dist = (#self.active_slot.container.widget.slotpos - 1) * 20
 				dest_pos.x = dest_pos.x + ((-100) - degree_dist - self.active_slot.container.widget.slotpos[self.active_slot.num].x) * xscale
+			
+			elseif self.active_slot.container ~= nil and self.active_slot.container.type == "hand_inv" then
+				-- oceanfishrod, slingshot, etc.
+				self.actionstringtitle:SetPosition(wmax/2, h0/2)
+				self.actionstringbody:SetPosition(wmax/2, -h1/2)
+				self.actionstringtitle_below:SetPosition(wmax/2, -h2/2 - h1)
+				self.actionstringbody_below:SetPosition(wmax/2, -h3/2 - h2 - h1)
+				dest_pos.x = dest_pos.x + 100 * xscale
+
 			elseif self.active_slot.side_align_tip then
 				-- in-game containers, chests, fridge
 				self.actionstringtitle:SetPosition(wmax/2, h0/2)
 				self.actionstringbody:SetPosition(wmax/2, -h1/2)
-
+				self.actionstringtitle_below:SetPosition(wmax/2, -h2/2 - h1)
+				self.actionstringbody_below:SetPosition(wmax/2, -h3/2 - h2 - h1)
 				dest_pos.x = dest_pos.x + self.active_slot.side_align_tip * xscale
+
 			elseif self.active_slot.top_align_tip then
 				-- main inventory
-				self.actionstringtitle:SetPosition(0, h0/2 + h1)
-				self.actionstringbody:SetPosition(0, h1/2)
-
+				self.actionstringtitle:SetPosition(0, h0/2 + h1 + h2 + h3)
+				self.actionstringbody:SetPosition(0, h1/2 + h2 + h3)
+				self.actionstringtitle_below:SetPosition(0, h2/2 + h3)
+				self.actionstringbody_below:SetPosition(0, h3/2)
 				dest_pos.y = dest_pos.y + (self.active_slot.top_align_tip + TIP_YFUDGE) * yscale
+
 			elseif self.active_slot.bottom_align_tip then
-				
 				self.actionstringtitle:SetPosition(0, -h0/2)
 				self.actionstringbody:SetPosition(0, -(h1/2 + h0))
-
+				self.actionstringtitle_below:SetPosition(0, -(h2/2 + h0 + h1))
+				self.actionstringbody_below:SetPosition(0, -(h3/2 + h0 + h1 + h2))
 				dest_pos.y = dest_pos.y + (self.active_slot.bottom_align_tip + TIP_YFUDGE) * yscale
+
 			else
 				-- old default as fallback ?
-				self.actionstringtitle:SetPosition(0, h0/2 + h1)
-				self.actionstringbody:SetPosition(0, h1/2)
-
+				self.actionstringtitle:SetPosition(0, h0/2 + h1 + h2 + h3)
+				self.actionstringbody:SetPosition(0, h1/2 + h2 + h3)
+				self.actionstringtitle_below:SetPosition(0, h2/2 + h3)
+				self.actionstringbody_below:SetPosition(0, h3/2)
 				dest_pos.y = dest_pos.y + (W/2 + TIP_YFUDGE) * yscale
+
 			end
 
 			-- print("self.active_slot:GetWorldPosition()", self.active_slot:GetWorldPosition())
@@ -780,6 +835,10 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			-- print("w0", w0)
 			-- print("h1", h1)
 			-- print("w1", h1)
+			-- print("h2", h2)
+			-- print("w2", w2)
+			-- print("h3", h3)
+			-- print("w3", h3)
 			-- print("dest_pos", dest_pos)
 
 			if dest_pos:DistSq(self.actionstring:GetPosition()) > 1 then
@@ -793,6 +852,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			end
 		else
 			self.actionstringbody:SetString("")
+			self.actionstringbody_below:SetString("")
 			self.actionstring:Hide()
 		end
 	end

@@ -666,7 +666,7 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
-		if target ~= self.controller_target then
+		if target ~= self.controller_target or self.controller_target_action ~= target_action then
 			self.controller_target = target
 			self.controller_target_action = target_action
 			self.controller_target_age = 0

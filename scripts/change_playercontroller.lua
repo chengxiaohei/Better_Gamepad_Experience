@@ -589,7 +589,7 @@ AddComponentPostInit("playercontroller", function(self)
 							local angleto = math.abs(anglediff(-heading_angle, angletoepos))
 							shouldcheck = angleto < anglemax
 						end
-						if shouldcheck then
+						if shouldcheck or CHANGE_IS_INTERACT_ALL_DIRECTION then
 							-- Incorporate the y component after we've performed the inclusion radius test.
 							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
 							-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
@@ -765,7 +765,7 @@ AddComponentPostInit("playercontroller", function(self)
 							local angleto = math.abs(anglediff(-heading_angle, angletoepos))
 							shouldcheck = angleto < anglemax
 						end
-						if shouldcheck then
+						if shouldcheck or CHANGE_IS_INTERACT_ALL_DIRECTION then
 							-- Incorporate the y component after we've performed the inclusion radius test.
 							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
 							-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
@@ -889,7 +889,7 @@ AddComponentPostInit("playercontroller", function(self)
 		--end
 
 		local equipped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-		local forced_rad = equipped_item ~= nil and equipped_item.controller_use_attack_distance or 0
+		local forced_rad = equipped_item ~= nil and equipped_item.controller_use_attack_distance or CHANGE_ADD_ATTACKABLE_TARGET_DETECT_RADIUS
 
 		local min_rad = 3
 		local max_rad = math.max(forced_rad, combat:GetAttackRangeWithWeapon()) + 3.5

@@ -265,6 +265,24 @@ configuration_options = {
 		default = true
 	},
 	{
+		name = "interact_all_direction",
+		label = Language_En and "Allow Interact Targets Behind" or "允许与身后目标交互",
+		hover = Language_En and "Allow Interact with All Targets Nearby Even though it Behind You." or "允许与角色附近的所有目标交互，即使目标在角色的身后",
+		options = {
+			{
+				description = "Yes",
+				data = true,
+				hover = Language_En and "Now You Can Interact All Targets Nearby." or "现在你可以与你附近的所有目标交互",
+			},
+			{
+				description = "No (Default)",
+				data = false,
+				hover = Language_En and "Now You Can Only Interact Targets you're facing as Before" or "现在你只能与你面前的目标交互",
+			}
+		},
+		default = false
+	},
+	{
 		name = "attack_all_direction",
 		label = Language_En and "Allow Attack Targets Behind" or "允许攻击身后的目标",
 		hover = Language_En and "Allow Attack All Targets Nearby Even though it Behind You." or "允许攻击角色附近的所有目标，即使目标在角色的身后",
@@ -284,10 +302,10 @@ configuration_options = {
 	},
 	{
 		name = "interaction_target_detect_radius",
-		label = Language_En and "Detection Radius" or "检测半径",
-		hover = Language_En and "Adjust the Detection Radius of Interactable Items Detection."..
-							" Note: The Larger the Detection Radius, The Smaller the Detection Angle."
-							or "调整检测附近可交互物品时的检测半径。注意：检测半径越大，检测夹角越小。",
+		label = Language_En and "Interact Radius" or "可交互目标检测半径",
+		hover = Language_En and "Adjust the Detection Radius of Interactable Items Detection.\n"..
+							"Note: The Larger the Detection Radius, The Smaller the Detection Angle."
+							or "调整检测附近可交互物品时的检测半径\n。注意: 检测半径越大, 检测夹角越小。",
 		options = {
 			{ description = "6 (Default)", data = 6,  hover = ""},
 			{ description = "9",           data = 9,  hover = ""},
@@ -302,6 +320,32 @@ configuration_options = {
 			{ description = "36",          data = 36, hover = ""}
 		},
 		default = 6
+	},
+	{
+		name = "add_attackable_target_detect_radius",
+		label = Language_En and "Attack Radius" or "可攻击目标检测半径",
+		hover = Language_En and "Adjust the Detection Radius of Attackable Target Detection."
+							or "调整检测附近可攻击目标时的检测半径。",
+		options = {
+			{ description = "4 (Default)", data = 0,  hover = ""},
+			{ description = "6",           data = 2,  hover = ""},
+			{ description = "8",           data = 4,  hover = ""},
+			{ description = "10",          data = 6,  hover = ""},
+			{ description = "12",          data = 8,  hover = ""},
+			{ description = "14",          data = 10, hover = ""},
+			{ description = "16",          data = 12, hover = ""},
+			{ description = "18",          data = 14, hover = ""},
+			{ description = "20",          data = 16, hover = ""},
+			{ description = "22",          data = 18, hover = ""},
+			{ description = "24",          data = 20, hover = ""},
+			{ description = "26",          data = 22, hover = ""},
+			{ description = "28",          data = 24, hover = ""},
+			{ description = "30",          data = 26, hover = ""},
+			{ description = "32",          data = 28, hover = ""},
+			{ description = "34",          data = 30, hover = ""},
+			{ description = "36",          data = 32, hover = ""},
+		},
+		default = 0
 	},
 
 	{name = "Title", label = Language_En and "Force Control Settings" or "强制操作设置", options = {{description = "", data = ""}}, default = ""},

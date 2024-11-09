@@ -32,6 +32,12 @@ AddClassPostConstruct("widgets/controls", function(self)
     -- self.groundactionhint
     self.groundactionhint:SetOffset(Vector3(0, 120, 0))
 
+    -- self.forwardactionhint
+    self.forwardactionhint = self:AddChild(FollowText(TALKINGFONT, 28))
+    self.forwardactionhint:SetHUD(self.owner.HUD.inst)
+    self.forwardactionhint:SetOffset(Vector3(0, 120, 0))
+    self.forwardactionhint:Hide()
+
     local HighlightSceneItem = function(target, followerWidget, itemhighlight)
         if target ~= nil and followerWidget.text.string ~= nil then
             itemhighlight:Show()
@@ -85,6 +91,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             self.attackhint:SetTarget(nil)
             self.attackhint_itemhighlight:SetTarget(nil)
             self.groundactionhint:SetTarget(nil)
+            self.forwardactionhint:SetTarget(nil)
             return
         end
 
@@ -94,6 +101,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             self:SetHUDSize()
         end
 
+        local Language_En = CHANGE_LANGUAGE_ENGLISH
         local controller_mode = TheInput:ControllerAttached()
         local controller_id = TheInput:GetControllerID()
 
@@ -133,6 +141,7 @@ AddClassPostConstruct("widgets/controls", function(self)
         if controller_mode and (CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU or not self.craftingmenu:IsCraftingOpen()) and self.owner:IsActionsVisible() and not CHANGE_HIDE_THEWORLD_ITEM_HINT then
             local ground_l, ground_r = self.owner.components.playercontroller:GetGroundUseAction()
             local ground_cmds = {}
+            local forward_cmds = {}
             local isplacing = self.owner.components.playercontroller.deployplacer ~= nil or self.owner.components.playercontroller.placer ~= nil
             local A_shown = false
             local Y_shown = false
@@ -198,6 +207,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
 
             local controller_action_from_space = false
+            local controller_action_is_step_forward_and_drop = false
             local controller_target = self.owner.components.playercontroller:GetControllerTarget()
             local controller_alt_target = self.owner.components.playercontroller:GetControllerAltTarget()
             local controller_attack_target = self.owner.components.playercontroller:GetControllerAttackTarget()
@@ -205,10 +215,15 @@ AddClassPostConstruct("widgets/controls", function(self)
             local l, r
             if controller_target ~= nil then
                 l, r = self.owner.components.playercontroller:GetSceneItemControllerAction(controller_target)
-                if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
-                    l = self.owner.components.playercontroller:GetActionButtonAction()
-                    controller_action_from_space = true
-                end
+            end
+            if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
+                l = self.owner.components.playercontroller:GetActionButtonAction()
+                controller_action_from_space = true
+            end
+            if not controller_action_from_space and (l == nil or (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON))) and self.owner.replica.inventory:GetActiveItem() ~= nil and
+                not TheWorld.Map:IsPassableAtPoint(self.owner.components.playercontroller.Change_drop_position:Get()) and
+                TheWorld.Map:IsOceanTileAtPoint(self.owner.components.playercontroller.Change_drop_position:Get()) then
+                controller_action_is_step_forward_and_drop = true
             end
             local action_string_from_keyboard = controller_action_from_space and " ("..STRINGS.UI.CONTROLSSCREEN.INPUTS[1][32] ..") " or " "
 
@@ -262,6 +277,22 @@ AddClassPostConstruct("widgets/controls", function(self)
                     end
                     self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
                 end
+            end
+            
+            if not A_shown and controller_action_is_step_forward_and_drop then
+                local active_item = self.owner.replica.inventory:GetActiveItem()
+                if active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+                    table.insert(forward_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..STRINGS.ACTIONS.DROP.GENERIC..(Language_En and " into Sea" or "进大海")..(Language_En and " (One)" or " (一个)"))
+                else
+                    table.insert(forward_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..STRINGS.ACTIONS.DROP.GENERIC..(Language_En and " into Sea" or "进大海"))
+                end
+                A_shown = true
+                self.forwardactionhint:Show()
+                self.forwardactionhint:SetTarget(self.owner)
+                self.forwardactionhint.text:SetString(table.concat(forward_cmds, "\n"))
+            else
+                self.forwardactionhint:Hide()
+                self.forwardactionhint:SetTarget(nil)
             end
 
             if controller_target ~= nil then
@@ -456,6 +487,9 @@ AddClassPostConstruct("widgets/controls", function(self)
 
             self.groundactionhint:Hide()
             self.groundactionhint:SetTarget(nil)
+
+            self.forwardactionhint:Hide()
+            self.forwardactionhint:SetTarget(nil)
         end
 
         if not self.owner:HasTag("idle") then
@@ -469,6 +503,7 @@ AddClassPostConstruct("widgets/controls", function(self)
         self.playeraltactionhint:SetScreenOffset(0,0)
         self.attackhint:SetScreenOffset(0,0)
         self.groundactionhint:SetScreenOffset(0,0)
+        self.forwardactionhint:SetScreenOffset(0,0)
 
         local AdjustLocation = function(x_axis, first, second)
             if first == nil or second == nil then
@@ -533,6 +568,11 @@ AddClassPostConstruct("widgets/controls", function(self)
         AdjustLocation(true, self.playeraltactionhint, self.groundactionhint)
         AdjustLocation(true, self.attackhint, self.groundactionhint)
 
+        AdjustLocation(true, self.playeractionhint, self.forwardactionhint)
+        AdjustLocation(true, self.playeraltactionhint, self.forwardactionhint)
+        AdjustLocation(true, self.attackhint, self.forwardactionhint)
+        AdjustLocation(true, self.groundactionhint, self.forwardactionhint)
+
         HighlightSceneItem(self.owner.components.playercontroller.controller_target, self.playeractionhint, self.playeractionhint_itemhighlight)
         HighlightSceneItem(self.owner.components.playercontroller.controller_alt_target, self.playeraltactionhint, self.playeraltactionhint_itemhighlight)
         HighlightSceneItem(self.owner.components.playercontroller.controller_attack_target, self.attackhint, self.attackhint_itemhighlight)
@@ -559,6 +599,9 @@ AddClassPostConstruct("widgets/controls", function(self)
 
             self.groundactionhint:Hide()
             self.groundactionhint:SetTarget(nil)
+
+            self.forwardactionhint:Hide()
+            self.forwardactionhint:SetTarget(nil)
             return OnUpdate_Old(self, dt, ...)
         end
     end

@@ -153,6 +153,34 @@ AddComponentPostInit("playercontroller", function(self)
 		return store_success
 	end
 
+	self.DoControllerOneStepForwardAndDropActiveItem = function (self, item, single)
+		local act = self.inst.components.playeractionpicker:GetLeftClickActions(self.Change_drop_position)[1]
+
+		if item ~= nil and act ~= nil and act.action == ACTIONS.DROP then
+			local spellbook, spell_id
+			if self:IsAOETargeting() then
+				spellbook = self:GetActiveSpellBook()
+				if spellbook ~= nil then
+					spell_id = spellbook.components.spellbook:GetSelectedSpell()
+				end
+			end
+			local platform, pos_x, pos_z = self:GetPlatformRelativePosition(self.Change_drop_position.x, self.Change_drop_position.z)
+			if self.locomotor == nil then
+				-- NOTES(JBK): Does not call locomotor component functions needed for pre_action_cb, manual call here.
+				if act.action.pre_action_cb ~= nil then
+					act.action.pre_action_cb(act)
+				end
+				SendRPCToServer(RPC.LeftClick, act.action.code, pos_x, pos_z, nil, true, single and 8 or nil, act.action.canforce, act.action.mod_name, platform, platform ~= nil, spellbook, spell_id)
+			elseif self:CanLocomote() then
+				act.preview_cb = function()
+					SendRPCToServer(RPC.LeftClick, act.action.code, pos_x, pos_z, nil, true, single and 8 or nil, nil, act.action.mod_name, platform, platform ~= nil, spellbook, spell_id)
+				end
+			end
+			act.options.wholestack = not single
+			self:DoAction(act, spellbook)
+		end
+	end
+
 	-- New Added
 	local ChangePlayerController = function (self, control, inv_item, active_item, slot, container, target, left, right)
 		self:ClearActionHold()
@@ -1091,6 +1119,7 @@ AddComponentPostInit("playercontroller", function(self)
 			UpdateControllerInteractionAltTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
 			UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 		end
+		self.Change_drop_position = Vector3(x + dirx, y, z + dirz)
 	end
 
 	-- Not Changed
@@ -1128,10 +1157,16 @@ AddComponentPostInit("playercontroller", function(self)
 
 	local DoControllerActionButton_Old = self.DoControllerActionButton
 	self.DoControllerActionButton = function (self, ...)
+		local active_obj = self.inst.replica.inventory:GetActiveItem()
 		if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) and
-			(self.placer == nil or self.placer_recipe == nil) and self.deployplacer == nil and self:IsEnabled() and not self:IsAOETargeting() and
+			self.placer == nil and self.placer_recipe == nil and self.deployplacer == nil and self:IsEnabled() and not self:IsAOETargeting() and
 			(CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) then
 			self:DoActionButton()
+		elseif (self.controller_target_action == nil or (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON))) and active_obj ~= nil and
+			self.placer == nil and self.placer_recipe == nil and self.deployplacer == nil and self:IsEnabled() and not self:IsAOETargeting() and
+			(CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and
+			not TheWorld.Map:IsPassableAtPoint(self.Change_drop_position:Get()) and TheWorld.Map:IsOceanTileAtPoint(self.Change_drop_position:Get()) then
+			self:DoControllerOneStepForwardAndDropActiveItem(active_obj, TheInput:IsControlPressed(CHANGE_CONTROL_LEFT))
 		else
 			DoControllerActionButton_Old(self, ...)
 		end

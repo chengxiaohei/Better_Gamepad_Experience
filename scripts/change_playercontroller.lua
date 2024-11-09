@@ -424,7 +424,7 @@ AddComponentPostInit("playercontroller", function(self)
 			local active_obj = self.inst.replica.inventory:GetActiveItem()
 			local slot, container = self:GetCursorInventorySlotAndContainer() ---------------------------------------
 			local target = self:GetControllerTarget()
-			ChangePlayerController(self, control, inv_obj, active_obj, slot, container, target, Input:IsControlPressed(CHANGE_CONTROL_LEFT), Input:IsControlPressed(CHANGE_CONTROL_RIGHT))
+			ChangePlayerController(self, control, inv_obj, active_obj, slot, container, target, TheInput:IsControlPressed(CHANGE_CONTROL_LEFT), TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT))
 		end
 	end
 

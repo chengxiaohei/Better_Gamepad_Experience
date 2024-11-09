@@ -1184,7 +1184,7 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 			if act == nil or (act ~= nil and obj == nil and not_force and is_reticule) then
 				act = self:GetGroundUseSpecialAction(nil, true)
-				if act ~= nil and not not_force and is_reticule then
+				if act ~= nil and not not_force then
 					obj = nil
 					isspecial = true
 				else

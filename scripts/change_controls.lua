@@ -250,7 +250,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
             if not isplacing and r == nil and alt_r == nil and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
-                if not B_shown and ground_r ~= nil and self.owner.replica.inventory:GetActiveItem() == nil and not (not_force and is_reticule) then
+                if not B_shown and ground_r ~= nil and self.owner.replica.inventory:GetActiveItem() == nil and not not_force then
                     table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
                     B_shown = true
                     self.groundactionhint:Show()

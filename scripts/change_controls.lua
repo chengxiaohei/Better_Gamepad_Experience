@@ -317,7 +317,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     Y_shown = true
                 end
                 if not X_shown and controller_target == controller_attack_target then
-                    if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                    if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
                         table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. r:GetActionString())
                     else
                         table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
@@ -383,7 +383,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
 
                 if not X_shown and controller_alt_target == controller_attack_target then
-                    if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                    if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
                         table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. alt_r:GetActionString())
                     else
                         table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
@@ -451,7 +451,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     Y_shown = true
                 end
                 if not X_shown then
-                    if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                    if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
                         table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. atk_r:GetActionString())
                     else
                         table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)

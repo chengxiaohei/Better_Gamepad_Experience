@@ -410,7 +410,7 @@ AddComponentPostInit("playercontroller", function(self)
 			local attack_target = self:GetControllerAttackTarget()
 			local _, attack_target_alt_action = self:GetSceneItemControllerAction(attack_target)
 			if equiped_item and equiped_item.controller_should_use_attack_target and attack_target_alt_action
-				and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+				and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 				self:DoControllerAltActionButton(attack_target)
 			else
 				if self.ismastersim then

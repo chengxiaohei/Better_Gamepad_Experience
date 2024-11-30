@@ -24,7 +24,6 @@ CHANGE_FORCE_BUTTON_LEVEL2 = GetModConfigData("enable_force_control") and CHANGE
 
 CHANGE_IS_FORCE_ATTACK        = CHANGE_FORCE_BUTTON and GetModConfigData("force_attack_target")  -- true or false
 CHANGE_IS_FORCE_PING_RETICULE = CHANGE_FORCE_BUTTON and GetModConfigData("force_ground_actions")  -- true or false
-CHANGE_IS_FORCE_SPACE_ACTION  = CHANGE_FORCE_BUTTON and GetModConfigData("force_space")
 CHANGE_IS_FORCE_PAUSE_QUICKLY = CHANGE_FORCE_BUTTON and GetModConfigData("force_pause")
 
 CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU  = GetModConfigData("change_craftingmenu")

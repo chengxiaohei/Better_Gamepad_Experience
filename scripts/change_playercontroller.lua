@@ -521,16 +521,6 @@ AddComponentPostInit("playercontroller", function(self)
 			return
 		end
 
-		if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
-			local action = self:GetActionButtonAction()
-			if action ~= nil and action.target ~= nil then
-				self.controller_target = action.target
-				self.controller_target_action = action
-				self.controller_target_age = 0
-			end
-			return
-		end
-
 		if self.controller_target ~= nil
 			and (not self.controller_target:IsValid() or
 				self.controller_target:HasTag("INLIMBO") or
@@ -1157,12 +1147,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 	local DoControllerActionButton_Old = self.DoControllerActionButton
 	self.DoControllerActionButton = function (self, ...)
-		local active_obj = self.inst.replica.inventory:GetActiveItem()
-		if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) and
-			self.placer == nil and self.placer_recipe == nil and self.deployplacer == nil and self:IsEnabled() and not self:IsAOETargeting() and
-			(CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) then
-			self:DoActionButton()
-		elseif (self.controller_target_action == nil or (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON))) and active_obj ~= nil and
+		if (self.controller_target_action == nil or (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON))) and active_obj ~= nil and
 			self.placer == nil and self.placer_recipe == nil and self.deployplacer == nil and self:IsEnabled() and not self:IsAOETargeting() and
 			(CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and
 			not TheWorld.Map:IsPassableAtPoint(self.Change_drop_position:Get()) and TheWorld.Map:IsOceanTileAtPoint(self.Change_drop_position:Get()) then

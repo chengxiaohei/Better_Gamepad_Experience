@@ -206,7 +206,6 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
             end
 
-            local controller_action_from_space = false
             local controller_action_is_step_forward_and_drop = false
             local controller_target = self.owner.components.playercontroller:GetControllerTarget()
             local controller_alt_target = self.owner.components.playercontroller:GetControllerAltTarget()
@@ -216,16 +215,11 @@ AddClassPostConstruct("widgets/controls", function(self)
             if controller_target ~= nil then
                 l, r = self.owner.components.playercontroller:GetSceneItemControllerAction(controller_target)
             end
-            if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_SPACE_ACTION and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON_LEVEL2) then
-                l = self.owner.components.playercontroller:GetActionButtonAction()
-                controller_action_from_space = true
-            end
-            if not controller_action_from_space and (l == nil or (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON))) and self.owner.replica.inventory:GetActiveItem() ~= nil and
+            if (l == nil or (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON))) and self.owner.replica.inventory:GetActiveItem() ~= nil and
                 not TheWorld.Map:IsPassableAtPoint(self.owner.components.playercontroller.Change_drop_position:Get()) and
                 TheWorld.Map:IsOceanTileAtPoint(self.owner.components.playercontroller.Change_drop_position:Get()) then
                 controller_action_is_step_forward_and_drop = true
             end
-            local action_string_from_keyboard = controller_action_from_space and " ("..STRINGS.UI.CONTROLSSCREEN.INPUTS[1][32] ..") " or " "
 
             local alt_l, alt_r
             if controller_alt_target ~= nil then
@@ -325,7 +319,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     X_shown = true
                 end
                 if not A_shown and l ~= nil then
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. action_string_from_keyboard .. l:GetActionString())
+                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. l:GetActionString())
                     A_shown = true
                 end
                 if not B_shown and r ~= nil and controller_target == controller_alt_target then

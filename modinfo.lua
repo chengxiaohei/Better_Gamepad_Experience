@@ -382,17 +382,6 @@ configuration_options = {
 		default = true
 	},
 	{
-		name = "force_space",
-		label = Language_En and "Force Space Actions" or "强制使用空格键",
-		hover = Language_En and "Hold Both Bumper Button ( "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Bumper.." ) and Press "..GamepadButtons.Button_A.." to Interact with The World Just as Press Space Button."
-							or  "同时按住两个肩键 ( "..GamepadButtons.Left_Bumper.." 和 "..GamepadButtons.Right_Bumper.." )，然后按下 "..GamepadButtons.Button_A.." 实现与按下键盘空格键一样的功能",
-		options = {
-			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用"},
-			{ description = "No",            data = false, hover = Language_En and "Disable." or "不启用"},
-		},
-		default = true
-	},
-	{
 		name = "force_pause",
 		label = Language_En and "Force Pause Server" or "强制暂停服务器",
 		hover = Language_En and "Hold Force Button ( "..GamepadButtons.Left_Bumper.." ) and Press "..GamepadButtons.Start.." to Force Pause Server."

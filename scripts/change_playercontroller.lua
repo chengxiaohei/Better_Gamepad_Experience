@@ -643,6 +643,13 @@ AddComponentPostInit("playercontroller", function(self)
 							if v:HasTag("hasfurnituredecoritem") then
 								score = score * 0.5
 							end
+							
+							local skip_target = false
+							if (v.prefab == "trap_teeth" or v.prefab == "trap_teeth_maxwell" or v.prefab == "trap_bramble") and
+								(v:HasTag("minesprung") or v:HasTag("mineactive")) and
+								not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+								skip_target = true
+							end
 
 							-- print(v, angle_component, dist_component, mult, add, score)
 
@@ -654,7 +661,7 @@ AddComponentPostInit("playercontroller", function(self)
 								score = score * 10
 							end
 
-							if CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen() then
+							if (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and not skip_target then
 								if score < target_score or
 									(   score == target_score and
 										(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or

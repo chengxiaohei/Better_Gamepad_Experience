@@ -70,6 +70,7 @@ CHANGE_MAPPING_LB_Y = GetModConfigData("MAPPING_LB_Y")
 CHANGE_MAPPING_RB_Y = GetModConfigData("MAPPING_RB_Y")
 CHANGE_MAPPING_LB_RB_Y = GetModConfigData("MAPPING_LB_RB_Y")
 
+modimport("scripts/change_frontend")
 modimport("scripts/change_functions")
 modimport("scripts/change_staff")
 modimport("scripts/change_mapscreen")

@@ -445,10 +445,6 @@ AddComponentPostInit("playercontroller", function(self)
 			return
 		end
 
-		if self.inst.HUD:IsCraftingOpen() then
-			return
-		end
-
 		local isenabled, ishudblocking = self:IsEnabled()
 		if not isenabled and not ishudblocking then
 			return

@@ -1150,6 +1150,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 	local DoControllerActionButton_Old = self.DoControllerActionButton
 	self.DoControllerActionButton = function (self, ...)
+		local active_obj = self.inst.replica.inventory:GetActiveItem()
 		if (self.controller_target_action == nil or (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON))) and active_obj ~= nil and
 			self.placer == nil and self.placer_recipe == nil and self.deployplacer == nil and self:IsEnabled() and not self:IsAOETargeting() and
 			(CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and

@@ -1442,6 +1442,16 @@ AddComponentPostInit("playercontroller", function(self)
 		LoadGeometricPlacementCtrlOption()
 	end
 
+	-- Only for query correct "placer_item" value in OnUpdate Function 
+	local GetCursorInventoryObject_Old = self.GetCursorInventoryObject
+	self.GetCursorInventoryObject = function(self, ...)
+		local result = GetCursorInventoryObject_Old(self, ...)
+		if self.deploy_mode then
+			result = self.inst.replica.inventory:GetActiveItem() or result
+		end
+		return result
+	end
+
 	local OnUpdate_Old = self.OnUpdate
 	self.OnUpdate = function (self, dt, ...)
 		if TheInput:ControllerAttached() then

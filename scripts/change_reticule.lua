@@ -28,11 +28,12 @@ AddPrefabPostInitAny(function(inst)
 end)
 
 AddComponentPostInit("reticule", function(self)
+    self.clear_memory_flag = false
 
     local OnCameraUpdate_Old = self.OnCameraUpdate
     self.OnCameraUpdate = function (self, dt, ...)
         if not (self.inst:HasTag("boat") or self.inst:HasTag("boatcannon") or self.inst.prefab == "winona") then
-            if not self.origin_twinstickmode and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+            if not self.origin_twinstickmode and self.clear_memory_flag == false and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                 self.twinstickmode = 1
                 self.twinstickrange = self.twinstickrange or 8  -- default is 8
             else
@@ -75,6 +76,7 @@ AddComponentPostInit("reticule", function(self)
     -- Found a honey place to clean up
     local CreateReticule_Old = self.CreateReticule
     self.CreateReticule = function (self, ...)
+        self.clear_memory_flag = false
         self.twinstickx_mode1 = nil
         self.twinstickz_mode1 = nil
         self.twinstickoverride_mode1 = nil

@@ -129,10 +129,6 @@ function GetQuickUseString(inv_slot, act)
             slot = GetModConfigData("MAPPING_LB_RSTICK"),
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_4)
         },
-        MAPPING_RB_RSTICK = {
-            slot = GetModConfigData("MAPPING_RB_RSTICK"),
-            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_4)
-        },
         MAPPING_LB_RB_RSTICK = {
             slot = GetModConfigData("MAPPING_LB_RB_RSTICK"),
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_4)

@@ -47,7 +47,16 @@ AddClassPostConstruct("screens/playerhud", function(self)
             elseif control == CONTROL_MENU_MISC_3 then
                 TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_LSTICK, CHANGE_MAPPING_RB_LSTICK, CHANGE_MAPPING_LB_RB_LSTICK, true)
             elseif control == CONTROL_MENU_MISC_4 then
-                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, CHANGE_MAPPING_RB_RSTICK, CHANGE_MAPPING_LB_RB_RSTICK, true)
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, true) then
+                    if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+                        if self.owner.components.playercontroller.reticule then
+                            self.owner.components.playercontroller.reticule.clear_memory_flag = true
+                            self.owner.components.playercontroller.reticule.twinstickx_mode1 = nil
+                            self.owner.components.playercontroller.reticule.twinstickz_mode1 = nil
+                            self.owner.components.playercontroller.reticule.twinstickoverride_mode1 = nil
+                        end
+                    end
+                end
             elseif control == CONTROL_INVENTORY_EXAMINE then
                 TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true)
             elseif control == CONTROL_OPEN_INVENTORY then
@@ -112,8 +121,15 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     return true
                 end
             elseif control == CONTROL_TOGGLE_PLAYER_STATUS then
-                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, CHANGE_MAPPING_RB_RSTICK, CHANGE_MAPPING_LB_RB_RSTICK, false) then
-                    self:ShowPlayerStatusScreen(true)
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, false) then
+                    if not self.owner.components.playercontroller.reticule or
+                        not self.owner.components.playercontroller.reticule.clear_memory_flag then
+                        self:ShowPlayerStatusScreen(true)
+                    end
+                end
+                -- Re-Enable reticule control
+                if self.owner.components.playercontroller.reticule then
+                    self.owner.components.playercontroller.reticule.clear_memory_flag = false
                 end
                 return true
             elseif control == CONTROL_TOGGLE_SAY then

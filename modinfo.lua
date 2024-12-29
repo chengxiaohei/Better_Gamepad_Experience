@@ -57,11 +57,10 @@ description = Language_En and [[
 * It's Best to Keep the Default Control Settings in the Settings.
 * Setting Separated Backpack Layout while Using Gamepad
 * Move Camera with ]]..GamepadButtons.Left_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 
-* Move Action Point with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 
+* Move Action Point with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[, Restore to Default with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Stick..[[ 
 * Select Items in the Inventroy Bar with ]]..GamepadButtons.Right_Trigger..[[ 
 * Move Items Between Opened Containers with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 
 * Attack Friendly Creatures with Force Button ]]..GamepadButtons.Left_Bumper..[[ and Attack Button ]]..GamepadButtons.Button_X..[[ 
-* Trigger the Same Function as the Space Bar on the Keyboard with ]]..GamepadButtons.Left_Bumper..[[ ]]..GamepadButtons.Right_Bumper..[[ and Action Button ]]..GamepadButtons.Button_A..[[ 
 * Teleport with Force Button ]]..GamepadButtons.Left_Bumper..[[ and AltAction Button ]]..GamepadButtons.Button_B..[[ 
 * While Focus on Crafting Menu Pinbar, Use ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Skins and Use ]]..GamepadButtons.Right_Bumper..[[ + ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Pages
 * Customize your Shortcut Key Mapping
@@ -69,18 +68,17 @@ description = Language_En and [[
 * 开启本Mod后，最好将系统设置中的控制器设置保持默认。
 * 在使用手柄时，也可以在系统设置中设置背包布局了
 * 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动视角
-* 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动操作目标点
+* 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动操作目标点，使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Stick..[[ 来恢复至默认状态
 * 使用 ]]..GamepadButtons.Right_Trigger..[[ 从物品栏中选取物品
 * 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 在打开的容器之间移动物品
 * 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加攻击按钮 ]]..GamepadButtons.Button_X..[[ 攻击友好生物
-* 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Bumper..[[ 加动作按钮 ]]..GamepadButtons.Button_A..[[ 实现与按下键盘空格键一样的功能
 * 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加副动作按钮 ]]..GamepadButtons.Button_B..[[ 进行传送等操作
 * 当光标在左侧的快捷制作栏上时，使用]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换皮肤，使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 切换页面
 * 自定义快捷键映射
 ]]
 
 author = "程小黑OvO"
-version = "0.1.19"
+version = "0.1.20"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"

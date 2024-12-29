@@ -976,7 +976,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 								if isally then
 									score = score * .25
-								elseif TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+								elseif CHANGE_IS_ATTACK_ALL_DIRECTION or TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 									-- do nothing
 								elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
 									score = score * 5
@@ -984,7 +984,7 @@ AddComponentPostInit("playercontroller", function(self)
 									score = score * 4
 								end
 
-								if TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+								if CHANGE_IS_ATTACK_ALL_DIRECTION or TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 									-- do nothing
 								elseif v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
 									score = score * 6
@@ -993,12 +993,6 @@ AddComponentPostInit("playercontroller", function(self)
 								if v == preferred_target then
 									score = score * 10
 								end
-
-								-- ============================================================================================================= --
-								if CHANGE_IS_ATTACK_ALL_DIRECTION and v == self:GetAttackTarget(true, nil, nil ~= self:GetCombatTarget()) then
-									score = score * 20
-								end
-								-- ============================================================================================================= --
 
 								table.insert(current_controller_targeting_targets, v)
 								if score > target_score then

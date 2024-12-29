@@ -188,8 +188,17 @@ AddComponentPostInit("placer", function(self)
     self.OnUpdate = function (self, dt, ...)
         if TheInput:ControllerAttached() and (not IsOtherModEnabled("Geometric Placement") or GetOtherModConfig("Geometric Placement", "CTRL") or TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
             OnUpdate_New(self, dt, ...)
+            if ThePlayer.components.playercontroller.reticule then
+                ThePlayer.components.playercontroller.reticule.clear_memory_flag = false
+            end
         else
             OnUpdate_Old(self, dt, ...)
+            if ThePlayer.components.playercontroller.reticule then
+                ThePlayer.components.playercontroller.reticule.clear_memory_flag = true
+                ThePlayer.components.playercontroller.reticule.twinstickx_mode1 = nil
+                ThePlayer.components.playercontroller.reticule.twinstickz_mode1 = nil
+                ThePlayer.components.playercontroller.reticule.twinstickoverride_mode1 = nil
+            end
         end
         if self.fake then
             self.inst:Hide()

@@ -518,7 +518,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		if active_item ~= nil and active_item.replica.inventoryitem == nil then
 			active_item = nil
 		end
-		if active_item ~= nil or inv_item ~= nil and not CHANGE_HIDE_INVENTORY_BAR_HINT then
+		if active_item ~= nil or inv_item ~= nil and CHANGE_HIDE_INVENTORY_BAR_HINT ~= "all" then
 			local controller_id = TheInput:GetControllerID()
 
 			if active_item ~= nil and inv_item ~= nil then
@@ -562,6 +562,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			local is_equip_slot = self.active_slot and self.active_slot.equipslot
 			local str = {}
 			local str_below = {}
+			local icon = {}
+			local icon_below = {}
 
 			local left = TheInput:IsControlPressed(CHANGE_CONTROL_LEFT)
 			local right = TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)
@@ -582,6 +584,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.EQUIP
 				end
 				table.insert(str, help_string)
+				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE))
+				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER))
 
 				help_string = ""
 				local always_show_inv = true
@@ -612,6 +616,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					local scene_action = self.owner.components.playercontroller:GetItemUseAction(active_item)
 					if scene_action ~= nil then
 						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. scene_action:GetActionString()
+						table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 					end
 					local use_action = self.owner.components.playercontroller:GetItemUseAction(active_item, inv_item)
 					local self_action = self.owner.components.playercontroller:GetItemSelfAction(active_item)
@@ -620,10 +625,13 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 						if right and active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() then 
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
+						table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					elseif use_action ~= nil then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. use_action:GetActionString()
+						table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					elseif self_action ~= nil then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. self_action:GetActionString()
+						table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					end
 				end
 				if help_string ~= "" then
@@ -635,6 +643,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 						help_string = help_string .. (Language_En and " (One)" or " (一个)")
 					end
 					table.insert(str, help_string)
+					table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP))
 				end
 
 				if always_show_inv or changebox_flag or drop_inv_flag or quick_use_flag then
@@ -642,6 +651,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 						help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.CHANGEBOX
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.CHANGEBOX
 						table.insert(str_below, help_string)
+						table.insert(icon_below, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
+						table.insert(icon_below, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					end
 					if drop_inv_flag then
 						help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
@@ -649,9 +660,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
 						table.insert(str_below, help_string)
+						table.insert(icon_below, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP))
 					end
 					if quick_use_flag then
 						table.insert(str_below, quick_act_string)
+						table.insert(icon_below, "\n" .. quick_act_string)
 					end
 				end
 
@@ -664,21 +677,26 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.EQUIP
 				end
 				table.insert(str, help_string)
+				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE))
+				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER))
 
 				help_string = ""
 				local scene_action = self.owner.components.playercontroller:GetItemUseAction(active_item)
 				if scene_action ~= nil then
 					help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. scene_action:GetActionString()
+					table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 				end
 				local self_action = self.owner.components.playercontroller:GetItemSelfAction(active_item)
 				if self_action ~= nil then
 					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. self_action:GetActionString()
+					table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 				end
 				if help_string ~= "" then
 					table.insert(str, help_string)
 				end
 
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
+				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP))
 				if left and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
 					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
@@ -689,6 +707,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.SELECT
 				help_string = help_string .. (left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() and (Language_En and " (Half)" or " (一半)") or "")
 				table.insert(str, help_string)
+				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE))
+				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER))
 
 				help_string = ""
 				if not is_equip_slot then
@@ -696,28 +716,35 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					if right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) then
 						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.CHANGEBOX
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.CHANGEBOX
+						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
+						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					else
 						if not inv_item.replica.inventoryitem:IsGrandOwner(self.owner) then
 							help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.TAKE
+							table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 						else
 							local scene_action = self.owner.components.playercontroller:GetItemUseAction(inv_item)
 							if scene_action ~= nil then
 								help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. scene_action:GetActionString()
+								table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 							end
 						end
 						local self_action = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
 						if self_action ~= nil then
 							if help_string ~= nil then help_string = help_string .. "  " end
 							help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. self_action:GetActionString()
+							table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 						end
 					end
 				else
 					local self_action = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
 					if self_action ~= nil and self_action.action ~= ACTIONS.UNEQUIP then
 						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. self_action:GetActionString()
+						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 					end
 					if #self.inv > 0 and not (inv_item:HasTag("heavy") or GetGameModeProperty("non_item_equips")) then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.UNEQUIP
+						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					end
 				end
 				if help_string ~= "" then
@@ -725,6 +752,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 				
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
+				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP))
 				if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
 					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
@@ -741,19 +769,31 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 				if quick_act ~= nil and quick_act.action.id ~= "TOGGLE_DEPLOY_MODE" and quick_act.action ~= ACTIONS.UNEQUIP and quick_act_string ~= "" then
 					table.insert(str, quick_act_string)
+					table.insert(icon, "\n" .. quick_act_string)
 				end
 			end
 
 			local was_shown = self.actionstring.shown
-			local old_string = self.actionstringbody:GetString()
-			local old_string_below = self.actionstringbody_below:GetString()
-			local new_string = table.concat(str, '\n')
-			local new_string_below = table.concat(str_below, '\n')
-			if old_string ~= new_string or old_string_below ~= new_string_below then
-				self.actionstringbody:SetString(new_string)
-				self.actionstringbody_below:SetString(new_string_below)
-				self.actionstringtime = CURSOR_STRING_DELAY
-				self.actionstring:Show()
+			local old = self.actionstringbody:GetString()
+			local old_below = self.actionstringbody_below:GetString()
+			if CHANGE_INVENTORY_BAR_HINT_REMOVE_ACTION_TEXT then
+				local new_icon = table.concat(icon, " ")
+				local new_icon_below = table.concat(icon_below, " ")
+				if old ~= new_icon or old_below ~= new_icon_below then
+					self.actionstringbody:SetString(new_icon)
+					self.actionstringbody_below:SetString(new_icon_below)
+					self.actionstringtime = CURSOR_STRING_DELAY
+					self.actionstring:Show()
+				end
+			else
+				local new_string = table.concat(str, '\n')
+				local new_string_below = table.concat(str_below, '\n')
+				if old ~= new_string or old_below ~= new_string_below then
+					self.actionstringbody:SetString(new_string)
+					self.actionstringbody_below:SetString(new_string_below)
+					self.actionstringtime = CURSOR_STRING_DELAY
+					self.actionstring:Show()
+				end
 			end
 
 			local w0, h0 = self.actionstringtitle:GetRegionSize()

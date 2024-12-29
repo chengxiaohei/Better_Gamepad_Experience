@@ -6,36 +6,68 @@ AddClassPostConstruct("widgets/controls", function(self)
     self.containerroot_side.parent:MoveToBack()
 
     -- self.playeractionhint
-    self.playeractionhint:SetOffset(Vector3(0, 120, 0))
+    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+        self.playeractionhint:SetOffset(Vector3(0, 100, 0))
+    else
+        self.playeractionhint:SetOffset(Vector3(0, 120, 0))
+    end
 
     -- self.playeractionhint_itemhighlight
-    self.playeractionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+        self.playeractionhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
+    else
+        self.playeractionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    end
     
     self.playeraltactionhint = self:AddChild(FollowText(TALKINGFONT, 28))
     self.playeraltactionhint:SetHUD(self.owner.HUD.inst)
-    self.playeraltactionhint:SetOffset(Vector3(0, 120, 0))
+    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+        self.playeraltactionhint:SetOffset(Vector3(0, 100, 0))
+    else
+        self.playeraltactionhint:SetOffset(Vector3(0, 120, 0))
+    end
     self.playeraltactionhint:Hide()
 
     self.playeraltactionhint_itemhighlight = self:AddChild(FollowText(TALKINGFONT, 28))
     self.playeraltactionhint_itemhighlight:SetHUD(self.owner.HUD.inst)
-    self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+        self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
+    else
+        self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    end
     self.playeraltactionhint_itemhighlight:Hide()
 
     -- self.attackhint
-    self.attackhint:SetOffset(Vector3(0, 120, 0))
+    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+        self.attackhint:SetOffset(Vector3(0, 100, 0))
+    else
+        self.attackhint:SetOffset(Vector3(0, 120, 0))
+    end
 
     self.attackhint_itemhighlight = self:AddChild(FollowText(TALKINGFONT, 28))
     self.attackhint_itemhighlight:SetHUD(self.owner.HUD.inst)
-    self.attackhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+        self.attackhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
+    else
+        self.attackhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    end
     self.attackhint_itemhighlight:Hide()
 
     -- self.groundactionhint
-    self.groundactionhint:SetOffset(Vector3(0, 120, 0))
+    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+        self.groundactionhint:SetOffset(Vector3(0, 100, 0))
+    else
+        self.groundactionhint:SetOffset(Vector3(0, 120, 0))
+    end
 
     -- self.forwardactionhint
     self.forwardactionhint = self:AddChild(FollowText(TALKINGFONT, 28))
     self.forwardactionhint:SetHUD(self.owner.HUD.inst)
-    self.forwardactionhint:SetOffset(Vector3(0, 120, 0))
+    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+        self.forwardactionhint:SetOffset(Vector3(0, 100, 0))
+    else
+        self.forwardactionhint:SetOffset(Vector3(0, 120, 0))
+    end
     self.forwardactionhint:Hide()
 
     local HighlightSceneItem = function(target, followerWidget, itemhighlight)
@@ -138,7 +170,7 @@ AddClassPostConstruct("widgets/controls", function(self)
             end
         end]]
 
-        if controller_mode and (CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU or not self.craftingmenu:IsCraftingOpen()) and self.owner:IsActionsVisible() and not CHANGE_HIDE_THEWORLD_ITEM_HINT then
+        if controller_mode and (CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU or not self.craftingmenu:IsCraftingOpen()) and self.owner:IsActionsVisible() and CHANGE_HIDE_THEWORLD_ITEM_HINT ~= "all" then
             local ground_l, ground_r = self.owner.components.playercontroller:GetGroundUseAction()
             local ground_cmds = {}
             local forward_cmds = {}
@@ -159,10 +191,18 @@ AddClassPostConstruct("widgets/controls", function(self)
                     self.groundactionhint:SetTarget(self.owner.components.playercontroller.deployplacer)
 
                     if not A_shown and self.owner.components.playercontroller.deployplacer.components.placer.can_build then
-                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. self.owner.components.playercontroller.deployplacer.components.placer:GetDeployAction():GetActionString().."\n"..TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                        else
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. self.owner.components.playercontroller.deployplacer.components.placer:GetDeployAction():GetActionString().."\n"..TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                        end
                         A_shown = true
                     elseif not B_shown then
-                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                        else
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                        end
                         B_shown = true
                     end
 
@@ -170,10 +210,18 @@ AddClassPostConstruct("widgets/controls", function(self)
                     self.groundactionhint:Show()
                     self.groundactionhint:SetTarget(self.owner.components.playercontroller.placer)
                     if not A_shown and self.owner.components.playercontroller.placer.components.placer.can_build then
-                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. STRINGS.UI.HUD.BUILD.."\n" .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. STRINGS.UI.HUD.CANCEL.."\n")
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                        else
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. STRINGS.UI.HUD.BUILD.."\n" .. TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. STRINGS.UI.HUD.CANCEL.."\n")
+                        end
                         A_shown = true
                     elseif not B_shown then
-                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. STRINGS.UI.HUD.CANCEL.."\n")
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                        else
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. STRINGS.UI.HUD.CANCEL.."\n")
+                        end
                         B_shown = true
                     end
                 end
@@ -181,15 +229,27 @@ AddClassPostConstruct("widgets/controls", function(self)
                 local aoetargeting = self.owner.components.playercontroller:IsAOETargeting()
                 if ground_r ~= nil then
                     if not B_shown and ground_r.action ~= ACTIONS.CASTAOE and self.owner.replica.inventory:GetActiveItem() == nil and not (not_force and is_reticule) then
-                        table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                        else
+                            table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
+                        end
                         B_shown = true
                     elseif not A_shown and aoetargeting then
-                        table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_r:GetActionString())
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION))
+                        else
+                            table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_r:GetActionString())
+                        end
                         A_shown = true
                     end
                 end
                 if not B_shown and aoetargeting then
-                    table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                    else
+                        table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.UI.HUD.CANCEL)
+                    end
                     B_shown = true
                 end
                 if #ground_cmds > 0 then
@@ -200,7 +260,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     else
                         self.groundactionhint:SetTarget(self.owner)
                     end
-                    self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
+                    self.groundactionhint.text:SetString(table.concat(ground_cmds, CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT and " " or "\n"))
                 else
                     self.groundactionhint:Hide()
                 end
@@ -250,17 +310,25 @@ AddClassPostConstruct("widgets/controls", function(self)
             if not isplacing and l == nil and alt_l == nil and ground_l == nil then
                 ground_l = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, false)
                 if not A_shown and ground_l ~= nil then
-                    table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_l:GetActionString())
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION))
+                    else
+                        table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_l:GetActionString())
+                    end
                     A_shown = true
                     self.groundactionhint:Show()
                     self.groundactionhint:SetTarget(self.owner)
-                    self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
+                    self.groundactionhint.text:SetString(table.concat(ground_cmds, CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT and " " or "\n"))
                 end
             end
             if not isplacing and r == nil and alt_r == nil and ground_r == nil then
                 ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
                 if not B_shown and ground_r ~= nil and self.owner.replica.inventory:GetActiveItem() == nil and not not_force then
-                    table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                    else
+                        table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..ground_r:GetActionString())
+                    end
                     B_shown = true
                     self.groundactionhint:Show()
                     if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_PING_RETICULE then
@@ -269,21 +337,25 @@ AddClassPostConstruct("widgets/controls", function(self)
                     else
                         self.groundactionhint:SetTarget(self.owner)
                     end
-                    self.groundactionhint.text:SetString(table.concat(ground_cmds, "\n"))
+                    self.groundactionhint.text:SetString(table.concat(ground_cmds, CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT and " " or "\n"))
                 end
             end
             
             if not A_shown and controller_action_is_step_forward_and_drop then
                 local active_item = self.owner.replica.inventory:GetActiveItem()
-                if active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
-                    table.insert(forward_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..STRINGS.ACTIONS.DROP.GENERIC..(Language_En and " into Sea" or "进大海")..(Language_En and " (One)" or " (一个)"))
+                if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                    table.insert(forward_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION))
                 else
-                    table.insert(forward_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..STRINGS.ACTIONS.DROP.GENERIC..(Language_En and " into Sea" or "进大海"))
+                    if active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+                        table.insert(forward_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..STRINGS.ACTIONS.DROP.GENERIC..(Language_En and " into Sea" or "进大海")..(Language_En and " (One)" or " (一个)"))
+                    else
+                        table.insert(forward_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..STRINGS.ACTIONS.DROP.GENERIC..(Language_En and " into Sea" or "进大海"))
+                    end
                 end
                 A_shown = true
                 self.forwardactionhint:Show()
                 self.forwardactionhint:SetTarget(self.owner)
-                self.forwardactionhint.text:SetString(table.concat(forward_cmds, "\n"))
+                self.forwardactionhint.text:SetString(table.concat(forward_cmds, CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT and " " or "\n"))
             else
                 self.forwardactionhint:Hide()
                 self.forwardactionhint:SetTarget(nil)
@@ -293,7 +365,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 local cmds = {}
 
                 local adjective = controller_target:GetAdjective()
-                table.insert(cmds, adjective ~= nil and (adjective.." "..controller_target:GetDisplayName()) or controller_target:GetDisplayName())
+                table.insert(cmds, adjective ~= nil and (adjective.." "..controller_target:GetDisplayName() .. "\n") or (controller_target:GetDisplayName() .. "\n"))
 
                 if not Y_shown and (self.owner.CanExamine == nil or self.owner:CanExamine()) and
                     --V2C: Closing the avatar popup takes priority
@@ -307,27 +379,47 @@ AddClassPostConstruct("widgets/controls", function(self)
                         CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
                         STRINGS.UI.HUD.INSPECT
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT))
+                    else
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
+                    end
                     Y_shown = true
                 end
                 if not X_shown and controller_target == controller_attack_target then
-                    if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
-                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. r:GetActionString())
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK))
                     else
-                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                        if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                            table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. r:GetActionString())
+                        else
+                            table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                        end
                     end
                     X_shown = true
                 end
                 if not A_shown and l ~= nil then
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. l:GetActionString())
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION))
+                    else
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. l:GetActionString())
+                    end
                     A_shown = true
                 end
                 if not B_shown and r ~= nil and controller_target == controller_alt_target then
-                    table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. r:GetActionString())
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                    else
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. r:GetActionString())
+                    end
                     B_shown = true
                 end
                 if not Unlock_shown and controller_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2))
+                    else
+                        table.insert(cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    end
                     Unlock_shown = true
                 end
                 if controller_target.quagmire_shoptab ~= nil then
@@ -344,7 +436,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 if #cmds ~= 0 then
                     self.playeractionhint:Show()
                     self.playeractionhint:SetTarget(controller_target)
-                    self.playeractionhint.text:SetString(table.concat(cmds, "\n"))
+                    self.playeractionhint.text:SetString(table.concat(cmds, CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT and " " or "\n"))
                 else
                     self.playeractionhint:Hide()
                     self.playeractionhint:SetTarget(nil)
@@ -358,7 +450,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 local alt_cmds = {}
 
                 local adjective = controller_alt_target:GetAdjective()
-                table.insert(alt_cmds, adjective ~= nil and adjective .. controller_alt_target:GetDisplayName() or controller_alt_target:GetDisplayName())
+                table.insert(alt_cmds, adjective ~= nil and (adjective .. controller_alt_target:GetDisplayName() .. "\n") or (controller_alt_target:GetDisplayName() .. "\n"))
 
                 if not Y_shown and (self.owner.CanExamine == nil or self.owner:CanExamine()) and
                     --V2C: Closing the avatar popup takes priority
@@ -372,31 +464,47 @@ AddClassPostConstruct("widgets/controls", function(self)
                         CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_alt_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
                         STRINGS.UI.HUD.INSPECT
-                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT))
+                    else
+                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
+                    end
                     Y_shown = true
                 end
 
                 if not X_shown and controller_alt_target == controller_attack_target then
-                    if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
-                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. alt_r:GetActionString())
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK))
                     else
-                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                        if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                            table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. alt_r:GetActionString())
+                        else
+                            table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                        end
                     end
                     X_shown = true
                 end
                 if not B_shown and alt_r ~= nil then
-                    table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. alt_r:GetActionString())
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                    else
+                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION) .. " " .. alt_r:GetActionString())
+                    end
                     B_shown = true
                 end
                 if not Unlock_shown and controller_alt_target == controller_attack_target and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(alt_cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2))
+                    else
+                        table.insert(alt_cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    end
                     Unlock_shown = true
                 end
 
                 if #alt_cmds > 1 then
                     self.playeraltactionhint:Show()
                     self.playeraltactionhint:SetTarget(controller_alt_target)
-                    self.playeraltactionhint.text:SetString(table.concat(alt_cmds, "\n"))
+                    self.playeraltactionhint.text:SetString(table.concat(alt_cmds, CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT and " " or "\n"))
                 else
                     self.playeraltactionhint:Hide()
                     self.playeraltactionhint:SetTarget(nil)
@@ -410,7 +518,11 @@ AddClassPostConstruct("widgets/controls", function(self)
                 if self.dismounthintdelay <= 0
                     and self.owner.replica.rider ~= nil
                     and self.owner.replica.rider:IsRiding() then
-                    self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                    else
+                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+                    end
                     B_shown = true
                     self.groundactionhint:Show()
                     self.groundactionhint:SetTarget(self.owner)
@@ -427,7 +539,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 local attack_cmds = {}
 
                 local adjective = controller_attack_target:GetAdjective()
-                table.insert(attack_cmds, adjective ~= nil and adjective .. controller_attack_target:GetDisplayName() or controller_attack_target:GetDisplayName())
+                table.insert(attack_cmds, adjective ~= nil and (adjective .. controller_attack_target:GetDisplayName() .. "\n") or (controller_attack_target:GetDisplayName() .. "\n"))
 
                 if not Y_shown and (self.owner.CanExamine == nil or self.owner:CanExamine()) and
                     --V2C: Closing the avatar popup takes priority
@@ -441,26 +553,38 @@ AddClassPostConstruct("widgets/controls", function(self)
                         CLOSEINSPECTORUTIL.CanCloseInspect(self.owner, controller_attack_target) and
                         STRINGS.ACTIONS.LOOKAT.CLOSEINSPECT or
                         STRINGS.UI.HUD.INSPECT
-                    table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT))
+                    else
+                        table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_INSPECT) .. " " .. actionstr)
+                    end
                     Y_shown = true
                 end
                 if not X_shown then
-                    if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
-                        table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. atk_r:GetActionString())
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK))
                     else
-                        table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                        if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                            table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. atk_r:GetActionString())
+                        else
+                            table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
+                        end
                     end
                     X_shown = true
                 end
                 if not Unlock_shown and self.owner.components.playercontroller:IsControllerTargetLocked() then
-                    table.insert(attack_cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2))
+                    else
+                        table.insert(attack_cmds, STRINGS.UI.WORLDRESETDIALOG.BUTTONPROMPT1 .. TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
+                    end
                     Unlock_shown = true
                 end
 
                 if #attack_cmds > 1 then
                     self.attackhint:Show()
                     self.attackhint:SetTarget(controller_attack_target)
-                    self.attackhint.text:SetString(table.concat(attack_cmds, "\n"))
+                    self.attackhint.text:SetString(table.concat(attack_cmds, CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT and " " or "\n"))
                 else
                     self.attackhint:Hide()
                     self.attackhint:SetTarget(nil)

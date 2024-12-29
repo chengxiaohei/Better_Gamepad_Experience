@@ -142,20 +142,22 @@ configuration_options = {
 		label = Language_En and "Hide Inventory Bar Hint Message" or "隐藏物品栏物品的提示信息",
 		hover = Language_En and "Hide Inventory Bar Hint Message" or "隐藏物品栏物品的提示信息",
 		options = {
-			{ description = "No (Default)", data = false, hover = Language_En and "Show." or "显示"},
-			{ description = "Yes",          data = true,  hover = Language_En and "Hide." or "隐藏"},
+			{ description = "No (Default)", data = "none", hover = Language_En and "Show." or "显示"},
+			{ description = "Action Text",  data = "part", hover = Language_En and "Show Name and Icons" or "显示名称和图标"},
+			{ description = "Yes",          data = "all",  hover = Language_En and "Hide." or "隐藏"},
 		},
-		default = false
+		default = "none"
 	},
 	{
 		name = "hide_world_item_hint",
 		label = Language_En and "Hide World Items Hint Message" or "隐藏世界物品的提示信息",
 		hover = Language_En and "Hide World Items Hint Message" or "隐藏世界物品的提示信息",
 		options = {
-			{ description = "No (Default)", data = false, hover = Language_En and "Show." or "显示"},
-			{ description = "Yes",          data = true,  hover = Language_En and "Hide." or "隐藏"},
+			{ description = "No (Default)", data = "none",    hover = Language_En and "Show." or "显示"},
+			{ description = "Action Text",  data = "part", hover = Language_En and "Show Name and Icons" or "显示名称和图标"},
+			{ description = "Yes",          data = "all",     hover = Language_En and "Hide." or "隐藏"},
 		},
-		default = false
+		default = "none"
 	},
 
 	{name = "Title", label = Language_En and "Camera Control Settings" or "视角控制设置", options = {{description = "", data = ""}}, default = ""},

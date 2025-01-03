@@ -594,6 +594,7 @@ AddComponentPostInit("playercontroller", function(self)
 						or (dsq <= target_rad_sq
 							and (v == self.controller_target or
 								v == self.controller_attack_target or
+								CHANGE_IS_INTERACT_ALL_DIRECTION or
 								dx * dirx + dz * dirz > 0))) and
 						CanEntitySeePoint(self.inst, x1, y1, z1) then
 						local shouldcheck = dsq < 1 -- Do not skip really close entities.
@@ -601,9 +602,12 @@ AddComponentPostInit("playercontroller", function(self)
 							local epos = v:GetPosition()
 							local angletoepos = self.inst:GetAngleToPoint(epos)
 							local angleto = math.abs(anglediff(-heading_angle, angletoepos))
-							shouldcheck = angleto < anglemax
+							shouldcheck = angleto < anglemax or CHANGE_IS_INTERACT_ALL_DIRECTION
 						end
-						if shouldcheck or CHANGE_IS_INTERACT_ALL_DIRECTION then
+						if shouldcheck then
+							-- Get Action Status
+							local lmb, _ = self:GetSceneItemControllerAction(v)
+
 							-- Incorporate the y component after we've performed the inclusion radius test.
 							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
 							-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
@@ -612,12 +616,9 @@ AddComponentPostInit("playercontroller", function(self)
 							local dist = dsq > 0 and math.sqrt(dsq) or 0
 							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
 
-							local _k = (1/4) * max_rad - 1
-							local _y = _k * (dot - 1) + 1
-							local angle_component = _y > 0 and _y or 0   -- finally, angle component still between [0..1]
 
-							-- --keep the angle component between [0..1]
-							-- local angle_component = (dot + 1) / 2
+							--keep the angle component between [0..1]
+							local angle_component = CHANGE_IS_INTERACT_ALL_DIRECTION and 1 or (dot + 1) / 2
 
 							--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
 							local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
@@ -626,7 +627,13 @@ AddComponentPostInit("playercontroller", function(self)
 							local add = dsq < .0625 --[[.25 * .25]] and 1 or 0
 
 							--just a little hysteresis
-							local mult = v == self.controller_target and not v:HasTag("wall") and 1.5 or 1
+							local mult = v == self.controller_target and self.controller_target_action ~= nil and
+								not v:HasTag("wall") and 1.5 or 1
+
+							--select the item that can do action on it.
+							if lmb ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+								mult = mult * 10
+							end
 
 							local score = angle_component * dist_component * mult + add
 
@@ -648,14 +655,6 @@ AddComponentPostInit("playercontroller", function(self)
 							end
 
 							-- print(v, angle_component, dist_component, mult, add, score)
-
-							local lmb, _ = self:GetSceneItemControllerAction(v)
-							local inv_obj = self:GetCursorInventoryObject()
-							local inv_act = inv_obj ~= nil and self:GetItemUseAction(inv_obj, v) or nil
-
-							if (lmb ~= nil or (inv_act ~= nil and inv_act.target == v)) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
-								score = score * 10
-							end
 
 							if (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and not skip_target then
 								if score < target_score or
@@ -687,7 +686,10 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
-		if target ~= self.controller_target or self.controller_target_action ~= target_action then
+		if target ~= self.controller_target or
+		(target_action == nil and self.controller_target_action ~= nil) or
+		(target_action ~= nil and self.controller_target_action == nil) or
+		(target_action ~= nil and self.controller_target_action ~= nil and self.controller_target_action:__tostring() ~= target_action:__tostring()) then
 			self.controller_target = target
 			self.controller_target_action = target_action
 			self.controller_target_age = 0
@@ -775,8 +777,9 @@ AddComponentPostInit("playercontroller", function(self)
 
 					if (dsq < min_rad_sq
 						or (dsq <= alt_target_rad_sq
-							and (v == self.controller_target or
+							and (v == self.controller_alt_target or
 								v == self.controller_attack_target or
+								CHANGE_IS_INTERACT_ALL_DIRECTION or
 								dx * dirx + dz * dirz > 0))) and
 						CanEntitySeePoint(self.inst, x1, y1, z1) then
 						local shouldcheck = dsq < 1 -- Do not skip really close entities.
@@ -784,9 +787,12 @@ AddComponentPostInit("playercontroller", function(self)
 							local epos = v:GetPosition()
 							local angletoepos = self.inst:GetAngleToPoint(epos)
 							local angleto = math.abs(anglediff(-heading_angle, angletoepos))
-							shouldcheck = angleto < anglemax
+							shouldcheck = angleto < anglemax or CHANGE_IS_INTERACT_ALL_DIRECTION
 						end
-						if shouldcheck or CHANGE_IS_INTERACT_ALL_DIRECTION then
+						if shouldcheck then
+							-- Get Action Status
+							local _, rmb = self:GetSceneItemControllerAction(v)
+
 							-- Incorporate the y component after we've performed the inclusion radius test.
 							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
 							-- but we still want to use the y component as a tiebreaker for objects at the same x,z position.
@@ -795,12 +801,8 @@ AddComponentPostInit("playercontroller", function(self)
 							local dist = dsq > 0 and math.sqrt(dsq) or 0
 							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
 
-							local _k = (1/4) * max_rad - 1
-							local _y = _k * (dot - 1) + 1
-							local angle_component = _y > 0 and _y or 0   -- finally, angle component still between [0..1]
-
-							-- --keep the angle component between [0..1]
-							-- local angle_component = (dot + 1) / 2
+							--keep the angle component between [0..1]
+							local angle_component = CHANGE_IS_INTERACT_ALL_DIRECTION and 1 or (dot + 1) / 2
 
 							--distance doesn't matter when you're really close, and then attenuates down from 1 as you get farther away
 							local dist_component = dsq < min_rad_sq and 1 or min_rad_sq / dsq
@@ -810,6 +812,11 @@ AddComponentPostInit("playercontroller", function(self)
 
 							--just a little hysteresis
 							local alt_mult = v == self.controller_alt_target and not v:HasTag("wall") and 1.5 or 1
+
+							--select the item that can do action on it.
+							if rmb ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+								alt_mult = alt_mult * 10
+							end
 
 							local score = angle_component * dist_component * alt_mult + add
 
@@ -824,8 +831,6 @@ AddComponentPostInit("playercontroller", function(self)
 							end
 
 							-- print(v, angle_component, dist_component, alt_mult, add, score)
-
-							local _, rmb = self:GetSceneItemControllerAction(v)
 
 							if rmb ~= nil and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) then
 								if score < alt_target_score or

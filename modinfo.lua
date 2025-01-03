@@ -303,9 +303,8 @@ configuration_options = {
 	{
 		name = "interaction_target_detect_radius",
 		label = Language_En and "Interact Radius" or "可交互目标检测半径",
-		hover = Language_En and "Adjust the Detection Radius of Interactable Items Detection.\n"..
-							"Note: The Larger the Detection Radius, The Smaller the Detection Angle."
-							or "调整检测附近可交互物品时的检测半径\n。注意: 检测半径越大, 检测夹角越小。",
+		hover = Language_En and "Adjust the Detection Radius of Interactable Items Detection."
+							or "调整检测附近可交互物品时的检测半径。",
 		options = {
 			{ description = "6 (Default)", data = 6,  hover = ""},
 			{ description = "9",           data = 9,  hover = ""},

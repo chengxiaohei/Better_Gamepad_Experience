@@ -648,10 +648,13 @@ AddComponentPostInit("playercontroller", function(self)
 							end
 							
 							local skip_target = false
-							if (v.prefab == "trap_teeth" or v.prefab == "trap_teeth_maxwell" or v.prefab == "trap_bramble") and
-								(v:HasTag("minesprung") or v:HasTag("mineactive")) and
-								not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
-								skip_target = true
+							for _, skip_condition in ipairs(skip_target_list) do
+								if skip_condition.prefab == "any" or skip_condition.prefab == v.prefab then
+									for _, tag in ipairs(skip_condition.tags) do
+										if v:HasTag(tag) then skip_target = true end
+									end
+								end
+								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
 							-- print(v, angle_component, dist_component, mult, add, score)
@@ -830,9 +833,19 @@ AddComponentPostInit("playercontroller", function(self)
 								score = score * 0.5
 							end
 
+							local skip_target = false
+							for _, skip_condition in ipairs(skip_alt_target_list) do
+								if skip_condition.prefab == "any" or skip_condition.prefab == v.prefab then
+									for _, tag in ipairs(skip_condition.tags) do
+										if v:HasTag(tag) then skip_target = true end
+									end
+								end
+								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+							end
+
 							-- print(v, angle_component, dist_component, alt_mult, add, score)
 
-							if rmb ~= nil and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) then
+							if rmb ~= nil and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and not skip_target then
 								if score < alt_target_score or
 									(   score == alt_target_score and
 										(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or

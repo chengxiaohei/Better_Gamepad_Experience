@@ -38,7 +38,7 @@ CHANGE_ADD_ATTACKABLE_TARGET_DETECT_RADIUS = GetModConfigData("add_attackable_ta
 
 CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD = GetModConfigData("reverse_rotation_hud_screen")
 CHANGE_IS_REVERSE_CAMERA_ROTATION_MAP = GetModConfigData("reverse_rotation_map_screen")
-CHANGE_IS_REVERSE_CAMERA_ZOOM         = GetModConfigData("reverse_zoom")
+CHANGE_IS_REVERSE_CAMERA_ZOOM         = GetModConfigData("reverse_zoom_hud_screen")
 
 CHANGE_MAPPING_LB_LT = GetModConfigData("MAPPING_LB_LT")
 CHANGE_MAPPING_RB_LT = GetModConfigData("MAPPING_RB_LT")

@@ -200,7 +200,7 @@ configuration_options = {
 		default = false
 	},
 	{
-		name = "reverse_zoom",
+		name = "reverse_zoom_hud_screen",
 		label = Language_En and "Reverse Camera Zoom" or "反转视角缩放",
 		hover = Language_En and "Reverse Camera Zoom" or "反转视角缩放",
 		options = {
@@ -215,6 +215,19 @@ configuration_options = {
 				data = true,
 				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Down.." Zoom In, Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Up.." Zoom Out."
 									or "使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Down.." 拉近视角，使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Up.." 拉远视角。"
+			},
+		},
+		default = false
+	},
+	{
+		name = "reverse_zoom_map_screen",
+		label = Language_En and "Reverse Map Zoom" or "反转地图缩放",
+		hover = Language_En and "Setting in Settings Page" or "在游戏设置页面中设置即可",
+		options = {
+			{
+				description = "None",
+				data = false,
+				hover = ""
 			},
 		},
 		default = false

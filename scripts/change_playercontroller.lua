@@ -607,6 +607,8 @@ AddComponentPostInit("playercontroller", function(self)
 						if shouldcheck then
 							-- Get Action Status
 							local lmb, _ = self:GetSceneItemControllerAction(v)
+							local inv_obj = self:GetCursorInventoryObject()
+							local inv_act = inv_obj ~= nil and self:GetItemUseAction(inv_obj, v) or nil
 
 							-- Incorporate the y component after we've performed the inclusion radius test.
 							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
@@ -631,7 +633,7 @@ AddComponentPostInit("playercontroller", function(self)
 								not v:HasTag("wall") and 1.5 or 1
 
 							--select the item that can do action on it.
-							if lmb ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+							if (lmb ~= nil or inv_act ~= nil) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								mult = mult * 10
 							end
 

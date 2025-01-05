@@ -160,7 +160,7 @@ configuration_options = {
 
 	{name = "Title", label = Language_En and "Camera Control Settings" or "视角控制设置", options = {{description = "", data = ""}}, default = ""},
 	{
-		name = "reverse_rotation",
+		name = "reverse_rotation_hud_screen",
 		label = Language_En and "Reverse Camera Rotation" or "反转视角旋转",
 		hover = Language_En and "Reverse Camera Rotation" or "反转视角旋转",
 		options = {
@@ -175,6 +175,26 @@ configuration_options = {
 				data = true,
 				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Right.." Rotate Camera Left, Use "..GamepadButtons.Left_Bumper.." and "..GamepadButtons.Right_Thumb_Left.." Rotate Camera Right."
 									or "使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Right.." 向左旋转视角，使用 "..GamepadButtons.Left_Bumper.." 加 "..GamepadButtons.Right_Thumb_Left.." 向右旋转视角。"
+			},
+		},
+		default = false
+	},
+	{
+		name = "reverse_rotation_map_screen",
+		label = Language_En and "Reverse Map Rotation" or "反转地图旋转",
+		hover = Language_En and "Reverse Map Rotation" or "反转地图旋转",
+		options = {
+			{
+				description = "No (Default)",
+				data = false,
+				hover = Language_En and "Use "..GamepadButtons.Left_Bumper.." Rotate Map Left, Use "..GamepadButtons.Right_Bumper.." Rotate Map Right."
+									or "使用 "..GamepadButtons.Left_Bumper.." 向左旋转地图，使用 "..GamepadButtons.Right_Bumper.." 向右旋转地图。"
+			},
+			{
+				description = "Yes",
+				data = true,
+				hover = Language_En and "Use "..GamepadButtons.Right_Bumper.." Rotate Map Left, Use "..GamepadButtons.Left_Bumper.." Rotate Map Right."
+									or "使用 "..GamepadButtons.Right_Bumper.." 向左旋转地图，使用 "..GamepadButtons.Left_Bumper.." 向右旋转地图。"
 			},
 		},
 		default = false

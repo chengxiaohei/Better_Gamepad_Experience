@@ -36,8 +36,9 @@ CHANGE_IS_ATTACK_ALL_DIRECTION = GetModConfigData("attack_all_direction") -- Def
 CHANGE_INTERACTION_TARGET_DETECT_RADIUS = GetModConfigData("interaction_target_detect_radius")  --Default: 6
 CHANGE_ADD_ATTACKABLE_TARGET_DETECT_RADIUS = GetModConfigData("add_attackable_target_detect_radius")  -- Default: 0
 
-CHANGE_IS_REVERSE_CAMERA_ROTATION = GetModConfigData("reverse_rotation")
-CHANGE_IS_REVERSE_CAMERA_ZOOM     = GetModConfigData("reverse_zoom")
+CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD = GetModConfigData("reverse_rotation_hud_screen")
+CHANGE_IS_REVERSE_CAMERA_ROTATION_MAP = GetModConfigData("reverse_rotation_map_screen")
+CHANGE_IS_REVERSE_CAMERA_ZOOM         = GetModConfigData("reverse_zoom")
 
 CHANGE_MAPPING_LB_LT = GetModConfigData("MAPPING_LB_LT")
 CHANGE_MAPPING_RB_LT = GetModConfigData("MAPPING_RB_LT")

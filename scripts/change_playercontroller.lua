@@ -454,10 +454,10 @@ AddComponentPostInit("playercontroller", function(self)
 
 		if self.lastrottime == nil or time - self.lastrottime > CHANGE_ROT_REPEAT then
 			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (self.reticule == nil or not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
-				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION and CONTROL_INVENTORY_LEFT or CONTROL_INVENTORY_RIGHT) then
+				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD and CONTROL_INVENTORY_LEFT or CONTROL_INVENTORY_RIGHT) then
 					self:RotLeft()
 					self.lastrottime = time
-				elseif TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION and CONTROL_INVENTORY_RIGHT or CONTROL_INVENTORY_LEFT) then
+				elseif TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD and CONTROL_INVENTORY_RIGHT or CONTROL_INVENTORY_LEFT) then
 					self:RotRight()
 					self.lastrottime = time
 				end

@@ -1305,87 +1305,19 @@ AddComponentPostInit("playercontroller", function(self)
 		DoControllerAltActionButton_New_Old(self, ...)
 	end
 
-	-- Allow Attack while AoeTargeting (Changed a little)
 	local DoControllerAttackButton_Old = self.DoControllerAttackButton
-	local DoControllerAttackButton_New = function (self, target, ...)
-		-- ================================================================================================= --
-		-- if target == nil and (self:IsAOETargeting() or self.inst:HasTag("sitting_on_chair")) then
-		-- 	return
-		-- elseif target ~= nil then
-		if target ~= nil then
-		-- ================================================================================================= --
-			--Don't want to spam the controller attack button when retargetting
-			if not self.ismastersim and (self.remote_controls[CONTROL_CONTROLLER_ATTACK] or 0) > 0 then
-				return
-			end
-
-			if self.inst.sg ~= nil then
-				if self.inst.sg:HasStateTag("attack") then
-					return
-				end
-			elseif self.inst:HasTag("attack") then
-				return
-			end
-
-			if not self.inst.replica.combat:CanHitTarget(target) or
-				IsEntityDead(target, true) or
-				not CanEntitySeeTarget(self.inst, target) then
-				return
-			end
-		else
-			target = self.controller_attack_target
-			if target ~= nil then
-				if target == self.inst.replica.combat:GetTarget() then
-					--Still need to let the server know our controller attack button is down
-					if not self.ismastersim and
-						self.locomotor == nil and
-						self.remote_controls[CONTROL_CONTROLLER_ATTACK] == nil then
-						self.remote_controls[CONTROL_CONTROLLER_ATTACK] = 0
-						SendRPCToServer(RPC.ControllerAttackButton, true)
-					end
-					return
-				elseif not self.inst.replica.combat:CanTarget(target) then
-					target = nil
-				end
-			end
-			--V2C: controller attacks still happen even with no valid target
-			if target == nil and (
-				self.directwalking or
-				self.inst:HasTag("playerghost") or
-				self.inst:HasTag("weregoose") or
-				self.inst.replica.inventory:IsHeavyLifting() or
-				(self.classified and self.classified.inmightygym:value() > 0) or
-				GetGameModeProperty("no_air_attack")
-			) then
-				--Except for player ghosts!
-				return
-			end
-		end
-
-		local act = BufferedAction(self.inst, target, ACTIONS.ATTACK)
-
-		if self.ismastersim then
-			self.inst.components.combat:SetTarget(nil)
-		elseif self.locomotor == nil then
-			self.remote_controls[CONTROL_CONTROLLER_ATTACK] = BUTTON_REPEAT_COOLDOWN
-			SendRPCToServer(RPC.ControllerAttackButton, target, nil, act.action.canforce)
-		elseif self:CanLocomote() then
-			act.preview_cb = function()
-				self.remote_controls[CONTROL_CONTROLLER_ATTACK] = BUTTON_REPEAT_COOLDOWN
-				local isreleased = not TheInput:IsControlPressed(CONTROL_CONTROLLER_ATTACK)
-				SendRPCToServer(RPC.ControllerAttackButton, target, isreleased)
-			end
-		end
-
-		self:DoAction(act)
-	end
-
 	self.DoControllerAttackButton = function (self, target, ...)
-		if TheInput:ControllerAttached() then
-			DoControllerAttackButton_New(self, target, ...)
-		else
-			DoControllerAttackButton_Old(self, target, ...)
+		local IsAOETargeting_Old = self.IsAOETargeting
+		self.IsAOETargeting = function(self, ...) return false end
+		local IsSittingOnChair = self.inst:HasTag("sitting_on_chair")
+		if IsSittingOnChair then
+			self.inst:RemoveTag("sitting_on_chair")
 		end
+		DoControllerAttackButton_Old(self, target, ...)
+		if IsSittingOnChair then
+			self.inst:AddTag("sitting_on_chair")
+		end
+		self.IsAOETargeting = IsAOETargeting_Old
 	end
 
 	local CancelPlacement_Old = self.CancelPlacement

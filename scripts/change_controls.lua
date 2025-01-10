@@ -691,6 +691,20 @@ AddClassPostConstruct("widgets/controls", function(self)
         AdjustLocation(true, self.attackhint, self.forwardactionhint)
         AdjustLocation(true, self.groundactionhint, self.forwardactionhint)
 
+        if IsOtherModEnabled("Insight (Show Me+)") then
+            if self.owner.components.playercontroller.controller_target and self.playeractionhint.text.string ~= nil then
+                self.HighlightActionItem(self, true, true)
+            else
+                if self.primaryInsightText then
+                    self.primaryInsightText:Hide()
+                    self.primaryInsightText:SetTarget(nil)
+                end
+                if self.primaryInsightText2 then
+                    self.primaryInsightText2:Hide()
+                    self.primaryInsightText2:SetTarget(nil)
+                end
+            end
+        end
         HighlightSceneItem(self.owner.components.playercontroller.controller_target, self.playeractionhint, self.playeractionhint_itemhighlight)
         HighlightSceneItem(self.owner.components.playercontroller.controller_alt_target, self.playeraltactionhint, self.playeraltactionhint_itemhighlight)
         HighlightSceneItem(self.owner.components.playercontroller.controller_attack_target, self.attackhint, self.attackhint_itemhighlight)

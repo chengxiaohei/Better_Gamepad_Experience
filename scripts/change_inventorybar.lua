@@ -489,16 +489,24 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		obj.inst:ListenForEvent("continuefrompause", function() obj:SetSize(size * TheFrontEnd:GetHUDScale()) end, hud)
 		obj.inst:ListenForEvent("refreshhudsize", function(hud, scale) obj:SetSize(size * scale) end, hud)
 	end
-	SetActionStringSize(self.actionstringtitle, 24, self.owner.HUD.inst)
-	SetActionStringSize(self.actionstringbody, 18, self.owner.HUD.inst)
 
 	self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 24))
     self.actionstringtitle_below:SetColour(204/255, 180/255, 154/255, 1)
-    self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 18))
-    self.actionstringbody_below:EnableWordWrap(true)
+	self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 18))
+	self.actionstringbody_below:EnableWordWrap(true)
 
-	SetActionStringSize(self.actionstringtitle_below, 24, self.owner.HUD.inst)
-	SetActionStringSize(self.actionstringbody_below, 18, self.owner.HUD.inst)
+	if IsOtherModEnabled("Insight (Show Me+)") then
+		self.actionstringtitle:SetSize(25)
+		self.actionstringbody:SetSize(20)
+		self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 25))
+		self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 20))
+		self.fake_text = self.actionstring:AddChild(Text(TALKINGFONT, 20))
+	else
+		SetActionStringSize(self.actionstringtitle, 24, self.owner.HUD.inst)
+		SetActionStringSize(self.actionstringbody, 18, self.owner.HUD.inst)
+		SetActionStringSize(self.actionstringtitle_below, 24, self.owner.HUD.inst)
+		SetActionStringSize(self.actionstringbody_below, 18, self.owner.HUD.inst)
+	end
 
 	SetTooltipColour_Old = self.SetTooltipColour
 	self.SetTooltipColour = function (self, ...)
@@ -796,6 +804,19 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 			end
 
+			local below_text_offset = 0
+			if IsOtherModEnabled("Insight (Show Me+)") then
+				local insight_description_lines = self.insightText and self.insightText.line_count or 0
+				if insight_description_lines > 0 then
+					local fake_str = {}
+					for _ = 1, insight_description_lines do
+						table.insert(fake_str, " ")
+					end
+					self.fake_text:SetString(table.concat(fake_str, '\n'))
+					_, below_text_offset = self.fake_text:GetRegionSize()
+				end
+			end
+
 			local w0, h0 = self.actionstringtitle:GetRegionSize()
 			local w1, h1 = self.actionstringbody:GetRegionSize()
 			local w2, h2 = self.actionstringtitle_below:GetRegionSize()
@@ -816,16 +837,16 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				-- backpack
 				self.actionstringtitle:SetPosition(-wmax/2, h0/2)
 				self.actionstringbody:SetPosition(-wmax/2, -h1/2)
-				self.actionstringtitle_below:SetPosition(-wmax/2, -h2/2 - h1)
-				self.actionstringbody_below:SetPosition(-wmax/2, -h3/2 - h2 - h1)
+				self.actionstringtitle_below:SetPosition(-wmax/2, -h2/2 - h1 + below_text_offset)
+				self.actionstringbody_below:SetPosition(-wmax/2, -h3/2 - h2 - h1 + below_text_offset)
 				dest_pos.x = dest_pos.x + ((-240) - self.active_slot.container.widget.slotpos[self.active_slot.num].x) * xscale
 
 			elseif self.active_slot.container ~= nil and self.active_slot.container.type == "side_inv_behind" then
 				-- beard
 				self.actionstringtitle:SetPosition(-wmax/2, h0/2)
 				self.actionstringbody:SetPosition(-wmax/2, -h1/2)
-				self.actionstringtitle_below:SetPosition(-wmax/2, -h2/2 - h1)
-				self.actionstringbody_below:SetPosition(-wmax/2, -h3/2 - h2 - h1)
+				self.actionstringtitle_below:SetPosition(-wmax/2, -h2/2 - h1 + below_text_offset)
+				self.actionstringbody_below:SetPosition(-wmax/2, -h3/2 - h2 - h1 + below_text_offset)
 				local degree_dist = (#self.active_slot.container.widget.slotpos - 1) * 20
 				dest_pos.x = dest_pos.x + ((-100) - degree_dist - self.active_slot.container.widget.slotpos[self.active_slot.num].x) * xscale
 			
@@ -833,39 +854,39 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				-- oceanfishrod, slingshot, etc.
 				self.actionstringtitle:SetPosition(wmax/2, h0/2)
 				self.actionstringbody:SetPosition(wmax/2, -h1/2)
-				self.actionstringtitle_below:SetPosition(wmax/2, -h2/2 - h1)
-				self.actionstringbody_below:SetPosition(wmax/2, -h3/2 - h2 - h1)
+				self.actionstringtitle_below:SetPosition(wmax/2, -h2/2 - h1 + below_text_offset)
+				self.actionstringbody_below:SetPosition(wmax/2, -h3/2 - h2 - h1 + below_text_offset)
 				dest_pos.x = dest_pos.x + 100 * xscale
 
 			elseif self.active_slot.side_align_tip then
 				-- in-game containers, chests, fridge
 				self.actionstringtitle:SetPosition(wmax/2, h0/2)
 				self.actionstringbody:SetPosition(wmax/2, -h1/2)
-				self.actionstringtitle_below:SetPosition(wmax/2, -h2/2 - h1)
-				self.actionstringbody_below:SetPosition(wmax/2, -h3/2 - h2 - h1)
+				self.actionstringtitle_below:SetPosition(wmax/2, -h2/2 - h1 + below_text_offset)
+				self.actionstringbody_below:SetPosition(wmax/2, -h3/2 - h2 - h1 + below_text_offset)
 				dest_pos.x = dest_pos.x + self.active_slot.side_align_tip * xscale
 
 			elseif self.active_slot.top_align_tip then
 				-- main inventory
 				self.actionstringtitle:SetPosition(0, h0/2 + h1 + h2 + h3)
 				self.actionstringbody:SetPosition(0, h1/2 + h2 + h3)
-				self.actionstringtitle_below:SetPosition(0, h2/2 + h3)
-				self.actionstringbody_below:SetPosition(0, h3/2)
+				self.actionstringtitle_below:SetPosition(0, h2/2 + h3 + below_text_offset)
+				self.actionstringbody_below:SetPosition(0, h3/2 + below_text_offset)
 				dest_pos.y = dest_pos.y + (self.active_slot.top_align_tip + TIP_YFUDGE) * yscale
 
 			elseif self.active_slot.bottom_align_tip then
 				self.actionstringtitle:SetPosition(0, -h0/2)
 				self.actionstringbody:SetPosition(0, -(h1/2 + h0))
-				self.actionstringtitle_below:SetPosition(0, -(h2/2 + h0 + h1))
-				self.actionstringbody_below:SetPosition(0, -(h3/2 + h0 + h1 + h2))
+				self.actionstringtitle_below:SetPosition(0, -(h2/2 + h0 + h1) + below_text_offset)
+				self.actionstringbody_below:SetPosition(0, -(h3/2 + h0 + h1 + h2) + below_text_offset)
 				dest_pos.y = dest_pos.y + (self.active_slot.bottom_align_tip + TIP_YFUDGE) * yscale
 
 			else
 				-- old default as fallback ?
 				self.actionstringtitle:SetPosition(0, h0/2 + h1 + h2 + h3)
 				self.actionstringbody:SetPosition(0, h1/2 + h2 + h3)
-				self.actionstringtitle_below:SetPosition(0, h2/2 + h3)
-				self.actionstringbody_below:SetPosition(0, h3/2)
+				self.actionstringtitle_below:SetPosition(0, h2/2 + h3 + below_text_offset)
+				self.actionstringbody_below:SetPosition(0, h3/2 + below_text_offset)
 				dest_pos.y = dest_pos.y + (W/2 + TIP_YFUDGE) * yscale
 
 			end

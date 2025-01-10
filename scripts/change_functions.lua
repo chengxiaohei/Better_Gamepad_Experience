@@ -178,7 +178,8 @@ function GetQuickUseString(inv_slot, act)
 end
 
 local ModCompatabilityTable = {
-    ["Geometric Placement"] = "workshop-351325790"
+    ["Geometric Placement"] = "workshop-351325790",
+    ["Insight (Show Me+)"] = "workshop-2189004162",
 }
 
 function IsOtherModEnabled(modname)

@@ -181,6 +181,8 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 	end
 
+	local Double_Click_Gap_Time = GetTime()
+	local Status_Announce_Time = GetTime()
 	-- New Added
 	local ChangePlayerController = function (self, control, inv_item, active_item, slot, container, target, left, right)
 		self:ClearActionHold()
@@ -193,6 +195,14 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif control == CONTROL_INVENTORY_EXAMINE then
 			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) then
 				self:DoControllerInspectItemFromInvTile(active_item or inv_item)
+				local DeltaTime = GetTime() - Double_Click_Gap_Time
+				local Should_Announce = DeltaTime > 0 and DeltaTime < 0.3 and GetTime() - Status_Announce_Time > 1
+				if IsOtherModEnabled("Status Announcements") and Should_Announce and inv_item then
+					local StatusAnnouncer = require("statusannouncer")()
+					StatusAnnouncer:AnnounceItem(self.inst.HUD.controls.inv.active_slot)
+					Status_Announce_Time = GetTime()
+				end
+				Double_Click_Gap_Time = GetTime()
 			end
 		elseif control == CONTROL_INVENTORY_USEONSELF then
 			if left and right and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then

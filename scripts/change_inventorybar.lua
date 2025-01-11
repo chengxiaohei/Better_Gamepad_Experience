@@ -496,11 +496,19 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	self.actionstringbody_below:EnableWordWrap(true)
 
 	if IsOtherModEnabled("Insight (Show Me+)") then
-		self.actionstringtitle:SetSize(25)
-		self.actionstringbody:SetSize(20)
-		self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 25))
-		self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 20))
-		self.fake_text = self.actionstring:AddChild(Text(TALKINGFONT, 20))
+		if CHANGE_LANGUAGE_ENGLISH then
+			self.actionstringtitle:SetSize(25)
+			self.actionstringbody:SetSize(20)
+			self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 25))
+			self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 20))
+			self.fake_text = self.actionstring:AddChild(Text(TALKINGFONT, 20))
+		else
+			self.actionstringtitle:SetSize(31)
+			self.actionstringbody:SetSize(23)
+			self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 31))
+			self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 23))
+			self.fake_text = self.actionstring:AddChild(Text(TALKINGFONT, 23))
+		end
 	else
 		SetActionStringSize(self.actionstringtitle, 24, self.owner.HUD.inst)
 		SetActionStringSize(self.actionstringbody, 18, self.owner.HUD.inst)

@@ -667,9 +667,14 @@ AddComponentPostInit("playercontroller", function(self)
 								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
+							local ignore_skip = false
+							if skip_target and inv_act ~= nil and self.inst.replica.inventory:GetActiveItem() == nil then
+								ignore_skip = true
+							end
+
 							-- print(v, angle_component, dist_component, mult, add, score)
 
-							if (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and not skip_target then
+							if (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and (ignore_skip or not skip_target) then
 								if score < target_score or
 									(   score == target_score and
 										(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or

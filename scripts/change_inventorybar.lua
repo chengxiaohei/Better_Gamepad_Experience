@@ -608,9 +608,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				local changebox_flag = false
 				local drop_inv_flag = false
 				local quick_use_flag = false
-				local _, h, p, b, l, r = self.owner.components.playercontroller:GetAllTypeContainers()
-				if not is_equip_slot and right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) and
-					not (left and inv_item.replica.container ~= nil) then
+				if not is_equip_slot and right and not (left and inv_item.replica.container ~= nil) then
 					changebox_flag = true
 				end
 				if right then
@@ -728,8 +726,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 				help_string = ""
 				if not is_equip_slot then
-					local _, h, p, b, l, r = self.owner.components.playercontroller:GetAllTypeContainers()
-					if right and (h ~= nil or p ~= nil or b ~= nil or l ~= nil or r ~= nil) then
+					if right then
 						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.CHANGEBOX
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.CHANGEBOX
 						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))

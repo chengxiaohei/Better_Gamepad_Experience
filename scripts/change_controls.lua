@@ -264,6 +264,17 @@ AddClassPostConstruct("widgets/controls", function(self)
                 else
                     self.groundactionhint:Hide()
                 end
+
+                if not B_shown and not self.groundactionhint.shown and self.owner.replica.rider ~= nil and self.owner.replica.rider:IsRiding() and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                    else
+                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+                    end
+                    B_shown = true
+                    self.groundactionhint:Show()
+                    self.groundactionhint:SetTarget(self.owner)
+                end
             end
 
             local controller_action_is_step_forward_and_drop = false
@@ -514,27 +525,6 @@ AddClassPostConstruct("widgets/controls", function(self)
                 self.playeraltactionhint:SetTarget(nil)
             end
 
-            if not B_shown and not self.groundactionhint.shown then
-                if self.dismounthintdelay <= 0
-                    and self.owner.replica.rider ~= nil
-                    and self.owner.replica.rider:IsRiding() then
-                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
-                    else
-                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
-                    end
-                    B_shown = true
-                    self.groundactionhint:Show()
-                    self.groundactionhint:SetTarget(self.owner)
-                else
-                    self.groundactionhint:Hide()
-                    self.groundactionhint:SetTarget(nil)
-                end
-            elseif not self.groundactionhint.shown then
-                self.groundactionhint:Hide()
-                self.groundactionhint:SetTarget(nil)
-            end
-
             if controller_attack_target ~= nil then
                 local attack_cmds = {}
 
@@ -608,12 +598,6 @@ AddClassPostConstruct("widgets/controls", function(self)
 
             self.forwardactionhint:Hide()
             self.forwardactionhint:SetTarget(nil)
-        end
-
-        if not self.owner:HasTag("idle") then
-            self.dismounthintdelay = .5
-        elseif self.dismounthintdelay > 0 then
-            self.dismounthintdelay = self.dismounthintdelay - dt
         end
 
         --default offsets

@@ -417,7 +417,7 @@ AddComponentPostInit("playercontroller", function(self)
 			local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 			local attack_target = self:GetControllerAttackTarget()
 			local _, attack_target_alt_action = self:GetSceneItemControllerAction(attack_target)
-			if equiped_item and equiped_item.controller_should_use_attack_target and attack_target_alt_action
+			if equiped_item and equiped_item.controller_should_use_attack_target and attack_target and attack_target_alt_action
 				and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 				self:DoControllerAltActionButton(attack_target)
 			else
@@ -1188,6 +1188,16 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 	end
 
+	local GetGroundUseAction_Old = self.GetGroundUseAction
+	self.GetGroundUseAction = function (self, ...)
+		local lmb, rmb = GetGroundUseAction_Old(self, ...)
+		if self.inst.replica.inventory:GetActiveItem() then
+			rmb = nil
+		end
+		return lmb, rmb
+	end
+
+
 	-- Newly created function
 	self.GetControllerAltTarget = function (self, ...)
 		return self.controller_alt_target ~= nil and self.controller_alt_target:IsValid() and self.controller_alt_target or nil
@@ -1209,51 +1219,63 @@ AddComponentPostInit("playercontroller", function(self)
 
 		self.actionholdtime = GetTime()
 
-		local lmb, act = self:GetGroundUseAction()
-		local isspecial = nil
-		local obj = act ~= nil and act.target or nil
+		local lmb, act, obj, isspecial
 		local not_force = CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_PING_RETICULE and not TheInput:IsControlPressed(CHANGE_FORCE_BUTTON)
 		local is_reticule = self.reticule ~= nil and self.reticule.reticule ~= nil and self.reticule.reticule.entity:IsVisible()
-		if act == nil or (act ~= nil and obj == nil and not_force and is_reticule) then
-			-- ========================================================================= --
-			-- obj = self:GetControllerTarget()
-			obj = target or self:GetControllerAltTarget()
-			-- ========================================================================= --
-			if obj ~= nil then
-				lmb, act = self:GetSceneItemControllerAction(obj)
-				if act ~= nil and act.action == ACTIONS.APPLYCONSTRUCTION then
-					local container = act.target ~= nil and act.target.replica.container
-					if container ~= nil and
-						container.widget ~= nil and
-						container.widget.overrideactionfn ~= nil and
-						container.widget.overrideactionfn(act.target, self.inst)
-						then
-						--e.g. rift offering has a local confirmation popup
-						return
-					end
-				end
-			end
-			if act == nil or (act ~= nil and obj == nil and not_force and is_reticule) then
+		if target ~= nil then
+			obj = target
+			lmb, act = self:GetSceneItemControllerAction(obj)
+		else
+			lmb, act = self:GetGroundUseAction()
+			obj = act ~= nil and act.target or nil
+			-- print("act: ", act, "obj: ", obj)
+
+			-- [[place ground action]] -> act ~= nil 
+				-- [[using oil to row]] -> act ~= nil and obj == nil
+				-- [[stop using magician tool]] -> act ~= nil and obj ~= nil
+
+			if act == nil or (is_reticule and not_force) then
 				act = self:GetGroundUseSpecialAction(nil, true)
 				if act ~= nil and not not_force then
+					-- [[special action]]
 					obj = nil
 					isspecial = true
 				else
 					local rider = self.inst.replica.rider
-					if rider ~= nil and rider:IsRiding() then
+					if rider ~= nil and rider:IsRiding() and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+						-- [[dismount]]
 						obj = self.inst
 						act = BufferedAction(obj, obj, ACTIONS.DISMOUNT)
 					else
-						self:TryAOETargeting()
-						return
+						obj = self:GetControllerAltTarget()
+						if obj ~= nil then
+							-- [[normal alt action]]
+							lmb, act = self:GetSceneItemControllerAction(obj)
+							if act ~= nil and act.action == ACTIONS.APPLYCONSTRUCTION then
+								local container = act.target ~= nil and act.target.replica.container
+								if container ~= nil and
+									container.widget ~= nil and
+									container.widget.overrideactionfn ~= nil and
+									container.widget.overrideactionfn(act.target, self.inst)
+									then
+									--e.g. rift offering has a local confirmation popup
+									return
+								end
+							end
+						else
+							-- [[AOETargeting or AOECharging]]
+							if self:TryAOETargeting() or
+								(self.TryAOECharging and self:TryAOECharging(nil, true)) then
+								-- do nothing
+							end
+							return
+						end
 					end
 				end
 			end
 		end
 
-
-		if self.reticule ~= nil and self.reticule.reticule ~= nil and self.reticule.reticule.entity:IsVisible() and obj == nil then
-			if not_force then return end
+		if is_reticule and not not_force then
 			self.reticule:PingReticuleAt(act:GetDynamicActionPoint())
 		end
 

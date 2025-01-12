@@ -205,10 +205,8 @@ AddComponentPostInit("playercontroller", function(self)
 				Double_Click_Gap_Time = GetTime()
 			end
 		elseif control == CONTROL_INVENTORY_USEONSELF then
-			if left and right and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
+			if left and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
 				PutActiveItemInContainer(self, active_item, inv_item, true)
-			elseif left and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
-				PutActiveItemInContainer(self, active_item, inv_item, false)
 			elseif right and container ~= nil and slot ~= nil and inv_item ~= nil then
 				local cursor_container_type = QueryContainerType(self, container.inst)
 				local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()

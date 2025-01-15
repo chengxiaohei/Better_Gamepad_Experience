@@ -641,7 +641,8 @@ AddComponentPostInit("playercontroller", function(self)
 								not v:HasTag("wall") and 1.5 or 1
 
 							--select the item that can do action on it.
-							if (lmb ~= nil or inv_act ~= nil) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+							if (lmb ~= nil or (inv_obj and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil)) and
+								not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								mult = mult * 10
 							end
 
@@ -668,8 +669,11 @@ AddComponentPostInit("playercontroller", function(self)
 							end
 
 							local ignore_skip = false
-							if skip_target and inv_act ~= nil and self.inst.replica.inventory:GetActiveItem() == nil then
-								ignore_skip = true
+							if skip_target then
+								local active_item = self.inst.replica.inventory:GetActiveItem()
+								if inv_obj ~= nil and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil and active_item == nil then
+									ignore_skip = true
+								end
 							end
 
 							-- print(v, angle_component, dist_component, mult, add, score)
@@ -858,9 +862,18 @@ AddComponentPostInit("playercontroller", function(self)
 								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
+							local ignore_skip = false
+							if skip_target then
+								local active_item = self.inst.replica.inventory:GetActiveItem()
+								local active_action = active_item and active_item.replica.inventoryitem and self:GetItemUseAction(active_item, v) or nil
+								if active_item ~= nil and active_action ~= nil and active_action.action == ACTIONS.REPAIR then
+									ignore_skip = true
+								end
+							end
+
 							-- print(v, angle_component, dist_component, alt_mult, add, score)
 
-							if rmb ~= nil and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and not skip_target then
+							if rmb ~= nil and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and (ignore_skip or not skip_target) then
 								if score < alt_target_score or
 									(   score == alt_target_score and
 										(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or

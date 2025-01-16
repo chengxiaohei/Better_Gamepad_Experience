@@ -668,6 +668,10 @@ AddComponentPostInit("playercontroller", function(self)
 								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
+							if lmb ~= nil and lmb.action == ACTIONS.DROP then
+								skip_target = true
+							end
+
 							local ignore_skip = false
 							if skip_target then
 								local active_item = self.inst.replica.inventory:GetActiveItem()
@@ -862,11 +866,13 @@ AddComponentPostInit("playercontroller", function(self)
 								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
+							if (rmb ~= nil and (rmb.action == ACTIONS.BLINK or rmb.action == ACTIONS.CASTSPELL)) then
+								skip_target = true
+							end
+
 							local ignore_skip = false
 							if skip_target then
-								local active_item = self.inst.replica.inventory:GetActiveItem()
-								local active_action = active_item and active_item.replica.inventoryitem and self:GetItemUseAction(active_item, v) or nil
-								if active_item ~= nil and active_action ~= nil and active_action.action == ACTIONS.REPAIR then
+								if rmb ~= nil and rmb.action == ACTIONS.REPAIR then
 									ignore_skip = true
 								end
 							end

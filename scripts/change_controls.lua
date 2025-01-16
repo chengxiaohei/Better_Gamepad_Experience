@@ -401,7 +401,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
                         table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK))
                     else
-                        if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                        if r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) and not IsOtherModEnabled("Snapping tills") then
                             table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. r:GetActionString())
                         else
                             table.insert(cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
@@ -487,7 +487,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
                         table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK))
                     else
-                        if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                        if alt_r ~= nil and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) and not IsOtherModEnabled("Snapping tills") then
                             table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. alt_r:GetActionString())
                         else
                             table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)
@@ -554,7 +554,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                     if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
                         table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK))
                     else
-                        if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                        if atk_r and equiped_item and equiped_item.controller_should_use_attack_target and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) and not IsOtherModEnabled("Snapping tills") then
                             table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. atk_r:GetActionString())
                         else
                             table.insert(attack_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. STRINGS.UI.HUD.ATTACK)

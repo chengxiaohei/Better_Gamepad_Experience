@@ -181,6 +181,7 @@ local ModCompatabilityTable = {
     ["Geometric Placement"] = "workshop-351325790",
     ["Insight (Show Me+)"] = "workshop-2189004162",
     ["Status Announcements"] = "workshop-343753877",
+    ["Snapping tills"] = "workshop-2302837868",
 }
 
 function IsOtherModEnabled(modname)

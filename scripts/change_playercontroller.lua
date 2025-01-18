@@ -668,7 +668,8 @@ AddComponentPostInit("playercontroller", function(self)
 								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
-							if lmb ~= nil and lmb.action == ACTIONS.DROP then
+							if (lmb ~= nil and lmb.action == ACTIONS.DROP) and 
+								(v:HasTag("walkingplank") or v:HasTags("boatbumper") or v:HasTags("boat")) then
 								skip_target = true
 							end
 
@@ -866,7 +867,8 @@ AddComponentPostInit("playercontroller", function(self)
 								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
-							if (rmb ~= nil and (rmb.action == ACTIONS.BLINK or rmb.action == ACTIONS.CASTSPELL)) then
+							if (rmb ~= nil and (rmb.action == ACTIONS.BLINK or rmb.action == ACTIONS.CASTSPELL)) and
+								(v:HasTag("walkingplank") or v:HasTags("boatbumper") or v:HasTags("boat")) then
 								skip_target = true
 							end
 

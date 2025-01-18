@@ -1254,21 +1254,18 @@ AddComponentPostInit("playercontroller", function(self)
 				-- [[stop using magician tool]] -> act ~= nil and obj ~= nil
 
 			if act == nil or (is_reticule and not_force) then
-				act = self:GetGroundUseSpecialAction(nil, true)
-				if act ~= nil and not not_force then
-					-- [[special action]]
-					obj = nil
-					isspecial = true
+				local rider = self.inst.replica.rider
+				if rider ~= nil and rider:IsRiding() and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+					-- [[dismount]]
+					obj = self.inst
+					act = BufferedAction(obj, obj, ACTIONS.DISMOUNT)
 				else
-					local rider = self.inst.replica.rider
-					if rider ~= nil and rider:IsRiding() and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
-						-- [[dismount]]
-						obj = self.inst
-						act = BufferedAction(obj, obj, ACTIONS.DISMOUNT)
-					else
-						obj = self:GetControllerAltTarget()
-						if obj ~= nil then
+					local alt_obj = self:GetControllerAltTarget()
+					local special_act = self:GetGroundUseSpecialAction(nil, true)
+					if alt_obj ~= nil and special_act ~= nil then
+						if (not CHANGE_IS_FORCE_PING_RETICULE or not_force) then
 							-- [[normal alt action]]
+							obj = alt_obj
 							lmb, act = self:GetSceneItemControllerAction(obj)
 							if act ~= nil and act.action == ACTIONS.APPLYCONSTRUCTION then
 								local container = act.target ~= nil and act.target.replica.container
@@ -1282,13 +1279,38 @@ AddComponentPostInit("playercontroller", function(self)
 								end
 							end
 						else
-							-- [[AOETargeting or AOECharging]]
-							if self:TryAOETargeting() or
-								(self.TryAOECharging and self:TryAOECharging(nil, true)) then
-								-- do nothing
-							end
-							return
+							-- [[special action]]
+							act = special_act
+							obj = nil
+							isspecial = true
 						end
+					elseif alt_obj ~= nil then
+						-- [[normal alt action]]
+						obj = alt_obj
+						lmb, act = self:GetSceneItemControllerAction(obj)
+						if act ~= nil and act.action == ACTIONS.APPLYCONSTRUCTION then
+							local container = act.target ~= nil and act.target.replica.container
+							if container ~= nil and
+								container.widget ~= nil and
+								container.widget.overrideactionfn ~= nil and
+								container.widget.overrideactionfn(act.target, self.inst)
+								then
+								--e.g. rift offering has a local confirmation popup
+								return
+							end
+						end
+					elseif special_act ~= nil then
+						-- [[special action]]
+						act = special_act
+						obj = nil
+						isspecial = true
+					else
+						-- [[AOETargeting or AOECharging]]
+						if self:TryAOETargeting() or
+							(self.TryAOECharging and self:TryAOECharging(nil, true)) then
+							-- do nothing
+						end
+						return
 					end
 				end
 			end

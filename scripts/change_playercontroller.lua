@@ -1301,7 +1301,7 @@ AddComponentPostInit("playercontroller", function(self)
 								return
 							end
 						end
-					elseif special_act ~= nil then
+					elseif special_act ~= nil and not not_force then
 						-- [[special action]]
 						act = special_act
 						obj = nil

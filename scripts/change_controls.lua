@@ -172,6 +172,8 @@ AddClassPostConstruct("widgets/controls", function(self)
 
         if controller_mode and (CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU or not self.craftingmenu:IsCraftingOpen()) and self.owner:IsActionsVisible() and CHANGE_HIDE_THEWORLD_ITEM_HINT ~= "all" then
             local ground_l, ground_r = self.owner.components.playercontroller:GetGroundUseAction()
+            local special_l = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, false)
+            local special_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
             local ground_cmds = {}
             local forward_cmds = {}
             local isplacing = self.owner.components.playercontroller.deployplacer ~= nil or self.owner.components.playercontroller.placer ~= nil
@@ -318,8 +320,8 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
             end
 
-            if not isplacing and l == nil and alt_l == nil and ground_l == nil then
-                ground_l = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, false)
+            if not isplacing and ((l == nil and alt_l == nil) or (special_l and CHANGE_IS_FORCE_PING_RETICULE and not not_force)) and ground_l == nil then
+                ground_l = special_l
                 if not A_shown and ground_l ~= nil then
                     if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
                         table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION))
@@ -332,8 +334,8 @@ AddClassPostConstruct("widgets/controls", function(self)
                     self.groundactionhint.text:SetString(table.concat(ground_cmds, CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT and " " or "\n"))
                 end
             end
-            if not isplacing and r == nil and alt_r == nil and ground_r == nil then
-                ground_r = self.owner.components.playercontroller:GetGroundUseSpecialAction(nil, true)
+            if not isplacing and ((r == nil and alt_r == nil) or (special_r and CHANGE_IS_FORCE_PING_RETICULE and not not_force)) and ground_r == nil then
+                ground_r = special_r
                 if not B_shown and ground_r ~= nil and self.owner.replica.inventory:GetActiveItem() == nil and not not_force then
                     if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
                         table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))

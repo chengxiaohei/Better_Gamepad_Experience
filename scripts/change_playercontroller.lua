@@ -938,7 +938,6 @@ AddComponentPostInit("playercontroller", function(self)
 	local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 		if self.inst:HasTag("playerghost") or self.inst.replica.inventory:IsHeavyLifting() then
 			self.controller_attack_target = nil
-			self.controller_attack_target_ally_cd = nil
 
 			-- we can't target right now; disable target locking
 			self.controller_targeting_lock_target = false
@@ -947,7 +946,6 @@ AddComponentPostInit("playercontroller", function(self)
 
 		local combat = self.inst.replica.combat
 
-		self.controller_attack_target_ally_cd = math.max(0, (self.controller_attack_target_ally_cd or 1) - dt)
 
 		if self.controller_attack_target ~= nil and
 			not (combat:CanTarget(self.controller_attack_target) and
@@ -958,12 +956,6 @@ AddComponentPostInit("playercontroller", function(self)
 			self.controller_targeting_lock_target = false
 			--it went invalid, but we're not resetting the age yet
 		end
-
-		--self.controller_attack_target_age = self.controller_attack_target_age + dt
-		--if self.controller_attack_target_age < .3 then
-			--prevent target flickering
-		--    return
-		--end
 
 		local equipped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 		local forced_rad = equipped_item ~= nil and equipped_item.controller_use_attack_distance or CHANGE_ADD_ATTACKABLE_TARGET_DETECT_RADIUS
@@ -983,7 +975,6 @@ AddComponentPostInit("playercontroller", function(self)
 
 		local target = nil
 		local target_score = 0
-		local target_isally = true
 		local preferred_target =
 			TheInput:IsControlPressed(CONTROL_CONTROLLER_ATTACK) and
 			self.controller_attack_target or
@@ -994,16 +985,10 @@ AddComponentPostInit("playercontroller", function(self)
 		local selected_target_index = 0
 		for i, v in ipairs(nearby_ents) do
 			if v ~= self.inst and (v ~= self.controller_attack_target or i == 1) then
-				local isally = combat:IsAlly(v)
-				if not (isally and
-						self.controller_attack_target_ally_cd > 0 and
-						v ~= preferred_target) and
-					combat:CanTarget(v) then
+				if combat:CanTarget(v) then
 					
-					-- ================================================================================================= --
 					local need_force_attack = IsNeedForceAttack(self, v)
 					if not CHANGE_FORCE_BUTTON or not CHANGE_IS_FORCE_ATTACK or not need_force_attack or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) or self.controller_targeting_lock_target then
-					-- ================================================================================================= --
 
 						--Check distance including y value
 						local x1, y1, z1 = v.Transform:GetWorldPosition()
@@ -1017,22 +1002,15 @@ AddComponentPostInit("playercontroller", function(self)
 						if dsq < max_range * max_range and CanEntitySeePoint(self.inst, x1, y1, z1) then
 							local dist = dsq > 0 and math.sqrt(dsq) or 0
 							local dot = dist > 0 and dx / dist * dirx + dz / dist * dirz or 0
-							-- ========================================================================================== --
 							if (CHANGE_IS_ATTACK_ALL_DIRECTION or dot > 0) or dist < min_rad + phys_rad then
-							-- if dot > 0 or dist < min_rad + phys_rad then
-							-- ========================================================================================== --
 								--now calculate score with physics radius subtracted
 								dist = math.max(0, dist - phys_rad)
-								-- ======================================================================== --
 								if CHANGE_IS_ATTACK_ALL_DIRECTION and dot < 0 then
 									dot = (-0.7) * dot
 								end
-								-- ======================================================================== --
 								local score = dot + 1 - 0.5 * dist * dist / max_rad_sq
 
-								if isally then
-									score = score * .25
-								elseif CHANGE_IS_ATTACK_ALL_DIRECTION or TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+								if CHANGE_IS_ATTACK_ALL_DIRECTION or TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 									-- do nothing
 								elseif CheckControllerPriorityTagOrOverride(v, "epic", v.controller_priority_override_is_epic) then
 									score = score * 5
@@ -1055,13 +1033,10 @@ AddComponentPostInit("playercontroller", function(self)
 									selected_target_index = #current_controller_targeting_targets
 									target = v
 									target_score = score
-									target_isally = isally
 								end
 							end
 						end
-					-- ================================================================================================= --
 					end
-					-- ================================================================================================= --
 				end
 			end
 		end
@@ -1109,28 +1084,15 @@ AddComponentPostInit("playercontroller", function(self)
 					--if giftmachine has (Y) control priority, then it
 					--should also have (X) control priority over walls
 					target = nil
-					target_isally = true
 				end
-			-- ============================================================================================================ --
-			-- elseif self.controller_target:HasTag("wall") and not IsEntityDead(self.controller_target, true) then
-			-- 	--if we have no (X) control target, then give
-			-- 	--it to our (Y) control target if it's a wall
-			-- 	target = self.controller_target
-			-- 	target_isally = false
-			-- ============================================================================================================ --
 			end
 		end
 
 		if target ~= self.controller_attack_target then
 			self.controller_attack_target = target
 			self.controller_targeting_target_index = selected_target_index
-			--self.controller_attack_target_age = 0
 		end
 
-		if not target_isally then
-			--reset ally targeting cooldown
-			self.controller_attack_target_ally_cd = nil
-		end
 	end
 
 	-- Numerous Changed, 
@@ -1154,7 +1116,6 @@ AddComponentPostInit("playercontroller", function(self)
 				UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
 			else
 				self.controller_attack_target = nil
-				self.controller_attack_target_ally_cd = nil
 				self.controller_targeting_lock_target = nil
 			end
 		else

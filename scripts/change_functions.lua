@@ -182,6 +182,7 @@ local ModCompatabilityTable = {
     ["Insight (Show Me+)"] = "workshop-2189004162",
     ["Status Announcements"] = "workshop-343753877",
     ["Snapping tills"] = "workshop-2302837868",
+    ["Hybrid Crafting Menu UI"] = "workshop-2839020127",
 }
 
 function IsOtherModEnabled(modname)

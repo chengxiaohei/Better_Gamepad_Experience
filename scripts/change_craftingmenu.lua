@@ -20,7 +20,10 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
         if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             if control == CONTROL_MENU_MISC_1 then return false end
             if control == CONTROL_MENU_MISC_2 then return false end
-            if control == CONTROL_ACCEPT or control == CONTROL_CONTROLLER_ACTION then return false end
+            if control == CONTROL_ACCEPT or control == CONTROL_CONTROLLER_ACTION and
+                not (IsOtherModEnabled("Hybrid Crafting Menu UI") and self.oldui~=nil and self.oldui.controllercraftingopen) then
+                return false
+            end
             if control == CONTROL_CANCEL or control == CONTROL_CONTROLLER_ALTACTION then return false end
 
             -- change pin and uppin to d-pad up

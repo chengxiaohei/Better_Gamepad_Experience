@@ -819,6 +819,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					end
 					self.fake_text:SetString(table.concat(fake_str, '\n'))
 					_, below_text_offset = self.fake_text:GetRegionSize()
+					-- Fix crash while "Insight" and "45 inventory slot" both open 
+					below_text_offset = below_text_offset or 0
 				end
 			end
 

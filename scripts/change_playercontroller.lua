@@ -659,32 +659,45 @@ AddComponentPostInit("playercontroller", function(self)
 							end
 							
 							local skip_target = false
-							for _, skip_condition in ipairs(skip_target_list) do
-								if skip_condition.prefab == "any" or skip_condition.prefab == v.prefab then
-									for _, tag in ipairs(skip_condition.tags) do
-										if v:HasTag(tag) then skip_target = true end
-									end
+							if not skip_target and (v.prefab == "trap_teeth" or v.prefab == "trap_teeth_maxwell" or v.prefab == "trap_bramble") and
+								(v:HasTag("minesprung") or v:HasTag("mineactive")) then
+								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+							end
+
+							if not skip_target and (v:HasTag("walkingplank") or v:HasTag("boatbumper") or v:HasTag("boat")) then
+								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+								if inv_obj ~= nil and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil and
+									self.inst.replica.inventory:GetActiveItem() == nil then
+									skip_target = false
 								end
-								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+								if lmb ~= nil and lmb.action == ACTIONS.DROP and
+									self.inst.replica.inventory:GetActiveItem() ~= nil then
+									skip_target = true
+								end
 							end
 
-							-- skip this target even OPTION button has been pressed.
-							if (lmb ~= nil and lmb.action == ACTIONS.DROP) and 
-								(v:HasTag("walkingplank") or v:HasTags("boatbumper") or v:HasTags("boat")) then
-								skip_target = true
+							if not skip_target and (v.prefab == "wobysmall" or v.prefab =="wobybig") and
+								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
+								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+								if lmb ~= nil and self.inst.replica.inventory:GetActiveItem() ~= nil then
+									skip_target = false
+								end
+								if self.inst.HUD:IsSpellWheelOpen() or v.replica.container:IsOpenedBy(self.inst) then
+									skip_target = false
+								end
 							end
 
-							local ignore_skip = false
-							if skip_target then
-								local active_item = self.inst.replica.inventory:GetActiveItem()
-								if inv_obj ~= nil and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil and active_item == nil then
-									ignore_skip = true
+							if not skip_target and v:HasTag("critter") and v.prefab ~= "wobysmall" and
+								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
+								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+								if lmb ~= nil and self.inst.replica.inventory:GetActiveItem() ~= nil then
+									skip_target = false
 								end
 							end
 
 							-- print(v, angle_component, dist_component, mult, add, score)
 
-							if (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and (ignore_skip or not skip_target) then
+							if (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and not skip_target then
 								if score < target_score or
 									(   score == target_score and
 										(   (target ~= nil and not (target.CanMouseThrough ~= nil and target:CanMouseThrough())) or
@@ -859,30 +872,33 @@ AddComponentPostInit("playercontroller", function(self)
 							end
 
 							local skip_target = false
-							for _, skip_condition in ipairs(skip_alt_target_list) do
-								if skip_condition.prefab == "any" or skip_condition.prefab == v.prefab then
-									for _, tag in ipairs(skip_condition.tags) do
-										if v:HasTag(tag) then skip_target = true end
+							if not skip_target and (v:HasTag("walkingplank") or v:HasTag("boatbumper") or v:HasTag("boat")) then
+								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+								if rmb ~= nil then
+									if rmb.action == ACTIONS.BLINK or rmb.action == ACTIONS.CASTSPELL then
+										skip_target = true
+									elseif rmb.action == ACTIONS.REPAIR then
+										skip_target = false
 									end
 								end
-								skip_target = (skip_target or #skip_condition.tags == 0) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
-							if (rmb ~= nil and (rmb.action == ACTIONS.BLINK or rmb.action == ACTIONS.CASTSPELL)) and
-								(v:HasTag("walkingplank") or v:HasTags("boatbumper") or v:HasTags("boat")) then
-								skip_target = true
-							end
-
-							local ignore_skip = false
-							if skip_target then
-								if rmb ~= nil and rmb.action == ACTIONS.REPAIR then
-									ignore_skip = true
+							if not skip_target and (v.prefab == "wobysmall" or v.prefab =="wobybig") and
+								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
+								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+								if self.inst.HUD:IsSpellWheelOpen() or v.replica.container:IsOpenedBy(self.inst) then
+									skip_target = false
 								end
+							end
+
+							if not skip_target and v:HasTag("saddled") and
+								rmb ~= nil and rmb.action == ACTIONS.MOUNT then
+								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end
 
 							-- print(v, angle_component, dist_component, alt_mult, add, score)
 
-							if rmb ~= nil and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and (ignore_skip or not skip_target) then
+							if rmb ~= nil and (CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and not skip_target then
 								if score < alt_target_score or
 									(   score == alt_target_score and
 										(   (alt_target ~= nil and not (alt_target.CanMouseThrough ~= nil and alt_target:CanMouseThrough())) or

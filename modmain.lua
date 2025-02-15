@@ -70,22 +70,6 @@ CHANGE_MAPPING_LB_Y = GetModConfigData("MAPPING_LB_Y")
 CHANGE_MAPPING_RB_Y = GetModConfigData("MAPPING_RB_Y")
 CHANGE_MAPPING_LB_RB_Y = GetModConfigData("MAPPING_LB_RB_Y")
 
-skip_target_list = {
-	--[[The relationship between tags is "or"]]
-	{prefab = "trap_teeth", tags = {"minesprung", "mineactive"}},
-	{prefab = "trap_teeth_maxwell", tags = {"minesprung", "mineactive"}},
-	{prefab = "trap_bramble", tags = {"minesprung", "mineactive"}},
-	{prefab = "any", tags = {"walkingplank"}},
-	{prefab = "any", tags = {"boatbumper"}},
-	{prefab = "any", tags = {"boat"}},
-}
-
-skip_alt_target_list = {
-	{prefab = "any", tags = {"walkingplank"}},
-	{prefab = "any", tags = {"boatbumper"}},
-	{prefab = "any", tags = {"boat"}},
-}
-
 modimport("scripts/change_frontend")
 modimport("scripts/change_functions")
 modimport("scripts/change_staff")

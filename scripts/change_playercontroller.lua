@@ -642,7 +642,6 @@ AddComponentPostInit("playercontroller", function(self)
 
 							--select the item that can do action on it.
 							if (lmb ~= nil or (inv_obj and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil)) and
-								not v:HasTag("critter") and
 								not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								mult = mult * 10
 							end
@@ -843,7 +842,7 @@ AddComponentPostInit("playercontroller", function(self)
 							local alt_mult = v == self.controller_alt_target and not v:HasTag("wall") and 1.5 or 1
 
 							--select the item that can do action on it.
-							if rmb ~= nil and not v:HasTag("critter") and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+							if rmb ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								alt_mult = alt_mult * 10
 							end
 

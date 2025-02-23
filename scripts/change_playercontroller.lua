@@ -193,7 +193,9 @@ AddComponentPostInit("playercontroller", function(self)
 				self:DoControllerDropItemFromInvTile(active_item or inv_item, left)
 			end
 		elseif control == CONTROL_INVENTORY_EXAMINE then
-			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) then
+			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) and
+				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true, false) and
+				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false, false) then
 				self:DoControllerInspectItemFromInvTile(active_item or inv_item)
 				local DeltaTime = GetTime() - Double_Click_Gap_Time
 				local Should_Announce = DeltaTime > 0 and DeltaTime < 0.3 and GetTime() - Status_Announce_Time > 1
@@ -304,7 +306,9 @@ AddComponentPostInit("playercontroller", function(self)
 				self:DoControllerUseItemOnSceneFromInvTile(active_item or inv_item)
 			end
 		elseif control == CONTROL_OPEN_INVENTORY then
-			if not TryTriggerMappingKey(self.inst, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) then
+			if not TryTriggerMappingKey(self.inst, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) and
+				not TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true, false) and
+				not TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false, false) then
 				if inv_item ~= nil or active_item ~= nil then
 					if self.inst.HUD.controls.inv.active_slot ~= nil then
 						self.inst.HUD.controls.inv.active_slot:Click(left)
@@ -406,7 +410,9 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif control == CONTROL_CANCEL then
 			self:CancelPlacement()
 		elseif control == CONTROL_INSPECT then
-			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false) then
+			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false) and
+				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, true, false) and
+				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false, false) then
 				self:DoInspectButton()
 			end
 		elseif control == CONTROL_CONTROLLER_ALTACTION then

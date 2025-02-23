@@ -28,7 +28,9 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
 
             -- change pin and uppin to d-pad up
             if control == CONTROL_INVENTORY_EXAMINE then
-                if TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) then
+                if TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) or
+                    TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true, false) or
+                    TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false, false) then
                     return false
                 else
                     control = CONTROL_MENU_MISC_1
@@ -36,7 +38,9 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
             end
             -- change add favorite to right trigger
             if control == CONTROL_OPEN_INVENTORY then
-                if TryTriggerMappingKey(self.owner, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) then
+                if TryTriggerMappingKey(self.owner, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) or
+                    TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true, false) or
+                    TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false, false) then
                     return false
                 else
                     control = CONTROL_MENU_MISC_2

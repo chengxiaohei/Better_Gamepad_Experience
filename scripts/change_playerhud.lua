@@ -18,7 +18,9 @@ AddClassPostConstruct("screens/playerhud", function(self)
 
         if down then
             if control == CONTROL_INSPECT then
-                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, true) then
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, true) and
+                    not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, down, true) and
+                    not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, not down, false) then
                     if self.controls.votedialog:CheckControl(control, down) then
                         return true
                     end
@@ -41,13 +43,21 @@ AddClassPostConstruct("screens/playerhud", function(self)
             elseif control == CONTROL_INSPECT_SELF and self:InspectSelf() then
                 return true
             elseif control == CONTROL_MAP then
-                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, true)
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, true) then
+                    TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, down, true)
+                end
             elseif control == CONTROL_PAUSE then
-                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, true)
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, true) then
+                    TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, down, true)
+                end
             elseif control == CONTROL_MENU_MISC_3 then
-                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_LSTICK, CHANGE_MAPPING_RB_LSTICK, CHANGE_MAPPING_LB_RB_LSTICK, true)
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_LSTICK, CHANGE_MAPPING_RB_LSTICK, CHANGE_MAPPING_LB_RB_LSTICK, true) then
+                    TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_LSTICK, CHANGE_MAPPING_RB_LSTICK, CHANGE_MAPPING_LB_RB_LSTICK, down, true)
+                end
             elseif control == CONTROL_MENU_MISC_4 then
-                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, true) then
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, true) and
+                    not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, down, true) and
+                    not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, not down, false) then
                     if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                         if self.owner.components.playercontroller.reticule then
                             self.owner.components.playercontroller.reticule.clear_memory_flag = true
@@ -58,12 +68,19 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     end
                 end
             elseif control == CONTROL_INVENTORY_EXAMINE then
-                TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true)
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true) then
+                    TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, down, true)
+                end
             elseif control == CONTROL_OPEN_INVENTORY then
-                TryTriggerMappingKey(self.owner, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true)
+                if not TryTriggerMappingKey(self.owner, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true) then
+                    TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, down, true)
+                end
             end
         elseif control == CONTROL_PAUSE then
-            if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, false) then
+            if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, false) and
+                not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, not down, false) and
+                not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, down, true) then
+                -- Do things below at the moment we release CONTROL_PAUSE button if no mapping key triggered while press down CONTROL_PAUSE button
                 self.owner.components.playercontroller:CancelAOETargeting()
                 self:CloseCrafting()
                 self:CloseSpellWheel()
@@ -86,6 +103,14 @@ AddClassPostConstruct("screens/playerhud", function(self)
         elseif control == CONTROL_SERVER_PAUSE then
             SetServerPaused()
             return true
+        elseif control == CONTROL_INSPECT then
+            return TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, down, true)
+        elseif control == CONTROL_OPEN_INVENTORY then
+            return TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, down, true)
+        elseif control == CONTROL_MENU_MISC_3 then
+            return TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_LSTICK, CHANGE_MAPPING_RB_LSTICK, CHANGE_MAPPING_LB_RB_LSTICK, down, true)
+        elseif control == CONTROL_INVENTORY_EXAMINE then
+            return TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, down, true)
         end
 
         --V2C: This kinda hax? Cuz we don't rly want to set focus to it I guess?
@@ -98,7 +123,10 @@ AddClassPostConstruct("screens/playerhud", function(self)
             return true        
         elseif not down then
             if control == CONTROL_MAP then
-                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, false) then
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, false) and
+                    not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, not down, false) and
+                    not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, down, true) then
+                    -- Do things below at the moment we release CONTROL_PAUSE button if no mapping key triggered while press down CONTROL_PAUSE button
                     if not self:IsMapScreenOpen() then
                         self:CloseCrafting()
                         self:CloseSpellWheel()
@@ -121,7 +149,10 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     return true
                 end
             elseif control == CONTROL_TOGGLE_PLAYER_STATUS then
-                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, false) then
+                if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, false) and
+                    not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, not down, false) and
+                    not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, down, true) then
+                    -- Do things below at the moment we release CONTROL_PAUSE button if no mapping key triggered while press down CONTROL_PAUSE button
                     if not self.owner.components.playercontroller.reticule or
                         not self.owner.components.playercontroller.reticule.clear_memory_flag then
                         self:ShowPlayerStatusScreen(true)
@@ -148,6 +179,8 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 chat_input_screen.chat_edit:SetString(":")
                 TheFrontEnd:PushScreen(chat_input_screen)
                 return true
+            elseif control == CONTROL_OPEN_CRAFTING then
+                return TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_LT, CHANGE_MAPPING_RB_LT, CHANGE_MAPPING_LB_RB_LT, down, true)
             end
         elseif control == CONTROL_SHOW_PLAYER_STATUS then
             if not self:IsPlayerAvatarPopUpOpen() or self.playeravatarpopup.settled then
@@ -155,7 +188,9 @@ AddClassPostConstruct("screens/playerhud", function(self)
             end
             return true
         elseif control == CONTROL_OPEN_CRAFTING then
-            if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_LT, CHANGE_MAPPING_RB_LT, CHANGE_MAPPING_LB_RB_LT, true) then
+            if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_LT, CHANGE_MAPPING_RB_LT, CHANGE_MAPPING_LB_RB_LT, true) and
+                not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_LT, CHANGE_MAPPING_RB_LT, CHANGE_MAPPING_LB_RB_LT, down, true) and
+                not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_LT, CHANGE_MAPPING_RB_LT, CHANGE_MAPPING_LB_RB_LT, not down, false) then
                 if self:IsCraftingOpen() then
                     if TheInput:IsControlPressed(CONTROL_CRAFTING_MODIFIER) then
                         self.controls.craftingmenu.craftingmenu:StartSearching(true)

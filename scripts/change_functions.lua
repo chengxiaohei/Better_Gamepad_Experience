@@ -5,8 +5,71 @@ local EquipmentMappingTable = {
     [-3] = EQUIPSLOTS.HEAD,
 }
 
+-- local KeyboardMappingTable = {
+-- 	["a"] = 97,  ["A"] = 97,
+-- 	["b"] = 98,  ["B"] = 98,
+-- 	["c"] = 99,  ["C"] = 99,
+-- 	["d"] = 100, ["D"] = 100,
+-- 	["e"] = 101, ["E"] = 101,
+-- 	["f"] = 102, ["F"] = 102,
+-- 	["g"] = 103, ["G"] = 103,
+-- 	["h"] = 104, ["H"] = 104,
+-- 	["i"] = 105, ["I"] = 105,
+-- 	["j"] = 106, ["J"] = 106,
+-- 	["k"] = 107, ["K"] = 107,
+-- 	["l"] = 108, ["L"] = 108,
+-- 	["m"] = 109, ["M"] = 109,
+-- 	["n"] = 110, ["N"] = 110,
+-- 	["o"] = 111, ["O"] = 111,
+-- 	["p"] = 112, ["P"] = 112,
+-- 	["q"] = 113, ["Q"] = 113,
+-- 	["r"] = 114, ["R"] = 114,
+-- 	["s"] = 115, ["S"] = 115,
+-- 	["t"] = 116, ["T"] = 116,
+-- 	["u"] = 117, ["U"] = 117,
+-- 	["v"] = 118, ["V"] = 118,
+-- 	["w"] = 119, ["W"] = 119,
+-- 	["x"] = 120, ["X"] = 120,
+-- 	["y"] = 121, ["Y"] = 121,
+-- 	["z"] = 122, ["Z"] = 122,
+-- }
+
+function TriggerKeyboardMappingKey(key, down, use)
+    if down then
+        if next(TheInput.onkeydown:GetHandlersForEvent(key)) then
+            if use then
+                TheInput.onkeydown:HandleEvent(key, IsOtherModEnabled("Gesture Wheel"))
+            end
+            return true
+        end
+    else
+        if next(TheInput.onkeyup:GetHandlersForEvent(key)) then
+            if use then
+                TheInput.onkeyup:HandleEvent(key, IsOtherModEnabled("Gesture Wheel"))
+            end
+            return true
+        end
+    end
+    return false
+end
+
+function TryTriggerKeyboardMappingKey(left, right, left_and_right, down, use)
+    if left_and_right and left_and_right >= 97 and left_and_right <= 122 and
+        TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+        return TriggerKeyboardMappingKey(left_and_right, down, use)
+    end
+    local Trigger = false;
+    if left and left >= 97 and left <= 122 and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+        Trigger = Trigger or TriggerKeyboardMappingKey(left, down, use)
+    end
+    if right and right >= 97 and right <= 122 and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+        Trigger = Trigger or TriggerKeyboardMappingKey(right, down, use)
+    end
+    return Trigger;
+end
+
 function TryTriggerMappingKey(player, left, right, left_and_right, use)
-    if left_and_right and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+    if left_and_right and left_and_right < 15 and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
             if left_and_right > 0 then
@@ -24,7 +87,7 @@ function TryTriggerMappingKey(player, left, right, left_and_right, use)
         return true
     end
     local Trigger = false
-    if left and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+    if left and left < 15 and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
             if left > 0 then
@@ -41,7 +104,7 @@ function TryTriggerMappingKey(player, left, right, left_and_right, use)
         end
         Trigger = true
     end
-    if right and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+    if right and right < 15 and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
             if right > 0 then
@@ -183,6 +246,7 @@ local ModCompatabilityTable = {
     ["Status Announcements"] = "workshop-343753877",
     ["Snapping tills"] = "workshop-2302837868",
     ["Hybrid Crafting Menu UI"] = "workshop-2839020127",
+    ["Gesture Wheel"] = "workshop-352373173",
 }
 
 function IsOtherModEnabled(modname)

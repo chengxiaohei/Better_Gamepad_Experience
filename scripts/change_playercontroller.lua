@@ -340,6 +340,10 @@ AddComponentPostInit("playercontroller", function(self)
 			nil
 	end
 
+	local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
+	local right_bumper_double_click_gap_time = GetTime()
+	local right_bumper_click_count = 1
+
 	local OnControl_Old = self.OnControl
 	local OnControl_New = function (self, control, down, ...)
 		-- do this first in order to not lose an up/down and get out of sync
@@ -392,6 +396,24 @@ AddComponentPostInit("playercontroller", function(self)
 			elseif control == CONTROL_TARGET_CYCLE_FORWARD then
 				self:CycleControllerAttackTargetForward()
 				self.controller_targeting_lock_timer = 0.0
+			end
+		end
+
+		-- Use Double/Triple/Quadruple/... Click Right Bumper to slow down reticule move speed
+		if control == CHANGE_CONTROL_RIGHT then
+			if down then
+				local DeltaTime = GetTime() - right_bumper_double_click_gap_time
+				if DeltaTime > 0 and DeltaTime < 0.3 then
+					right_bumper_click_count = right_bumper_click_count + 1
+					TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED / right_bumper_click_count
+				end
+				right_bumper_double_click_gap_time = GetTime()
+			else
+				local DeltaTime = GetTime() - right_bumper_double_click_gap_time
+				if DeltaTime > 0.3 and self.reticule then
+					right_bumper_click_count = 1
+					TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED
+				end
 			end
 		end
 

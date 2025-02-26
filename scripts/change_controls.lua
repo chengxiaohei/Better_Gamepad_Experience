@@ -694,6 +694,11 @@ AddClassPostConstruct("widgets/controls", function(self)
         HighlightSceneItem(self.owner.components.playercontroller.controller_target, self.playeractionhint, self.playeractionhint_itemhighlight)
         HighlightSceneItem(self.owner.components.playercontroller.controller_alt_target, self.playeraltactionhint, self.playeraltactionhint_itemhighlight)
         HighlightSceneItem(self.owner.components.playercontroller.controller_attack_target, self.attackhint, self.attackhint_itemhighlight)
+
+        -- Compatible with "GestureWheel"
+        if TheInput:IsControlPressed(CONTROL_MENU_MISC_3) and self.gesturewheel then
+            self.gesturewheel:OnUpdate()
+        end
     end
 
     self.OnUpdate = function (self, dt, ...)

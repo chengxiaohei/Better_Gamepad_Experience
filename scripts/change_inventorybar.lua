@@ -40,6 +40,12 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
+		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
+			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
+			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
+			return true
+		end
+
 		if self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned then
 			local k, slot = next(self.current_list or {})
 			if slot == nil or not slot.inst:IsValid() then
@@ -62,6 +68,12 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
+		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
+			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
+			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
+			return true
+		end
+
 		if self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned then
 			local k, slot = next(self.current_list or {})
 			if slot == nil or not slot.inst:IsValid() then
@@ -79,6 +91,12 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 	self.CursorUp = function (self, ...)
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+			return true
+		end
+
+		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
+			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
+			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
 			return true
 		end
 
@@ -106,6 +124,12 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 	self.CursorDown = function (self, ...)
 		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+			return true
+		end
+
+		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
+			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
+			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
 			return true
 		end
 

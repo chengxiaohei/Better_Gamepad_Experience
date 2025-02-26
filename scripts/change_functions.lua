@@ -246,6 +246,7 @@ local ModCompatabilityTable = {
     ["Snapping tills"] = "workshop-2302837868",
     ["Hybrid Crafting Menu UI"] = "workshop-2839020127",
     ["Gesture Wheel"] = "workshop-352373173",
+    ["Gesture Wheel (Chinese)"] = "workshop-2846271782",
 }
 
 function IsOtherModEnabled(modname)

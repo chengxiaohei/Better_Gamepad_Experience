@@ -199,8 +199,9 @@ AddComponentPostInit("playercontroller", function(self)
 				self:DoControllerInspectItemFromInvTile(active_item or inv_item)
 				local DeltaTime = GetTime() - Double_Click_Gap_Time
 				local Should_Announce = DeltaTime > 0 and DeltaTime < 0.3 and GetTime() - Status_Announce_Time > 1
-				if IsOtherModEnabled("Status Announcements") and Should_Announce and inv_item then
-					local StatusAnnouncer = require("statusannouncer")()
+				if Should_Announce and inv_item then
+					local StatusAnnouncerModule = require("statusannouncer")
+					local StatusAnnouncer = StatusAnnouncerModule and StatusAnnouncerModule()
 					StatusAnnouncer:AnnounceItem(self.inst.HUD.controls.inv.active_slot)
 					Status_Announce_Time = GetTime()
 				end

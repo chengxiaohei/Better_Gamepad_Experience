@@ -142,7 +142,11 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     self:CloseCrafting()
                     return true
                 elseif self:IsSpellWheelOpen() and not CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM then
-                    self:CloseSpellWheel()
+                    --V2C: Wheel widget closes itself on CONTROL_CANCEL down already.
+                    --     Don't do this here because we can now open spell wheel via
+                    --     (B) button, and this would've instantly closed it when the
+                    --     button is released.
+                    -- self:CloseSpellWheel()
                     return true
                 elseif self:IsControllerInventoryOpen() then
                     self:CloseControllerInventory()
@@ -222,11 +226,20 @@ AddClassPostConstruct("screens/playerhud", function(self)
     -- Not Changed
     local function OpenContainerWidget(self, container, side)
         local containerwidget = ContainerWidget(self.owner)
-        local parent = side and self.controls.containerroot_side
-                        or (container.replica.container ~= nil and container.replica.container.type == "hand_inv") and self.controls.inv.hand_inv
-                        or (container.replica.container ~= nil and container.replica.container.type == "side_inv") and self.controls.secondary_status.side_inv
-                        or (container.replica.container ~= nil and container.replica.container.type == "side_inv_behind") and self.controls.containerroot_side_behind
-                        or self.controls.containerroot
+        local parent
+        if side then
+            parent = self.controls.containerroot_side
+        else
+            local _container = container.replica.container
+            local _type = _container and _container.type or nil
+            parent =
+                (_type == "hand_inv" and self.controls.inv.hand_inv) or
+                (_type == "side_inv" and self.controls.secondary_status.side_inv) or
+                (_type == "side_inv_behind" and self.controls.containerroot_side_behind) or
+                (_type == "top_rack" and self.controls.containerroot_under) or
+                self.controls.containerroot
+        end
+
         parent:AddChild(containerwidget)
 
         --self.controls[side and "containerroot_side" or "containerroot"]:AddChild(containerwidget)
@@ -236,6 +249,7 @@ AddClassPostConstruct("screens/playerhud", function(self)
         containerwidget:MoveToBack()
         containerwidget:Open(container, self.owner)
         self.controls.containers[container] = containerwidget
+        self.controls.inv:OnNewContainerWidget(containerwidget)
 
         if parent == self.controls.containerroot then
             self:CloseSpellWheel()

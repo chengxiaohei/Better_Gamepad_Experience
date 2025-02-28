@@ -267,15 +267,38 @@ AddClassPostConstruct("widgets/controls", function(self)
                     self.groundactionhint:Hide()
                 end
 
-                if not B_shown and not self.groundactionhint.shown and self.owner.replica.rider ~= nil and self.owner.replica.rider:IsRiding() and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
-                    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
-                    else
-                        self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+                if not B_shown and not self.groundactionhint.shown then
+                    local rider = self.owner.replica.rider
+                    local mount = rider and rider:GetMount() or nil
+                    local container = mount and mount.replica.container or nil
+                    if container and container:IsOpenedBy(self.owner) then
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                        else
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..BufferedAction(self.owner, self.owner, ACTIONS.RUMMAGE):GetActionString())
+                        end
+                        B_shown = true
+                        self.groundactionhint:Show()
+                        self.groundactionhint:SetTarget(self.owner)
+                    elseif self.owner.components.spellbook and self.owner.components.spellbook:CanBeUsedBy(self.owner) and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                        else
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..BufferedAction(self.owner, self.owner, ACTIONS.USESPELLBOOK):GetActionString())
+                        end
+                        B_shown = true
+                        self.groundactionhint:Show()
+                        self.groundactionhint:SetTarget(self.owner)
+                    elseif mount and not (self.owner.components.playercontroller and self.owner.components.playercontroller:HasAOETargeting()) and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                        if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
+                        else
+                            self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION).." "..STRINGS.ACTIONS.DISMOUNT)
+                        end
+                        B_shown = true
+                        self.groundactionhint:Show()
+                        self.groundactionhint:SetTarget(self.owner)
                     end
-                    B_shown = true
-                    self.groundactionhint:Show()
-                    self.groundactionhint:SetTarget(self.owner)
                 end
             end
 

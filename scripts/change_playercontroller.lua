@@ -375,31 +375,6 @@ AddComponentPostInit("playercontroller", function(self)
 			return true
 		end
 
-		-- actions that can be done while the crafting menu is open go in here
-		if isenabled or ishudblocking then
-			if control == CONTROL_ACTION then
-				self:DoActionButton()
-			elseif control == CONTROL_ATTACK then
-				if self.ismastersim then
-					self.attack_buffer = CONTROL_ATTACK
-				else
-					self:DoAttackButton()
-				end
-			end
-		end
-
-		if self.controller_targeting_modifier_down then
-			if not down then
-				-- do nothing
-			elseif control == CONTROL_TARGET_CYCLE_BACK then
-				self:CycleControllerAttackTargetBack()
-				self.controller_targeting_lock_timer = 0.0
-			elseif control == CONTROL_TARGET_CYCLE_FORWARD then
-				self:CycleControllerAttackTargetForward()
-				self.controller_targeting_lock_timer = 0.0
-			end
-		end
-
 		-- Use Double/Triple/Quadruple/... Click Right Bumper to slow down reticule move speed
 		if control == CHANGE_CONTROL_RIGHT then
 			if down then
@@ -418,6 +393,41 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
+		--V2C: control up happens here now
+		if not down and control ~= CONTROL_PRIMARY and control ~= CONTROL_SECONDARY then
+			if not self.ismastersim then
+				self:RemoteStopControl(control)
+			end
+			return
+		end
+
+		-- actions that can be done while the crafting menu is open go in here
+		if isenabled or ishudblocking then
+			if control == CONTROL_ACTION then
+				self:DoActionButton()
+				return
+			elseif control == CONTROL_ATTACK then
+				if self.ismastersim then
+					self.attack_buffer = CONTROL_ATTACK
+				else
+					self:DoAttackButton()
+				end
+				return
+			end
+		end
+
+		if self.controller_targeting_modifier_down then
+			if not down then
+				-- do nothing
+			elseif control == CONTROL_TARGET_CYCLE_BACK then
+				self:CycleControllerAttackTargetBack()
+				self.controller_targeting_lock_timer = 0.0
+			elseif control == CONTROL_TARGET_CYCLE_FORWARD then
+				self:CycleControllerAttackTargetForward()
+				self.controller_targeting_lock_timer = 0.0
+			end
+		end
+
 		if not isenabled then
 			return
 		end
@@ -426,10 +436,11 @@ AddComponentPostInit("playercontroller", function(self)
 			self:OnLeftClick(down)
 		elseif control == CONTROL_SECONDARY then
 			self:OnRightClick(down)
-		elseif not down then
-			if not self.ismastersim then
-				self:RemoteStopControl(control)
-			end
+			--V2C: see above for control up handling
+			--elseif not down then
+			--    if not self.ismastersim then
+			--        self:RemoteStopControl(control)
+			--    end
 		elseif control == CONTROL_CANCEL then
 			self:CancelPlacement()
 		elseif control == CONTROL_INSPECT then
@@ -1170,39 +1181,6 @@ AddComponentPostInit("playercontroller", function(self)
 		self.Change_drop_position = Vector3(x + dirx, y, z + dirz)
 	end
 
-	-- Not Changed
-	local function PullUpMap(inst, maptarget)
-		-- NOTES(JBK): This is assuming inst is the local client on call with a check to inst.HUD not being nil.
-		if inst.HUD:IsCraftingOpen() then
-			inst.HUD:CloseCrafting()
-		end
-		if inst.HUD:IsSpellWheelOpen() then
-			inst.HUD:CloseSpellWheel()
-		end
-		if inst.HUD:IsControllerInventoryOpen() then
-			inst.HUD:CloseControllerInventory()
-		end
-		-- Pull up map now.
-		if not inst.HUD:IsMapScreenOpen() then
-			inst.HUD.controls:ToggleMap()
-			if inst.HUD:IsMapScreenOpen() then -- Just in case.
-				local mapscreen = TheFrontEnd:GetActiveScreen()
-				mapscreen._hack_ignore_held_controls = 0.1
-				mapscreen._hack_ignore_ups_for = {}
-				mapscreen.maptarget = maptarget
-				local min_dist = maptarget.map_remap_min_dist
-				if min_dist then
-					min_dist = min_dist + 0.1 -- Padding for floating point precision.
-					local x, y, z = inst.Transform:GetWorldPosition()
-					local rotation = inst.Transform:GetRotation() * DEGREES
-					local wx, wz = x + math.cos(rotation) * min_dist, z - math.sin(rotation) * min_dist -- Z offset is negative to desired from Transform coordinates.
-					inst.HUD.controls:FocusMapOnWorldPosition(mapscreen, wx, wz)
-				end
-				-- Do not have to take into account max_dist because the map automatically centers on the player when opened.
-			end
-		end
-	end
-
 	local DoControllerActionButton_Old = self.DoControllerActionButton
 	self.DoControllerActionButton = function (self, ...)
 		local active_obj = self.inst.replica.inventory:GetActiveItem()
@@ -1264,7 +1242,18 @@ AddComponentPostInit("playercontroller", function(self)
 
 			if act == nil or (is_reticule and not_force) then
 				local rider = self.inst.replica.rider
-				if rider ~= nil and rider:IsRiding() and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+				local mount = rider and rider:GetMount() or nil
+				local container = mount and mount.replica.container or nil
+				if container and container:IsOpenedBy(self.inst) then
+					-- [[close woby's bag container]]
+					obj = self.inst
+					act = BufferedAction(obj, obj, ACTIONS.RUMMAGE)
+				elseif self.inst.components.spellbook and self.inst.components.spellbook:CanBeUsedBy(self.inst) and
+					TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+					-- [[use spellbook]]
+					obj = self.inst
+					act = BufferedAction(obj, obj, ACTIONS.USESPELLBOOK)
+				elseif mount and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 					-- [[dismount]]
 					obj = self.inst
 					act = BufferedAction(obj, obj, ACTIONS.DISMOUNT)
@@ -1331,7 +1320,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 		local maptarget = self:GetMapTarget(act)
 		if maptarget ~= nil then
-			PullUpMap(self.inst, maptarget)
+			self:PullUpMap(maptarget)
 			return
 		end
 
@@ -1340,6 +1329,10 @@ AddComponentPostInit("playercontroller", function(self)
 		elseif obj ~= nil then
 			if self.locomotor == nil then
 				self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+				-- NOTES(JBK): Does not call locomotor component functions needed for pre_action_cb, manual call here.
+				if act.action.pre_action_cb then
+					act.action.pre_action_cb(act)
+				end
 				SendRPCToServer(RPC.ControllerAltActionButton, act.action.code, obj, nil, act.action.canforce, act.action.mod_name)
 			elseif self:CanLocomote() then
 				act.preview_cb = function()
@@ -1350,6 +1343,10 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		elseif self.locomotor == nil then
 			self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+			-- NOTES(JBK): Does not call locomotor component functions needed for pre_action_cb, manual call here.
+			if act.action.pre_action_cb then
+				act.action.pre_action_cb(act)
+			end
 			SendRPCToServer(RPC.ControllerAltActionButtonPoint, act.action.code, act.pos.local_pt.x, act.pos.local_pt.z, nil, act.action.canforce, isspecial, act.action.mod_name, act.pos.walkable_platform, act.pos.walkable_platform ~= nil)
 		elseif self:CanLocomote() then
 			act.preview_cb = function()

@@ -7,12 +7,14 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
             local DeltaTime = GetTime() - Double_Click_Gap_Time
             local Should_Announce = DeltaTime > 0 and DeltaTime < 0.3 and GetTime() - Status_Announce_Time > 1
             if Should_Announce and self:IsCraftingOpen() then
-                local StatusAnnouncerModule = require("statusannouncer")
-                local StatusAnnouncer = StatusAnnouncerModule and StatusAnnouncerModule()
-                local details = self.craftingmenu.details_root
-                if StatusAnnouncer and details and details.data and details.data.recipe then
-                    StatusAnnouncer:AnnounceRecipe(details.data.recipe)
-                    Status_Announce_Time = GetTime()
+                local exist, StatusAnnouncerModule = pcall(require, "statusannouncer")
+                if exist then
+                    local StatusAnnouncer = StatusAnnouncerModule()
+                    local details = self.craftingmenu.details_root
+                    if StatusAnnouncer and details and details.data and details.data.recipe then
+                        StatusAnnouncer:AnnounceRecipe(details.data.recipe)
+                        Status_Announce_Time = GetTime()
+                    end
                 end
             end
             Double_Click_Gap_Time = GetTime()

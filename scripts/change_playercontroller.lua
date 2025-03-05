@@ -729,7 +729,7 @@ AddComponentPostInit("playercontroller", function(self)
 								end
 							end
 
-							if not skip_target and v:HasTag("critter") and v.prefab ~= "wobysmall" and
+							if not skip_target and ((v:HasTag("critter") and v.prefab ~= "wobysmall") or v:HasTag("kitcoon") or v:HasTag("ticoon")) and
 								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 								if lmb ~= nil and self.inst.replica.inventory:GetActiveItem() ~= nil then
@@ -929,6 +929,14 @@ AddComponentPostInit("playercontroller", function(self)
 								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 								if self.inst.HUD:IsSpellWheelOpen() or v.replica.container:IsOpenedBy(self.inst) then
+									skip_target = false
+								end
+							end
+
+							if not skip_target and ((v:HasTag("critter") and v.prefab ~= "wobysmall") or v:HasTag("kitcoon") or v:HasTag("ticoon")) and
+								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
+								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
+								if rmb ~= nil and self.inst.replica.inventory:GetActiveItem() ~= nil then
 									skip_target = false
 								end
 							end

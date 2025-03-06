@@ -69,7 +69,7 @@ function TryTriggerKeyboardMappingKey(left, right, left_and_right, down, use)
 end
 
 function TryTriggerMappingKey(player, left, right, left_and_right, use)
-    if left_and_right and left_and_right < 15 and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+    if left_and_right and left_and_right <= 15 and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
             if left_and_right > 0 then
@@ -87,7 +87,7 @@ function TryTriggerMappingKey(player, left, right, left_and_right, use)
         return true
     end
     local Trigger = false
-    if left and left < 15 and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+    if left and left <= 15 and TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
             if left > 0 then
@@ -104,7 +104,7 @@ function TryTriggerMappingKey(player, left, right, left_and_right, use)
         end
         Trigger = true
     end
-    if right and right < 15 and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+    if right and right <= 15 and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
         local inventory = player.replica.inventory
         if use and inventory ~= nil and inventory:IsVisible() then
             if right > 0 then

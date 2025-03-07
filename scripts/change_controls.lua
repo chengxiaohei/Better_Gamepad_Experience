@@ -289,7 +289,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                         B_shown = true
                         self.groundactionhint:Show()
                         self.groundactionhint:SetTarget(self.owner)
-                    elseif mount and not (self.owner.components.playercontroller and self.owner.components.playercontroller:HasAOETargeting()) and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+                    elseif mount and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
                         if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
                             self.groundactionhint.text:SetString(TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ALTACTION))
                         else

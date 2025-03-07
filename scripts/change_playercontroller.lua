@@ -627,6 +627,12 @@ AddComponentPostInit("playercontroller", function(self)
 
 				--Only handle controller_target if it's the one we added at the front
 				if v ~= self.inst and (v ~= self.controller_target or i == 1) and v.entity:IsVisible() then
+					if v.entity:GetParent() == self.inst and v:HasTag("bundle") then
+						--bundling or constructing
+						target = v
+						target_action = nil
+						break
+					end
 
 					-- Calculate the dsq to filter out objects, ignoring the y component for now.
 					local x1, y1, z1 = v.Transform:GetWorldPosition()

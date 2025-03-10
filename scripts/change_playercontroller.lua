@@ -347,6 +347,9 @@ AddComponentPostInit("playercontroller", function(self)
 	local right_bumper_double_click_gap_time = GetTime()
 	local right_bumper_click_count = 1
 
+	local left_bumper_double_click_gap_time = GetTime()
+	local left_bumper_click_count = 1
+
 	local OnControl_Old = self.OnControl
 	local OnControl_New = function (self, control, down, ...)
 		-- do this first in order to not lose an up/down and get out of sync
@@ -384,13 +387,36 @@ AddComponentPostInit("playercontroller", function(self)
 				if DeltaTime > 0 and DeltaTime < 0.3 then
 					right_bumper_click_count = right_bumper_click_count + 1
 					TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED / right_bumper_click_count
+					if right_bumper_click_count == 2 then
+						self.Double_Click_Right_Bumper_And_Holding = true
+					end
 				end
 				right_bumper_double_click_gap_time = GetTime()
 			else
 				local DeltaTime = GetTime() - right_bumper_double_click_gap_time
-				if DeltaTime > 0.3 and self.reticule then
+				if DeltaTime > 0.3 then
 					right_bumper_click_count = 1
 					TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED
+					self.Double_Click_Right_Bumper_And_Holding = false
+				end
+			end
+		end
+
+		if control == CHANGE_CONTROL_LEFT then
+			if down then
+				local DeltaTime = GetTime() - left_bumper_double_click_gap_time
+				if DeltaTime > 0 and DeltaTime < 0.3 then
+					left_bumper_click_count = left_bumper_click_count + 1
+					if left_bumper_click_count == 2 then
+						self.Double_Click_Left_Bumper_And_Holding = true
+					end
+				end
+				left_bumper_double_click_gap_time = GetTime()
+			else
+				local DeltaTime = GetTime() - left_bumper_double_click_gap_time
+				if DeltaTime > 0.3 then
+					left_bumper_click_count = 1
+					self.Double_Click_Left_Bumper_And_Holding = false
 				end
 			end
 		end
@@ -1057,7 +1083,7 @@ AddComponentPostInit("playercontroller", function(self)
 		for i, v in ipairs(nearby_ents) do
 			if v ~= self.inst and (v ~= self.controller_attack_target or i == 1) then
 				if combat:CanTarget(v) then
-					
+					local isally = combat:IsAlly(v)
 					local need_force_attack = IsNeedForceAttack(self, v)
 					if not CHANGE_FORCE_BUTTON or not CHANGE_IS_FORCE_ATTACK or not need_force_attack or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) or self.controller_targeting_lock_target then
 
@@ -1099,11 +1125,18 @@ AddComponentPostInit("playercontroller", function(self)
 									score = score * 10
 								end
 
-								table.insert(current_controller_targeting_targets, v)
-								if score > target_score then
-									selected_target_index = #current_controller_targeting_targets
-									target = v
-									target_score = score
+								local skip_target = false
+								if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_ATTACK and isally and not self.Double_Click_Left_Bumper_And_Holding then
+									skip_target = true
+								end
+
+								if not skip_target then
+									table.insert(current_controller_targeting_targets, v)
+									if score > target_score then
+										selected_target_index = #current_controller_targeting_targets
+										target = v
+										target_score = score
+									end
 								end
 							end
 						end

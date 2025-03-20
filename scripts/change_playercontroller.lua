@@ -1362,6 +1362,12 @@ AddComponentPostInit("playercontroller", function(self)
 				end
 			end
 		end
+		
+		-- I don't know why others break down, 
+		-- I can only do some protect here
+		if act == nil then
+			return
+		end
 
 		if is_reticule and not not_force then
 			self.reticule:PingReticuleAt(act:GetDynamicActionPoint())

@@ -405,6 +405,28 @@ configuration_options = {
 		},
 		default = 0
 	},
+	{
+		name = "mount_and_dismount_must_press_RB",
+		label = Language_En and "Mount/Dismount with RB" or "上下坐骑需按下RB键",
+		hover = Language_En and "Now You Can Only Mount/Dismount By Pressing "..GamepadButtons.Right_Bumper
+							or "现在你必须按下 "..GamepadButtons.Left_Bumper.." 键才能上下坐骑。",
+		options = {
+			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用。"},
+			{ description = "No"           , data = false, hover = Language_En and "Disable." or "不启用。"},
+		},
+		default = true
+	},
+	{
+		name = "woby_action_must_press_RB",
+		label = Language_En and "Woby Action with RB" or "上下坐骑需按下RB键",
+		hover = Language_En and "Now You Can Only Trigger Woby Action By Pressing "..GamepadButtons.Right_Bumper
+							or "现在你必须按下 "..GamepadButtons.Left_Bumper.." 键才能打开或关闭沃比交互轮盘。",
+		options = {
+			{ description = "Yes (Default)", data = true,  hover = Language_En and "Enabled." or "启用。"},
+			{ description = "No"           , data = false, hover = Language_En and "Disable." or "不启用。"},
+		},
+		default = true
+	},
 
 	{name = "Title", label = Language_En and "Force Control Settings" or "强制操作设置", options = {{description = "", data = ""}}, default = ""},
 	{

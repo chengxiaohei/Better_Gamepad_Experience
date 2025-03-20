@@ -750,7 +750,8 @@ AddComponentPostInit("playercontroller", function(self)
 								end
 							end
 
-							if not skip_target and (v.prefab == "wobysmall" or v.prefab =="wobybig") and
+							if not skip_target and CHANGE_WOBY_ACTION_MUST_PRESS_RB and
+								(v.prefab == "wobysmall" or v.prefab =="wobybig") and
 								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 								if lmb ~= nil and self.inst.replica.inventory:GetActiveItem() ~= nil then
@@ -957,7 +958,8 @@ AddComponentPostInit("playercontroller", function(self)
 								end
 							end
 
-							if not skip_target and (v.prefab == "wobysmall" or v.prefab =="wobybig") and
+							if not skip_target and CHANGE_WOBY_ACTION_MUST_PRESS_RB and
+								(v.prefab == "wobysmall" or v.prefab =="wobybig") and
 								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 								if self.inst.HUD:IsSpellWheelOpen() or v.replica.container:IsOpenedBy(self.inst) then
@@ -973,7 +975,7 @@ AddComponentPostInit("playercontroller", function(self)
 								end
 							end
 
-							if not skip_target and v:HasTag("saddled") and
+							if not skip_target and CHANGE_MOUNT_AND_DISMOUNT_MUST_PRESS_RB and v:HasTag("saddled") and
 								rmb ~= nil and rmb.action == ACTIONS.MOUNT then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
 							end

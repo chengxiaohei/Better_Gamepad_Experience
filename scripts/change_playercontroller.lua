@@ -255,7 +255,7 @@ AddComponentPostInit("playercontroller", function(self)
 					if filtered_container then container:MoveItemFromAllOfSlot(slot, filtered_container) end
 				end
 			else
-				if inv_item ~= nil and active_item ~= nil and self:GetItemUseAction(active_item, inv_item) ~= nil then
+				if inv_item ~= nil and active_item ~= nil and active_item.replica.inventoryitem and self:GetItemUseAction(active_item, inv_item) ~= nil then
 					self.inst.replica.inventory:ControllerUseItemOnItemFromInvTile(inv_item, active_item)
 				else
 					self:DoControllerUseItemOnSelfFromInvTile(active_item or inv_item)
@@ -690,7 +690,7 @@ AddComponentPostInit("playercontroller", function(self)
 							-- Get Action Status
 							local lmb, _ = self:GetSceneItemControllerAction(v)
 							local inv_obj = self:GetCursorInventoryObject()
-							local inv_act = inv_obj ~= nil and self:GetItemUseAction(inv_obj, v) or nil
+							local inv_act = inv_obj ~= nil and inv_obj.replica.inventoryitem and self:GetItemUseAction(inv_obj, v) or nil
 
 							-- Incorporate the y component after we've performed the inclusion radius test.
 							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
@@ -715,7 +715,7 @@ AddComponentPostInit("playercontroller", function(self)
 								not v:HasTag("wall") and 1.5 or 1
 
 							--select the item that can do action on it.
-							if (lmb ~= nil or (inv_obj and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil)) and
+							if (lmb ~= nil or (inv_obj and inv_obj.replica.inventoryitem and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil)) and
 								not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								mult = mult * 10
 							end
@@ -740,7 +740,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 							if not skip_target and (v:HasTag("walkingplank") or v:HasTag("boatbumper") or v:HasTag("boat")) then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
-								if inv_obj ~= nil and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil and
+								if inv_obj ~= nil and inv_obj.replica.inventoryitem and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil and
 									self.inst.replica.inventory:GetActiveItem() == nil then
 									skip_target = false
 								end

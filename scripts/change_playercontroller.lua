@@ -190,13 +190,21 @@ AddComponentPostInit("playercontroller", function(self)
 			if right and active_item ~= nil and inv_item ~= nil then
 				self:DoControllerDropItemFromInvTile(inv_item, left)
 			else
-				self:DoControllerDropItemFromInvTile(active_item or inv_item, left)
+				if active_item ~= nil and active_item.replica.inventoryitem then
+					self:DoControllerDropItemFromInvTile(active_item, left)
+				elseif inv_item ~= nil and inv_item.replica.inventoryitem then
+					self:DoControllerDropItemFromInvTile(inv_item, left)
+				end
 			end
 		elseif control == CONTROL_INVENTORY_EXAMINE then
 			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) and
 				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true, false) and
 				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false, false) then
-				self:DoControllerInspectItemFromInvTile(active_item or inv_item)
+				if active_item ~= nil and active_item.replica.inventoryitem then
+					self:DoControllerInspectItemFromInvTile(active_item)
+				elseif inv_item ~= nil and inv_item.replica.inventoryitem then
+					self:DoControllerInspectItemFromInvTile(inv_item)
+				end
 				local DeltaTime = GetTime() - Double_Click_Gap_Time
 				local Should_Announce = DeltaTime > 0 and DeltaTime < 0.3 and GetTime() - Status_Announce_Time > 1
 				if Should_Announce and inv_item then
@@ -258,7 +266,11 @@ AddComponentPostInit("playercontroller", function(self)
 				if inv_item ~= nil and active_item ~= nil and active_item.replica.inventoryitem and self:GetItemUseAction(active_item, inv_item) ~= nil then
 					self.inst.replica.inventory:ControllerUseItemOnItemFromInvTile(inv_item, active_item)
 				else
-					self:DoControllerUseItemOnSelfFromInvTile(active_item or inv_item)
+					if active_item ~= nil and active_item.replica.inventoryitem then
+						self:DoControllerUseItemOnSelfFromInvTile(active_item)
+					elseif inv_item ~= nil and inv_item.replica.inventoryitem then
+						self:DoControllerUseItemOnSelfFromInvTile(inv_item)
+					end
 				end
 			end
 
@@ -306,7 +318,11 @@ AddComponentPostInit("playercontroller", function(self)
 					if filtered_container then container:MoveItemFromAllOfSlot(slot, filtered_container) end
 				end
 			else
-				self:DoControllerUseItemOnSceneFromInvTile(active_item or inv_item)
+				if active_item ~= nil and active_item.replica.inventoryitem then
+					self:DoControllerUseItemOnSceneFromInvTile(active_item)
+				elseif inv_item ~= nil and inv_item.replica.inventoryitem then
+					self:DoControllerUseItemOnSceneFromInvTile(inv_item)
+				end
 			end
 		elseif control == CONTROL_OPEN_INVENTORY then
 			if not TryTriggerMappingKey(self.inst, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) and

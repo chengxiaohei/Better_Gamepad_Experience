@@ -57,14 +57,16 @@ AddComponentPostInit("reticule", function(self)
         self.twinstickoverride_mode1 = self.twinstickoverride
 
         local x, _, z = self.inst.Transform:GetWorldPosition()
-        self.targetpos_mode1_delta_x = self.targetpos.x - x
-        self.targetpos_mode1_delta_z = self.targetpos.z - z
+        if self.targetpos ~= nil then
+            self.targetpos_mode1_delta_x = self.targetpos.x - x
+            self.targetpos_mode1_delta_z = self.targetpos.z - z
+        end
     end
 
     local UpdatePosition_Old = self.UpdatePosition
     self.UpdatePosition = function (self, dt, ...)
         if self.twinstickoverride_mode1 then
-            if self.targetpos_mode1_delta_x ~= nil and self.targetpos_mode1_delta_z ~= nil then
+            if self.targetpos ~= nil and self.targetpos_mode1_delta_x ~= nil and self.targetpos_mode1_delta_z ~= nil then
                 local x, _, z = self.inst.Transform:GetWorldPosition()
                 self.targetpos.x = self.targetpos_mode1_delta_x + x
                 self.targetpos.z = self.targetpos_mode1_delta_z + z

@@ -2,7 +2,7 @@
 local FrontEnd_OnFocusMove_End = FrontEnd.OnFocusMove
 
 FrontEnd.OnFocusMove = function(self, dir, down, ...)
-    if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+    if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
         return true
     end
     if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or

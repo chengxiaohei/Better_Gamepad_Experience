@@ -563,46 +563,6 @@ configuration_options = {
 		default = false
 	},
 	{
-		name = "MAPPING_LB_LSTICK",
-		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.." to Quick Use"
-							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Left_Stick.." 快捷使用",
-		hover = MappingHoverText,
-		options = MappingOptions,
-		default = false
-	},
-	{
-		name = "MAPPING_RB_LSTICK",
-		label = Language_En and GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.." to Quick Use"
-							or  GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.." 快捷使用",
-		hover = MappingHoverText,
-		options = MappingOptions,
-		default = false
-	},
-	{
-		name = "MAPPING_LB_RB_LSTICK",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.." to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Left_Stick.." 快捷使用",
-		hover = MappingHoverText,
-		options = MappingOptions,
-		default = false
-	},
-	{
-		name = "MAPPING_LB_RSTICK",
-		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.." to Quick Use"
-							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.Right_Stick.." 快捷使用",
-		hover = MappingHoverText,
-		options = MappingOptions,
-		default = false
-	},
-	{
-		name = "MAPPING_LB_RB_RSTICK",
-		label = Language_En and GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.." to Quick Use"
-							or  GamepadButtons.Left_Bumper..GamepadButtons.Right_Bumper.."+"..GamepadButtons.Right_Stick.." 快捷使用",
-		hover = MappingHoverText,
-		options = MappingOptions,
-		default = false
-	},
-	{
 		name = "MAPPING_LB_UP",
 		label = Language_En and GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.." to Quick Use"
 							or  GamepadButtons.Left_Bumper.."+"..GamepadButtons.DPad_Up.." 快捷使用",

@@ -36,7 +36,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	end
 
 	self.CursorLeft = function (self, ...)
-		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
 
@@ -64,7 +64,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	end
 
 	self.CursorRight = function (self, ...)
-		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
 
@@ -90,7 +90,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	end
 
 	self.CursorUp = function (self, ...)
-		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
 
@@ -123,7 +123,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 
 	self.CursorDown = function (self, ...)
-		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
 			return true
 		end
 
@@ -551,6 +551,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		local Language_En = CHANGE_LANGUAGE_ENGLISH
 		local inv_item = self:GetCursorItem()
 		local slot_num, container = self:GetCursorSlot()
+		local isreadonlycontainer = container and container.IsReadOnlyContainer and container:IsReadOnlyContainer()
 		local active_item = self.cursortile ~= nil and self.cursortile.item or nil
 		if inv_item ~= nil and inv_item.replica.inventoryitem == nil then
 			inv_item = nil
@@ -810,12 +811,22 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 			end
 
+			local hide_above = false
+			local hide_blow = false
+			if isreadonlycontainer then
+				if active_item ~= nil then
+					hide_blow = true
+				else
+					hide_above = true
+				end
+			end
+
 			local was_shown = self.actionstring.shown
 			local old = self.actionstringbody:GetString()
 			local old_below = self.actionstringbody_below:GetString()
 			if CHANGE_INVENTORY_BAR_HINT_REMOVE_ACTION_TEXT then
-				local new_icon = table.concat(icon, " ")
-				local new_icon_below = table.concat(icon_below, " ")
+				local new_icon = hide_above and " " or table.concat(icon, " ")
+				local new_icon_below = hide_blow and " " or table.concat(icon_below, " ")
 				if old ~= new_icon or old_below ~= new_icon_below then
 					self.actionstringbody:SetString(new_icon)
 					self.actionstringbody_below:SetString(new_icon_below)
@@ -823,8 +834,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					self.actionstring:Show()
 				end
 			else
-				local new_string = table.concat(str, '\n')
-				local new_string_below = table.concat(str_below, '\n')
+				local new_string = hide_above and " " or table.concat(str, '\n')
+				local new_string_below = hide_blow and " " or table.concat(str_below, '\n')
 				if old ~= new_string or old_below ~= new_string_below then
 					self.actionstringbody:SetString(new_string)
 					self.actionstringbody_below:SetString(new_string_below)

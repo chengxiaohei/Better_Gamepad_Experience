@@ -359,6 +359,15 @@ AddComponentPostInit("playercontroller", function(self)
 			nil
 	end
 
+	self.IsTargetCanBeLock = function (self, target)
+		for _, v in ipairs(self.controller_targeting_targets) do
+			if target == v then
+				return not CHANGE_FORCE_BUTTON or not CHANGE_IS_FORCE_ATTACK or not self:IsNeedForceAttack(target) or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON)
+			end
+		end
+		return false
+	end
+
 	local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
 	local right_bumper_double_click_gap_time = GetTime()
 	local right_bumper_click_count = 1
@@ -366,17 +375,11 @@ AddComponentPostInit("playercontroller", function(self)
 	local left_bumper_double_click_gap_time = GetTime()
 	local left_bumper_click_count = 1
 
+	self.Click_Right_Bumper_While_Holding_Left_Bumper = false
+	self.Click_Left_Bumper_While_Holding_Right_Bumper = false
+
 	local OnControl_Old = self.OnControl
 	local OnControl_New = function (self, control, down, ...)
-		-- do this first in order to not lose an up/down and get out of sync
-		if control == CONTROL_TARGET_MODIFIER then
-			self.controller_targeting_modifier_down = down
-			if down then
-				self.controller_targeting_lock_timer = 0.0
-			else
-				self.controller_targeting_lock_timer = nil
-			end
-		end
 
 		if IsPaused() then
 			return
@@ -437,6 +440,27 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
+		-- Indicate Left Bumper State and Right Bumper State
+		if control == CHANGE_CONTROL_RIGHT then
+			if down then
+				if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+					self.Click_Right_Bumper_While_Holding_Left_Bumper = true
+				end
+			else
+				self.Click_Right_Bumper_While_Holding_Left_Bumper = false
+			end
+		end
+
+		if control == CHANGE_CONTROL_LEFT then
+			if down then
+				if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+					self.Click_Left_Bumper_While_Holding_Right_Bumper = true
+				end
+			else
+				self.Click_Left_Bumper_While_Holding_Right_Bumper = false
+			end
+		end
+
 		--V2C: control up happens here now
 		if not down and control ~= CONTROL_PRIMARY and control ~= CONTROL_SECONDARY then
 			if not self.ismastersim then
@@ -457,18 +481,24 @@ AddComponentPostInit("playercontroller", function(self)
 					self:DoAttackButton()
 				end
 				return
-			end
-		end
-
-		if self.controller_targeting_modifier_down then
-			if not down then
-				-- do nothing
-			elseif control == CONTROL_TARGET_CYCLE_BACK then
-				self:CycleControllerAttackTargetBack()
-				self.controller_targeting_lock_timer = 0.0
-			elseif control == CONTROL_TARGET_CYCLE_FORWARD then
-				self:CycleControllerAttackTargetForward()
-				self.controller_targeting_lock_timer = 0.0
+			elseif control == CONTROL_MENU_MISC_4 then
+				if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+					self:DoCharacterCommandWheelButton()
+				end
+				return
+			elseif down and control == CONTROL_TARGET_LOCK then
+				if self:IsControllerTargetLockEnabled() then
+					if self:IsTargetCanBeLock(self.controller_target) and self.controller_target ~= self.controller_attack_target then
+						self.controller_attack_target = self.controller_target
+					elseif self:IsTargetCanBeLock(self.controller_alt_target) and self.controller_target ~= self.controller_attack_target then
+						self.controller_attack_target = self.controller_alt_target
+					else
+						self:ControllerTargetLock(false)
+					end
+				else
+					self:ControllerTargetLock(true)
+				end
+				return
 			end
 		end
 
@@ -487,6 +517,8 @@ AddComponentPostInit("playercontroller", function(self)
 			--    end
 		elseif control == CONTROL_CANCEL then
 			self:CancelPlacement()
+		elseif control == CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID and self:IsAxisAlignedPlacement() then
+			CycleAxisAlignmentValues()
 		elseif control == CONTROL_INSPECT then
 			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false) and
 				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, true, false) and
@@ -543,6 +575,33 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 
 		local time = GetStaticTime()
+
+		local cameracontrolscheme = TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV)
+		if cameracontrolscheme >= 2 and cameracontrolscheme <= 7 then
+			local xdir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ROTATE_RIGHT) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ROTATE_LEFT)
+			local ydir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ZOOM_IN) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ZOOM_OUT)
+			local absxdir = math.abs(xdir)
+			local absydir = math.abs(ydir)
+			local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
+			if absxdir >= deadzone and absxdir > absydir * 1.3 then --favour zoom a bit more at diagonals
+				local right = xdir > 0
+				if not CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD then
+					right = not right
+				end
+				local speed = Remap(math.min(1, absxdir), deadzone, 1, 2, 3)
+				if right then
+					self:RotRight(speed)
+				else
+					self:RotLeft(speed)
+				end
+				self.lastrottime = time
+			elseif absydir > deadzone then
+				local delta = Remap(math.min(1, absydir), deadzone, 1, 0, 0.65)
+				TheCamera:ContinuousZoomDelta(ydir > 0 and -delta or delta)
+				self.lastzoomtime = time
+			end
+			return
+		end
 
 		if self.lastrottime == nil or time - self.lastrottime > CHANGE_ROT_REPEAT then
 			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (self.reticule == nil or not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
@@ -731,7 +790,7 @@ AddComponentPostInit("playercontroller", function(self)
 								not v:HasTag("wall") and 1.5 or 1
 
 							--select the item that can do action on it.
-							if (lmb ~= nil or (inv_obj and inv_obj.replica.inventoryitem and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil)) and
+							if (lmb ~= nil or (inv_obj and inv_obj.replica.inventoryitem and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil) or self:IsTargetCanBeLock(v)) and
 								not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								mult = mult * 10
 							end
@@ -946,7 +1005,7 @@ AddComponentPostInit("playercontroller", function(self)
 							local alt_mult = v == self.controller_alt_target and not v:HasTag("wall") and 1.5 or 1
 
 							--select the item that can do action on it.
-							if rmb ~= nil and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
+							if (rmb ~= nil or self:IsTargetCanBeLock(v)) and not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								alt_mult = alt_mult * 10
 							end
 
@@ -1044,7 +1103,7 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	-- New Added
-	local function IsNeedForceAttack(self, target)
+	self.IsNeedForceAttack = function (self, target)
 		return not TargetIsHostile(self.inst, target) and
 			target ~= self.inst.replica.combat:GetTarget() and
 			self.inst ~= target.replica.combat:GetTarget()
@@ -1102,7 +1161,7 @@ AddComponentPostInit("playercontroller", function(self)
 			if v ~= self.inst and (v ~= self.controller_attack_target or i == 1) then
 				if combat:CanTarget(v) then
 					local isally = combat:IsAlly(v)
-					local need_force_attack = IsNeedForceAttack(self, v)
+					local need_force_attack = self:IsNeedForceAttack(v)
 					if not CHANGE_FORCE_BUTTON or not CHANGE_IS_FORCE_ATTACK or not need_force_attack or TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) or self.controller_targeting_lock_target then
 
 						--Check distance including y value
@@ -1435,8 +1494,11 @@ AddComponentPostInit("playercontroller", function(self)
 	self.TryWidgetButtonFunction = function (self, call, ...)
 		local _, _, _, _, _, cooker_type_container = self:GetAllTypeContainers()
 		if cooker_type_container ~= nil then
+			local isreadonlycontainer = cooker_type_container.replica.container ~= nil and
+										cooker_type_container.replica.container.IsReadOnlyContainer and
+										cooker_type_container.replica.container:IsReadOnlyContainer()
 			local widget = cooker_type_container.replica.container ~= nil and cooker_type_container.replica.container:GetWidget() or nil
-			if widget ~= nil and widget.buttoninfo ~= nil and widget.buttoninfo.fn ~= nil then
+			if not isreadonlycontainer and widget ~= nil and widget.buttoninfo ~= nil and widget.buttoninfo.fn ~= nil then
 				if self.inst:HasTag("busy") then
 					return
 				end

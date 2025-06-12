@@ -57,13 +57,6 @@ CHANGE_MAPPING_LB_START = GetModConfigData("MAPPING_LB_START")
 CHANGE_MAPPING_RB_START = GetModConfigData("MAPPING_RB_START")
 CHANGE_MAPPING_LB_RB_START = GetModConfigData("MAPPING_LB_RB_START")
 
-CHANGE_MAPPING_LB_LSTICK = GetModConfigData("MAPPING_LB_LSTICK")
-CHANGE_MAPPING_RB_LSTICK = GetModConfigData("MAPPING_RB_LSTICK")
-CHANGE_MAPPING_LB_RB_LSTICK = GetModConfigData("MAPPING_LB_RB_LSTICK")
-
-CHANGE_MAPPING_LB_RSTICK = GetModConfigData("MAPPING_LB_RSTICK")
-CHANGE_MAPPING_LB_RB_RSTICK = GetModConfigData("MAPPING_LB_RB_RSTICK")
-
 CHANGE_MAPPING_LB_UP = GetModConfigData("MAPPING_LB_UP")
 CHANGE_MAPPING_RB_UP = GetModConfigData("MAPPING_RB_UP")
 CHANGE_MAPPING_LB_RB_UP = GetModConfigData("MAPPING_LB_RB_UP")
@@ -72,6 +65,7 @@ CHANGE_MAPPING_LB_Y = GetModConfigData("MAPPING_LB_Y")
 CHANGE_MAPPING_RB_Y = GetModConfigData("MAPPING_RB_Y")
 CHANGE_MAPPING_LB_RB_Y = GetModConfigData("MAPPING_LB_RB_Y")
 
+modimport("scripts/change_input.lua")
 modimport("scripts/change_frontend")
 modimport("scripts/change_functions")
 modimport("scripts/change_staff")

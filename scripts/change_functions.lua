@@ -175,28 +175,6 @@ function GetQuickUseString(inv_slot, act)
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_PAUSE)
         },
 
-        MAPPING_LB_LSTICK = {
-            slot = GetModConfigData("MAPPING_LB_LSTICK"),
-            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_3)
-        },
-        MAPPING_RB_LSTICK = {
-            slot = GetModConfigData("MAPPING_RB_LSTICK"),
-            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_3)
-        },
-        MAPPING_LB_RB_LSTICK = {
-            slot = GetModConfigData("MAPPING_LB_RB_LSTICK"),
-            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_3)
-        },
-
-        MAPPING_LB_RSTICK = {
-            slot = GetModConfigData("MAPPING_LB_RSTICK"),
-            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_4)
-        },
-        MAPPING_LB_RB_RSTICK = {
-            slot = GetModConfigData("MAPPING_LB_RB_RSTICK"),
-            string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_MENU_MISC_4)
-        },
-
         MAPPING_LB_UP = {
             slot = GetModConfigData("MAPPING_LB_UP"),
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_EXAMINE)

@@ -1,12 +1,22 @@
 require("components/deployhelper")
 
 AddComponentPostInit("placer", function(self)
+    local SetBuilder_Old = self.SetBuilder
+    self.SetBuilder = function (self, builder, recipe, invobject, ...)
+        SetBuilder_Old(self, builder, recipe, invobject, ...)
+        if TheInput:ControllerAttached() then
+            self:InitializeAxisAlignedHelpers()
+        end
+    end
+
     local OnUpdate_Old = self.OnUpdate
     local OnUpdate_New = function (self, dt, ...)
 
         local rotating_from_boat_center
         local hide_if_cannot_build
 
+        local axisalignedhelpers_visible = false
+        self.axisalignedplacementtoggle = false
         if ThePlayer == nil then
             return
         elseif not TheInput:ControllerAttached() then
@@ -31,7 +41,13 @@ AddComponentPostInit("placer", function(self)
                     hide_if_cannot_build = true
                 end
             else
-                self.inst.Transform:SetPosition(pt:Get())
+                self.axisalignedplacementtoggle = TheInput:IsControlPressed(CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD)
+                if self:IsAxisAlignedPlacement() then
+                    axisalignedhelpers_visible = true
+                    self.inst.Transform:SetPosition(self:GetAxisAlignedPlacementTransform(pt.x, 0, pt.z))
+                else
+                    self.inst.Transform:SetPosition(pt:Get())
+                end
             end
 
             -- Set the placer's rotation to point away from the boat's center point
@@ -102,6 +118,13 @@ AddComponentPostInit("placer", function(self)
                 local target_pos = ThePlayer.components.playercontroller.reticule and ThePlayer.components.playercontroller.reticule.targetpos
                 if target_pos then
                     x, y, z = target_pos:Get()
+                end
+
+                self.axisalignedplacementtoggle = ThePlayer.components.playercontroller.Click_Right_Bumper_While_Holding_Left_Bumper
+                -- TheInput:IsControlPressed(CHANGE_CONTROL_LEFT)
+                if self:IsAxisAlignedPlacement() then
+                    axisalignedhelpers_visible = true
+                    x, y, z = self:GetAxisAlignedPlacementTransform(x, y, z)
                 end
             end
             -- ================================================================================================================================ --
@@ -182,6 +205,10 @@ AddComponentPostInit("placer", function(self)
                     v:Show()
                 end
             end
+        end
+        if self.axisalignedhelpers then
+            self.axisalignedhelpers.visible = axisalignedhelpers_visible
+            self:UpdateAxisAlignedHelpers(dt)
         end
     end
 

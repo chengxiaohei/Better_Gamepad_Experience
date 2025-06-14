@@ -593,7 +593,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                             table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_TARGET_LOCK) .. " " .. STRINGS.UI.HUD.UNLOCK_TARGET)
                         end
                         Unlock_shown = true
-                    elseif not Lock_shown then
+                    elseif not Lock_shown and not self.owner.components.playercontroller:IsControllerTargetLocked() then
                         if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
                             table.insert(alt_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_TARGET_LOCK))
                         else

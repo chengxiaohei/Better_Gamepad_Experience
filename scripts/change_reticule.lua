@@ -2,25 +2,22 @@
 AddPrefabPostInitAny(function(inst)
     if inst.components.reticule then
         inst.components.reticule.origin_twinstickmode = inst.components.reticule.twinstickmode
-        if not inst.components.reticule.twinstickrange then
-            -- TODO: Maybe Need Optimize or Fill
-            if inst.prefab == "wortox" then inst.components.reticule.twinstickrange = ACTIONS.BLINK.distance  -- 灵魂跳跃
-            elseif inst.prefab == "orangestaff" then inst.components.reticule.twinstickrange = 30  -- 传送法杖
-            elseif inst.prefab == "yellowstaff" then inst.components.reticule.twinstickrange = 20  -- 星杖
-            elseif inst.prefab == "opalstaff" then inst.components.reticule.twinstickrange = 20  -- 月杖
-            elseif inst.prefab == "trident" then inst.components.reticule.twinstickrange = 20  -- 三叉戟
-            elseif inst.prefab == "oceanfishingrod" then inst.components.reticule.twinstickrange = 20  -- 海钓竿
-            elseif inst.prefab == "gnarwail_horn" then inst.components.reticule.twinstickrange = 20  -- 一角鲸的角
-            elseif inst.prefab == "wurt_swampitem_shadow" then inst.components.reticule.twinstickrange = 30  -- wurt's magic staff
-            elseif inst.prefab == "wurt_swampitem_lunar" then inst.components.reticule.twinstickrange = 30  -- wurt's magic staff
-            -- default:
-                -- elseif inst:HasTag("dumbbell") then inst.components.reticule.twinstickrange = 8  -- 哑铃
-                -- elseif inst.prefab == "wilson" then inst.components.reticule.twinstickrange = 8  -- 扔火把
-                -- elseif inst.prefab == "sleepbomb" then inst.components.reticule.twinstickrange = 8  -- 催眠袋
-                -- 水球  8
-                -- 鱼食  8
-                -- 海草种子  8
-            end
+        if inst.prefab == "wortox" then inst.components.reticule.twinstickrange = ACTIONS.BLINK.distance  -- 灵魂跳跃
+        elseif inst.prefab == "orangestaff" then inst.components.reticule.twinstickrange = 30  -- 传送法杖
+        elseif inst.prefab == "yellowstaff" then inst.components.reticule.twinstickrange = 20  -- 星杖
+        elseif inst.prefab == "opalstaff" then inst.components.reticule.twinstickrange = 20  -- 月杖
+        elseif inst.prefab == "trident" then inst.components.reticule.twinstickrange = 20  -- 三叉戟
+        elseif inst.prefab == "oceanfishingrod" then inst.components.reticule.twinstickrange = 20  -- 海钓竿
+        elseif inst.prefab == "gnarwail_horn" then inst.components.reticule.twinstickrange = 20  -- 一角鲸的角
+        elseif inst.prefab == "wurt_swampitem_shadow" then inst.components.reticule.twinstickrange = 30  -- wurt's magic staff
+        elseif inst.prefab == "wurt_swampitem_lunar" then inst.components.reticule.twinstickrange = 30  -- wurt's magic staff
+        -- default:
+            -- elseif inst:HasTag("dumbbell") then inst.components.reticule.twinstickrange = 8  -- 哑铃
+            -- elseif inst.prefab == "wilson" then inst.components.reticule.twinstickrange = 8  -- 扔火把
+            -- elseif inst.prefab == "sleepbomb" then inst.components.reticule.twinstickrange = 8  -- 催眠袋
+            -- 水球  8
+            -- 鱼食  8
+            -- 海草种子  8
         end
     elseif inst.components.aoetargeting then
         inst.components.aoetargeting.reticule.origin_twinstickmode = inst.components.aoetargeting.reticule.twinstickmode
@@ -33,7 +30,7 @@ AddComponentPostInit("reticule", function(self)
     local OnCameraUpdate_Old = self.OnCameraUpdate
     self.OnCameraUpdate = function (self, dt, ...)
         if not (self.inst:HasTag("boat") or self.inst:HasTag("boatcannon") or self.inst.prefab == "winona") then
-            if not self.origin_twinstickmode and self.clear_memory_flag == false and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+            if self.clear_memory_flag == false and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                 self.twinstickmode = 1
                 self.twinstickrange = self.twinstickrange or 8  -- default is 8
             else
@@ -41,6 +38,16 @@ AddComponentPostInit("reticule", function(self)
             end
         end
         OnCameraUpdate_Old(self, dt, ...)
+        if ThePlayer and ThePlayer.components and ThePlayer.components.playercontroller
+            and ThePlayer.components.playercontroller.Click_Right_Stick_While_Holding_Right_Bumper then
+            self.clear_memory_flag = true
+            self.twinstickx_mode1 = nil
+            self.twinstickz_mode1 = nil
+            self.twinstickoverride = nil
+            self.twinstickoverride_mode1 = nil
+        else
+            self.clear_memory_flag = false
+        end
     end
 
     local UpdateTwinStickMode1_Old = self.UpdateTwinStickMode1
@@ -81,6 +88,7 @@ AddComponentPostInit("reticule", function(self)
         self.clear_memory_flag = false
         self.twinstickx_mode1 = nil
         self.twinstickz_mode1 = nil
+        self.twinstickoverride = nil
         self.twinstickoverride_mode1 = nil
         CreateReticule_Old(self, ...)
     end

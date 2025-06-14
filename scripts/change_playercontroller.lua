@@ -461,6 +461,44 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
+		if control == CONTROL_MENU_MISC_3 then
+			if down then
+				if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+					self.Click_Left_Stick_While_Holding_Left_Right_Bumper = true
+				else
+					if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+						self.Click_Left_Stick_While_Holding_Left_Bumper = true
+					end
+					if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+						self.Click_Left_Stick_While_Holding_Right_Bumper = true
+					end
+				end
+			else
+				self.Click_Left_Stick_While_Holding_Left_Right_Bumper = false
+				self.Click_Left_Stick_While_Holding_Left_Bumper = false
+				self.Click_Left_Stick_While_Holding_Right_Bumper = false
+			end
+		end
+
+		if control == CONTROL_MENU_MISC_4 then
+			if down then
+				if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+					self.Click_Right_Stick_While_Holding_Left_Right_Bumper = true
+				else
+					if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+						self.Click_Right_Stick_While_Holding_Left_Bumper = true
+					end
+					if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+						self.Click_Right_Stick_While_Holding_Right_Bumper = true
+					end
+				end
+			else
+				self.Click_Right_Stick_While_Holding_Left_Right_Bumper = false
+				self.Click_Right_Stick_While_Holding_Left_Bumper = false
+				self.Click_Right_Stick_While_Holding_Right_Bumper = false
+			end
+		end
+
 		--V2C: control up happens here now
 		if not down and control ~= CONTROL_PRIMARY and control ~= CONTROL_SECONDARY then
 			if not self.ismastersim then
@@ -575,9 +613,9 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 
 		local time = GetStaticTime()
+		local invert_rotation = Profile:GetInvertCameraRotation()
 
-		local cameracontrolscheme = TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV)
-		if cameracontrolscheme >= 2 and cameracontrolscheme <= 7 then
+		if TheInput:SupportsControllerFreeCamera() then
 			local xdir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ROTATE_RIGHT) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ROTATE_LEFT)
 			local ydir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ZOOM_IN) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ZOOM_OUT)
 			local absxdir = math.abs(xdir)
@@ -585,7 +623,7 @@ AddComponentPostInit("playercontroller", function(self)
 			local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
 			if absxdir >= deadzone and absxdir > absydir * 1.3 then --favour zoom a bit more at diagonals
 				local right = xdir > 0
-				if not CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD then
+				if not invert_rotation then
 					right = not right
 				end
 				local speed = Remap(math.min(1, absxdir), deadzone, 1, 2, 3)
@@ -1460,12 +1498,10 @@ AddComponentPostInit("playercontroller", function(self)
 			self.inst.components.combat:SetTarget(nil)
 		elseif obj ~= nil then
 			if self.locomotor == nil then
-				self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
-				-- NOTES(JBK): Does not call locomotor component functions needed for pre_action_cb, manual call here.
-				if act.action.pre_action_cb then
-					act.action.pre_action_cb(act)
+				act.non_preview_cb = function()
+					self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+					SendRPCToServer(RPC.ControllerAltActionButton, act.action.code, obj, nil, act.action.canforce, act.action.mod_name)
 				end
-				SendRPCToServer(RPC.ControllerAltActionButton, act.action.code, obj, nil, act.action.canforce, act.action.mod_name)
 			elseif self:CanLocomote() then
 				act.preview_cb = function()
 					self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
@@ -1474,12 +1510,10 @@ AddComponentPostInit("playercontroller", function(self)
 				end
 			end
 		elseif self.locomotor == nil then
-			self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
-			-- NOTES(JBK): Does not call locomotor component functions needed for pre_action_cb, manual call here.
-			if act.action.pre_action_cb then
-				act.action.pre_action_cb(act)
+			act.non_preview_cb = function()
+				self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+				SendRPCToServer(RPC.ControllerAltActionButtonPoint, act.action.code, act.pos.local_pt.x, act.pos.local_pt.z, nil, act.action.canforce, isspecial, act.action.mod_name, act.pos.walkable_platform, act.pos.walkable_platform ~= nil)
 			end
-			SendRPCToServer(RPC.ControllerAltActionButtonPoint, act.action.code, act.pos.local_pt.x, act.pos.local_pt.z, nil, act.action.canforce, isspecial, act.action.mod_name, act.pos.walkable_platform, act.pos.walkable_platform ~= nil)
 		elseif self:CanLocomote() then
 			act.preview_cb = function()
 				self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0

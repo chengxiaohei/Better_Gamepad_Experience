@@ -52,15 +52,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, true) then
                     TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_START, CHANGE_MAPPING_RB_START, CHANGE_MAPPING_LB_RB_START, down, true)
                 end
-            elseif control == CONTROL_MENU_MISC_4 or control == CONTROL_OPEN_COMMAND_WHEEL then
-                if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-                    if self.owner.components.playercontroller.reticule then
-                        self.owner.components.playercontroller.reticule.clear_memory_flag = true
-                        self.owner.components.playercontroller.reticule.twinstickx_mode1 = nil
-                        self.owner.components.playercontroller.reticule.twinstickz_mode1 = nil
-                        self.owner.components.playercontroller.reticule.twinstickoverride_mode1 = nil
-                    end
-                end
             elseif control == CONTROL_INVENTORY_EXAMINE then
                 if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true) then
                     TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, down, true)
@@ -130,16 +121,7 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 end
                 return true
             elseif control == CONTROL_OPEN_COMMAND_WHEEL then
-                if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) or TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-                    if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
-                        -- open CharacterCommandWheel (Already Done in PlayerController Component)
-                    end
-                    if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-                        if self.owner.components.playercontroller.reticule then
-                            self.owner.components.playercontroller.reticule.clear_memory_flag = false
-                        end
-                    end
-                else
+                if not (TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) or TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
                     if self:IsCommandWheelOpen() then
                         self:CloseCommandWheel()
                     else
@@ -162,21 +144,6 @@ AddClassPostConstruct("screens/playerhud", function(self)
                     self:CloseControllerInventory()
                     return true
                 end
-            -- elseif control == CONTROL_TOGGLE_PLAYER_STATUS then   --deprcated
-            --     if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, false) and
-            --         not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, not down, false) and
-            --         not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_RSTICK, false, CHANGE_MAPPING_LB_RB_RSTICK, down, true) then
-            --         -- Do things below at the moment we release CONTROL_PAUSE button if no mapping key triggered while press down CONTROL_PAUSE button
-            --         if not self.owner.components.playercontroller.reticule or
-            --             not self.owner.components.playercontroller.reticule.clear_memory_flag then
-            --             self:ShowPlayerStatusScreen(true)
-            --         end
-            --     end
-            --     -- Re-Enable reticule control
-            --     if self.owner.components.playercontroller.reticule then
-            --         self.owner.components.playercontroller.reticule.clear_memory_flag = false
-            --     end
-            --     return true
             elseif control == CONTROL_TOGGLE_SAY then
                 TheFrontEnd:PushScreen(ChatInputScreen(false))
                 return true

@@ -103,3 +103,12 @@ Input.ResolveVirtualControls = function (self, control, ...)
 
 	return ResolveVirtualControls_Old(self, control, ...)
 end
+
+local SupportsControllerFreeAiming_Old = Input.SupportsControllerFreeAiming
+Input.SupportsControllerFreeAiming = function (self, ...)
+	local scheme = self:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV)
+	if IsCamAndInvCtrlScheme123(scheme) then
+		return TheSim:GetDigitalControl(CHANGE_CONTROL_RIGHT)
+	end
+	return SupportsControllerFreeAiming_Old(self, ...)
+end

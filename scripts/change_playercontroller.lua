@@ -613,7 +613,6 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 
 		local time = GetStaticTime()
-		local invert_rotation = Profile:GetInvertCameraRotation()
 
 		if TheInput:SupportsControllerFreeCamera() then
 			local xdir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ROTATE_RIGHT) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ROTATE_LEFT)
@@ -623,7 +622,7 @@ AddComponentPostInit("playercontroller", function(self)
 			local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
 			if absxdir >= deadzone and absxdir > absydir * 1.3 then --favour zoom a bit more at diagonals
 				local right = xdir > 0
-				if not invert_rotation then
+				if not CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD then
 					right = not right
 				end
 				local speed = Remap(math.min(1, absxdir), deadzone, 1, 2, 3)

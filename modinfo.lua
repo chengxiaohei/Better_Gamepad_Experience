@@ -6,6 +6,7 @@ local GamepadButtons = {
 	DPad_Down    = "\238\128\140",--"DPad Down"
 	DPad_Left    = "\238\128\141",--"DPad Left",
 	DPad_Right   = "\238\128\142",--"DPad Right"
+	DPad_All     = "\238\128\153",--"DPad Up Down Left Right"
 	Start        = "\238\128\132",--"Start",
 	Back         = "\238\128\133",--"Back",
 	Left_Stick   = "\238\128\134",--"Left Stick"
@@ -25,6 +26,7 @@ local GamepadButtons = {
 	Right_Thumb_Right = "\238\128\151",--"Right Thumb Right",
 	Right_Thumb_Down  = "\238\128\149",--"Right Thumb Down",
 	Right_Thumb_Up    = "\238\128\148",--"Right Thumb Up",
+	Right_Thumb_All   = "\238\128\152",--"Right Thumb Up Down Left Right"
 	Left_Trigger      = "\238\128\136",--"Left Trigger",
 	Right_Trigger     = "\238\128\139",--"Right Trigger",
 }
@@ -80,21 +82,25 @@ local MappingHoverText = Language_En and "Mapping an Inventory or Equipment Slot
 
 name = "Better Gamepad UX" -- "Better Gamepad User Experience"
 description = Language_En and [[
-* It's Best to Keep the Default Control Settings in the Settings.
+* It's Best to Keep the Default Control Settings in the Settings. (Gamepad Control Scheme Only Support Scheme 1-3)
 * Setting Separated Backpack Layout while Using Gamepad
-* Move Camera with ]]..GamepadButtons.Left_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 
-* Move Action Point with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[, Restore to Default with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Stick..[[ 
+* Move Camera with ]]..GamepadButtons.Left_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_All..[[ 
+* Move Action Point with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Thumb_All..[[, Restore to Default with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.Right_Stick..[[ 
+* Temporarily Open/Close Axis Alignment with ]]..GamepadButtons.Left_Bumper..[[ 
+* Open/Close Character Command Wheel with ]]..GamepadButtons.Left_Bumper..[[ and ]]..GamepadButtons.Right_Stick..[[ 
 * Select Items in the Inventroy Bar with ]]..GamepadButtons.Right_Trigger..[[ 
 * Move Items Between Opened Containers with ]]..GamepadButtons.Right_Bumper..[[ and ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 
 * Attack Friendly Creatures with Force Button ]]..GamepadButtons.Left_Bumper..[[ and Attack Button ]]..GamepadButtons.Button_X..[[ 
 * Teleport with Force Button ]]..GamepadButtons.Left_Bumper..[[ and AltAction Button ]]..GamepadButtons.Button_B..[[ 
 * While Focus on Crafting Menu Pinbar, Use ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Skins and Use ]]..GamepadButtons.Right_Bumper..[[ + ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ to Switch Pages
 * Customize your Shortcut Key Mapping
-]] or [[
-* 开启本Mod后，最好将系统设置中的控制器设置保持默认。
+]] or [[ 
+* 开启本Mod后, 最好将系统设置中的控制器设置保持默认(手柄控制方案仅支持方案1-3)
 * 在使用手柄时，也可以在系统设置中设置背包布局了
-* 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动视角
-* 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_Left..GamepadButtons.Right_Thumb_Up..GamepadButtons.Right_Thumb_Right..GamepadButtons.Right_Thumb_Down..[[ 移动操作目标点，使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Stick..[[ 来恢复至默认状态
+* 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_All..[[ 移动视角
+* 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Thumb_All..[[ 移动操作目标点，使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.Right_Stick..[[ 来恢复至默认状态
+* 使用 ]]..GamepadButtons.Left_Bumper..[[ 来临时开关几何学网格
+* 使用 ]]..GamepadButtons.Left_Bumper..[[ 加 ]]..GamepadButtons.Right_Stick..[[ 来开启角色技能轮盘
 * 使用 ]]..GamepadButtons.Right_Trigger..[[ 从物品栏中选取物品
 * 使用 ]]..GamepadButtons.Right_Bumper..[[ 加 ]]..GamepadButtons.DPad_Left..GamepadButtons.DPad_Right..[[ 在打开的容器之间移动物品
 * 使用强制按钮 ]]..GamepadButtons.Left_Bumper..[[ 加攻击按钮 ]]..GamepadButtons.Button_X..[[ 攻击友好生物

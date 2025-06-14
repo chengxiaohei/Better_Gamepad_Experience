@@ -1718,4 +1718,13 @@ AddComponentPostInit("playercontroller", function(self)
 		self.inst.HUD.controls.inv.rebuild_pending = true
 	end
 
+	self.ShouldPlayerHUDControlBeIgnored = function (self, control, down, ...)
+		if self:IsAxisAlignedPlacement() and
+			control ~= CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID and
+			TheInput:ControlsHaveSameMapping(TheInput:GetControllerID(), control, CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID) then
+			return true
+		end
+		return false
+	end
+
 end)

@@ -14,8 +14,8 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 return true
             end
             return
-        -- elseif self.owner.components.playercontroller:ShouldPlayerHUDControlBeIgnored(control, down) then
-        --     return true
+        elseif self.owner.components.playercontroller:ShouldPlayerHUDControlBeIgnored(control, down) then
+            return true
         end
 
         if down then

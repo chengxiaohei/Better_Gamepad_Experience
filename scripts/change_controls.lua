@@ -115,6 +115,10 @@ AddClassPostConstruct("widgets/controls", function(self)
     local OnUpdate_Old = self.OnUpdate
 
     local OnUpdate_New = function (self, dt, ...)
+
+        -- Always ignore leftstick in Command Wheel (Social Menu)
+        self.commandwheel.ignoreleftstick = true
+
         if PerformingRestart then
             self.playeractionhint:SetTarget(nil)
             self.playeractionhint_itemhighlight:SetTarget(nil)

@@ -308,7 +308,9 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
             if self.focus and down and not _self.down then
                 if TheInput:ControllerAttached() then
                     if not self.craftingmenu:IsCraftingOpen() then
-                        if control == CONTROL_INVENTORY_USEONSELF or control == CONTROL_INVENTORY_USEONSCENE then
+                        local prev_ctrl = TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_LEFT)
+						local next_ctrl = TheInput:ResolveVirtualControls(VIRTUAL_CONTROL_INV_ACTION_RIGHT)
+						if control == next_ctrl or control == prev_ctrl then
                             -- if it is selected, pass the controls off to the details panel skin spinner to update the skin, otherwise it will be done here
                             local recipe_name, skin_name = self.craftingmenu:GetCurrentRecipeName()
                             if self.recipe_name ~= nil and self.recipe_name == recipe_name and self.craftingmenu.craftingmenu.details_root.skins_spinner:OnControl(control, down) then 
@@ -316,7 +318,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
                                 self:SetRecipe(recipe_name, skin_name)
                                 self.craftingmenu.craftingmenu.details_root:UpdateBuildButton(self)
                                 return true 
-                            elseif control == CONTROL_INVENTORY_USEONSELF and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+                            elseif control == prev_ctrl and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                                 if self.recipe_name ~= nil then
                                     local new_skin = self:GetPrevSkin(self.skin_name)
                                     if new_skin ~= self.skin_name then
@@ -327,7 +329,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
                                     end
                                     return true
                                 end
-                            elseif control == CONTROL_INVENTORY_USEONSCENE and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+                            elseif control == next_ctrl and not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                                 if self.recipe_name ~= nil then
                                     local new_skin = self:GetNextSkin(self.skin_name)
                                     if new_skin ~= self.skin_name then

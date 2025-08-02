@@ -145,16 +145,6 @@ configuration_options = {
 		default = true
 	},
 	{
-		name = "show_self_inspect",
-		label = Language_En and "Show Self Inspect Button" or "显示自我检查按钮",
-		hover = Language_En and "Show Self Inspect Button in Inventory Bar." or "显示物品栏中的自我检查按钮。",
-		options = {
-			{ description = "Yes (Default)", data = true,  hover = Language_En and "Show." or "显示"},
-			{ description = "No",            data = false, hover = Language_En and "Hide as Before." or "隐藏"},
-		},
-		default = true
-	},
-	{
 		name = "show_backpack_widget",
 		label = Language_En and "Show Backpack Widget" or "显示背包控件",
 		hover = Language_En and "Setting Backpack Layout to Separated in Settings Page of Original Game to Show Backpace Widget on the Right of Screen." or "在原版游戏的设置页面将更改背包布局为分开，即可在屏幕右侧显示背包控件。",

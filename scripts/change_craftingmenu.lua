@@ -39,14 +39,20 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
                     control = CONTROL_MENU_MISC_1
                 end
             end
-            -- change add favorite to right trigger
+            -- change add favorite to DPad Down
+            if control == CONTROL_INVENTORY_DROP then
+                control = CONTROL_MENU_MISC_2
+            end
             if control == CONTROL_OPEN_INVENTORY then
                 if TryTriggerMappingKey(self.owner, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) or
                     TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true, false) or
                     TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false, false) then
                     return false
                 else
-                    control = CONTROL_MENU_MISC_2
+                    if ThePlayer and ThePlayer.components and ThePlayer.components.playercontroller and ThePlayer.components.playercontroller:IsAOETargeting() then
+                        return false
+                    end
+                    control = self:IsCraftingOpen() and CONTROL_ACCEPT or CONTROL_INVENTORY_DROP
                 end
             end
         end
@@ -54,7 +60,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
         local result = OnControl_Old(self, control, down, ...)
 
         if not result and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU and (
-            control == CONTROL_MENU_MISC_1 or control == CONTROL_INVENTORY_DROP or
+            control == CONTROL_MENU_MISC_1 or control == CONTROL_MENU_MISC_2 or control == CONTROL_ACCEPT or control == CONTROL_INVENTORY_DROP or
             control == CONTROL_INVENTORY_USEONSELF or control == CONTROL_INVENTORY_USEONSCENE) then
             return true
         end
@@ -108,17 +114,6 @@ end)
 
 
 AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
-    local OnControl_Old = self.OnControl
-    self.OnControl = function(self, control, down, ...)
-        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
-            if control == CONTROL_INVENTORY_DROP then
-                    control = CONTROL_ACCEPT
-            end
-        end
-        return OnControl_Old(self, control, down, ...)
-    end
-
-
     -- 修改物品制作栏上下滑动的提示图标
     local RefreshControllers_Old = self.RefreshControllers
     self.RefreshControllers = function (self, controller_mode, ...)
@@ -133,11 +128,11 @@ AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
 
             local recipe_name = self.details_root.data ~= nil and self.details_root.data.recipe.name or nil
             if recipe_name then
-                hint_text = hint_text .."  "..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).." "..(TheCraftingMenuProfile:IsFavorite(recipe_name) and STRINGS.UI.CRAFTING_MENU.FAVORITE_REMOVE or STRINGS.UI.CRAFTING_MENU.FAVORITE_ADD)
+                hint_text = hint_text .."  "..TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP).." "..(TheCraftingMenuProfile:IsFavorite(recipe_name) and STRINGS.UI.CRAFTING_MENU.FAVORITE_REMOVE or STRINGS.UI.CRAFTING_MENU.FAVORITE_ADD)
             end
             return hint_text
         elseif self.filter_panel.focus then
-            return TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP).." "..STRINGS.UI.HUD.SELECT
+            return TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).." "..STRINGS.UI.HUD.SELECT
         end
         return ""
     end
@@ -156,11 +151,6 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinbar", function(self)
     local OnControl_Old = self.OnControl;
     self.OnControl = function(self, control, down, ...)
         if TheInput:ControllerAttached() and self.crafting_hud:IsCraftingOpen() then
-            if CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
-                if control == CONTROL_INVENTORY_DROP then
-                    control = CONTROL_ACCEPT
-                end
-            end
             if down and control == CONTROL_INVENTORY_USEONSCENE and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
                 self:GoToPrevPage()
                 return true
@@ -365,7 +355,7 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
         if self.recipe_name ~= nil then
             local recipe_name, skin_name = self.craftingmenu:GetCurrentRecipeName()
             if recipe_name == nil or self.recipe_name ~= recipe_name or self.skin_name ~= skin_name then
-                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP).." "..STRINGS.UI.HUD.SELECT)
+                table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY).." "..STRINGS.UI.HUD.SELECT)
             end
         end
 
@@ -411,6 +401,19 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
         Refresh_Old(self, ...)
         self.craft_button.GetHelpText = function (_self, ...) return "" end
     end
+
+    Recipe_Popup_Openhint_OnUpdate_Old = self.recipe_popup.openhint.OnUpdate
+    self.recipe_popup.openhint.OnUpdate = function(openhint, dt, ...)
+        if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
+            if ThePlayer and ThePlayer.components and ThePlayer.components.playercontroller and ThePlayer.components.playercontroller:IsAOETargeting() then
+                openhint:SetString("")
+            else
+                openhint:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_OPEN_INVENTORY))
+            end
+        else
+            Recipe_Popup_Openhint_OnUpdate_Old(openhint, dt, ...)
+        end
+	end
 end)
 
 
@@ -492,13 +495,13 @@ AddClassPostConstruct("widgets/redux/craftingmenu_details", function(self)
                     else
                         teaser:SetSize(26)
                         teaser:UpdateOriginalSize()
-                        teaser:SetMultilineTruncatedString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_DROP).." "..buttonstr, 2, (self.panel_width / 2) * 0.8, nil, false, true)
+                        teaser:SetMultilineTruncatedString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_OPEN_INVENTORY).." "..buttonstr, 2, (self.panel_width / 2) * 0.8, nil, false, true)
                         teaser:Show()
                     end
                 else
                     teaser:SetSize(20)
                     teaser:UpdateOriginalSize()
-                    teaser:SetMultilineTruncatedString(self.first_sub_ingredient_to_craft ~= nil and (TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_DROP).."  "..buttonstr) 
+                    teaser:SetMultilineTruncatedString(self.first_sub_ingredient_to_craft ~= nil and (TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_OPEN_INVENTORY).."  "..buttonstr) 
                                                         or meta.build_state == "prototype" and STRINGS.UI.CRAFTING.NEEDSTUFF_PROTOTYPE
                                                         or STRINGS.UI.CRAFTING.NEEDSTUFF
                                                         , 2, (self.panel_width / 2) * 0.8, nil, false, true)

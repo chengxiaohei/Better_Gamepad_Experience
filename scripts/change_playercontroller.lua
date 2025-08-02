@@ -565,7 +565,7 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		elseif control == CONTROL_CONTROLLER_ALTACTION then
 			self:DoControllerAltActionButton()
-		elseif control == CONTROL_CONTROLLER_ACTION then
+		elseif control == CONTROL_CONTROLLER_ACTION or (control == CONTROL_OPEN_INVENTORY and self:IsAOETargeting()) then
 			self:DoControllerActionButton()
 		elseif control == CONTROL_CONTROLLER_ATTACK then
 			local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)

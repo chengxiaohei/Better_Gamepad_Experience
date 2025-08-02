@@ -280,9 +280,11 @@ AddClassPostConstruct("widgets/controls", function(self)
                         B_shown = true
                     elseif not A_shown and aoetargeting then
                         if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-                            table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION))
+                            table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION)..
+                            (self.craftingmenu:IsCraftingOpen() and "" or "/"..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY)))
                         else
-                            table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION).." "..ground_r:GetActionString())
+                            table.insert(ground_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION)..
+                            (self.craftingmenu:IsCraftingOpen() and "" or "/"..TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_INVENTORY)).." "..ground_r:GetActionString())
                         end
                         A_shown = true
                     end

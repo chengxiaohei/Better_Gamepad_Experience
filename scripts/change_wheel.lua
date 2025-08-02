@@ -5,9 +5,12 @@ AddClassPostConstruct("widgets/wheel", function(self)
         if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM then
             if control == CONTROL_ACCEPT then return false
             elseif control == CONTROL_CANCEL then return false
+            elseif control == CONTROL_INVENTORY_EXAMINE then return true
             elseif control == CONTROL_INVENTORY_USEONSCENE then return true
-            elseif control == CONTROL_INVENTORY_USEONSELF then control = CONTROL_CANCEL
-            elseif control == CONTROL_INVENTORY_DROP then control = CONTROL_ACCEPT
+            elseif control == CONTROL_INVENTORY_USEONSELF then return true
+            elseif control == CONTROL_INVENTORY_DROP then return true
+            elseif control == CONTROL_OPEN_CRAFTING then control = CONTROL_CANCEL
+            elseif control == CONTROL_OPEN_INVENTORY then control = CONTROL_ACCEPT
             end
         end
         return OnControl_Old(self, control, down, ...)
@@ -17,7 +20,7 @@ AddClassPostConstruct("widgets/wheel", function(self)
     local GetHelpText_New = function (self, ...)
         local controller_id = TheInput:GetControllerID()
         local t = {}
-        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF, false, false ) .. " " .. STRINGS.UI.OPTIONS.CLOSE)	
+        table.insert(t, TheInput:GetLocalizedControl(controller_id, CONTROL_OPEN_CRAFTING, false, false ) .. " " .. STRINGS.UI.OPTIONS.CLOSE)	
         return table.concat(t, "  ")
     end
 
@@ -39,7 +42,7 @@ AddClassPostConstruct("widgets/wheel", function(self)
                         local controller_id = TheInput:GetControllerID()
                         local t = {}
                         if (not _self:IsSelected() or _self.AllowOnControlWhenSelected) and _self.help_message ~= "" then
-                            table.insert(t, TheInput:GetLocalizedControl(controller_id,CONTROL_INVENTORY_DROP, false, false ) .. " " .. _self.help_message)
+                            table.insert(t, TheInput:GetLocalizedControl(controller_id,CONTROL_OPEN_INVENTORY, false, false ) .. " " .. _self.help_message)
                         end
                         return table.concat(t, "  ")
                     end

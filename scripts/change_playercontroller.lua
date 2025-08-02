@@ -1147,7 +1147,8 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 	-- changed a little
 	local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
-		if self.inst:HasTag("playerghost") or self.inst.replica.inventory:IsHeavyLifting() then
+		local inventory = self.inst.replica.inventory
+		if inventory:IsHeavyLifting() or inventory:IsFloaterHeld() or self.inst:HasTag("playerghost") then
 			self.controller_attack_target = nil
 
 			-- we can't target right now; disable target locking
@@ -1168,7 +1169,7 @@ AddComponentPostInit("playercontroller", function(self)
 			--it went invalid, but we're not resetting the age yet
 		end
 
-		local equipped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		local equipped_item = inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 		local forced_rad = equipped_item ~= nil and equipped_item.controller_use_attack_distance or CHANGE_ADD_ATTACKABLE_TARGET_DETECT_RADIUS
 
 		local min_rad = 3

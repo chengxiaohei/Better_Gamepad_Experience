@@ -27,6 +27,7 @@ end)
 AddComponentPostInit("reticule", function(self)
     self.clear_memory_flag = false
 
+    local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
     local OnCameraUpdate_Old = self.OnCameraUpdate
     self.OnCameraUpdate = function (self, dt, ...)
         local controller = ThePlayer and ThePlayer.components and ThePlayer.components.playercontroller
@@ -49,6 +50,9 @@ AddComponentPostInit("reticule", function(self)
             self.twinstickoverride_mode1 = nil
         else
             self.clear_memory_flag = false
+        end
+        if controller ~= nil then
+            TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED / math.max(controller:GetRightBumperMultClickedCount(true), 1)
         end
     end
 

@@ -368,12 +368,75 @@ AddComponentPostInit("playercontroller", function(self)
 		return false
 	end
 
-	local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
-	local right_bumper_double_click_gap_time = GetTime()
+	local right_bumper_click_gap_time = GetTime()
 	local right_bumper_click_count = 1
+	local right_bumper_click_while_left_bumper_holding_count = 1
+	local right_bumper_click_count_final = 0
+	local right_bumper_click_while_left_bumper_holding_count_final = 0
 
-	local left_bumper_double_click_gap_time = GetTime()
+	self.IsRightBumperMultiClicked = function (self, immediately, count)
+		if immediately then
+			return right_bumper_click_count >= (count or 2) or right_bumper_click_count_final >= (count or 2)
+		else
+			return right_bumper_click_count_final >= (count or 2)
+		end
+	end
+	self.GetRightBumperMultClickedCount = function (self, immediately)
+		if immediately then
+			return math.max(right_bumper_click_count, right_bumper_click_count_final)
+		else
+			return right_bumper_click_count_final
+		end
+	end
+	self.IsRightBumperMultiClickedWhileHoldingLB = function (self, immediately, count)
+		if immediately then
+			return right_bumper_click_while_left_bumper_holding_count >= (count or 2) or right_bumper_click_while_left_bumper_holding_count_final >= (count or 2)
+		else
+			return right_bumper_click_while_left_bumper_holding_count_final >= (count or 2)
+		end
+	end
+	self.GetRightBumperMultClickedWhileHoldingLBCount = function (self, immediately)
+		if immediately then
+			return math.max(right_bumper_click_while_left_bumper_holding_count, right_bumper_click_while_left_bumper_holding_count_final)
+		else
+			return right_bumper_click_while_left_bumper_holding_count_final 
+		end
+	end
+
+	local left_bumper_click_gap_time = GetTime()
 	local left_bumper_click_count = 1
+	local left_bumper_click_while_right_bumper_holding_count = 1
+	local left_bumper_click_count_final = 0
+	local left_bumper_click_while_right_bumper_holding_count_final = 0
+
+	self.IsLeftBumperMultiClicked = function (self, immediately, count)
+		if immediately then
+			return left_bumper_click_count >= (count or 2) or left_bumper_click_count_final >= (count or 2)
+		else
+			return left_bumper_click_count_final >= (count or 2)
+		end
+	end
+	self.GetLeftBumperMultClickedCount = function (self, immediately)
+		if immediately then
+			return math.max(left_bumper_click_count, lfet_bumper_click_count_final)
+		else
+			return left_bumper_click_count_final
+		end
+	end
+	self.IsLeftBumperMultiClickedWhileHoldingRB = function (self, immediately, count)
+		if immediately then
+			return left_bumper_click_while_right_bumper_holding_count >= (count or 2) or left_bumper_click_while_right_bumper_holding_count_final >= (count or 2)
+		else
+			return left_bumper_click_while_right_bumper_holding_count_final >= (count or 2)
+		end
+	end
+	self.GetLeftBumperMultClickedwhileHoldingRBCount = function (self, immediately)
+		if immediately then
+			return math.max(left_bumper_click_while_right_bumper_holding_count, left_bumper_click_while_right_bumper_holding_count_final)
+		else
+			return left_bumper_click_while_right_bumper_holding_count_final 
+		end
+	end
 
 	self.Click_Right_Bumper_While_Holding_Left_Bumper = false
 	self.Click_Left_Bumper_While_Holding_Right_Bumper = false
@@ -399,43 +462,46 @@ AddComponentPostInit("playercontroller", function(self)
 			return true
 		end
 
-		-- Use Double/Triple/Quadruple/... Click Right Bumper to slow down reticule move speed
+		-- Double/Triple/Quadruple/... Click Right Bumper
 		if control == CHANGE_CONTROL_RIGHT then
 			if down then
-				local DeltaTime = GetTime() - right_bumper_double_click_gap_time
+				local DeltaTime = GetTime() - right_bumper_click_gap_time
 				if DeltaTime > 0 and DeltaTime < 0.3 then
-					right_bumper_click_count = right_bumper_click_count + 1
-					TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED / right_bumper_click_count
-					if right_bumper_click_count == 2 then
-						self.Double_Click_Right_Bumper_And_Holding = true
+					if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+						right_bumper_click_while_left_bumper_holding_count = right_bumper_click_while_left_bumper_holding_count + 1
+					else
+						right_bumper_click_count = right_bumper_click_count + 1
 					end
 				end
-				right_bumper_double_click_gap_time = GetTime()
+				right_bumper_click_gap_time = GetTime()
 			else
-				local DeltaTime = GetTime() - right_bumper_double_click_gap_time
+				local DeltaTime = GetTime() - right_bumper_click_gap_time
 				if DeltaTime > 0.3 then
-					right_bumper_click_count = 1
-					TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED
-					self.Double_Click_Right_Bumper_And_Holding = false
+					-- Clear Holding State
+					right_bumper_click_count_final = 0
+					right_bumper_click_while_left_bumper_holding_count_final = 0
 				end
 			end
 		end
 
+		-- Double/Triple/Quadruple/... Click Right Bumper
 		if control == CHANGE_CONTROL_LEFT then
 			if down then
-				local DeltaTime = GetTime() - left_bumper_double_click_gap_time
+				local DeltaTime = GetTime() - left_bumper_click_gap_time
 				if DeltaTime > 0 and DeltaTime < 0.3 then
-					left_bumper_click_count = left_bumper_click_count + 1
-					if left_bumper_click_count == 2 then
-						self.Double_Click_Left_Bumper_And_Holding = true
+					if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+						left_bumper_click_while_right_bumper_holding_count = left_bumper_click_while_right_bumper_holding_count + 1
+					else
+						left_bumper_click_count = left_bumper_click_count + 1
 					end
 				end
-				left_bumper_double_click_gap_time = GetTime()
+				left_bumper_click_gap_time = GetTime()
 			else
-				local DeltaTime = GetTime() - left_bumper_double_click_gap_time
+				local DeltaTime = GetTime() - left_bumper_click_gap_time
 				if DeltaTime > 0.3 then
-					left_bumper_click_count = 1
-					self.Double_Click_Left_Bumper_And_Holding = false
+					-- Clear Holding State
+					left_bumper_click_count_final = 0
+					left_bumper_click_while_right_bumper_holding_count_final = 0
 				end
 			end
 		end
@@ -1241,7 +1307,7 @@ AddComponentPostInit("playercontroller", function(self)
 								end
 
 								local skip_target = false
-								if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_ATTACK and isally and not self.Double_Click_Left_Bumper_And_Holding then
+								if CHANGE_FORCE_BUTTON and CHANGE_IS_FORCE_ATTACK and isally and not self:IsLeftBumperMultiClicked(true) then
 									skip_target = true
 								end
 
@@ -1710,6 +1776,44 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 		OnUpdate_Old(self, dt, ...)
+		local DeltaTime = GetTime() - right_bumper_click_gap_time
+		if DeltaTime > 0.3 then
+			if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+				-- Do Something while Multi Click And Holding Right Bumper
+				if right_bumper_click_count >= 2 then
+					right_bumper_click_count_final = right_bumper_click_count
+				end
+				if right_bumper_click_while_left_bumper_holding_count >= 2 then
+					right_bumper_click_while_left_bumper_holding_count_final = right_bumper_click_while_left_bumper_holding_count
+				end
+			else
+				-- Do Something while Multi Click Right Bumper
+					-- Param1: Click Count With Left Bumper NOT Holding
+					-- Param2: Click Count With Left Bumper Holding
+				self:DoControllerRightBumperMultiClickAction(right_bumper_click_count, right_bumper_click_while_left_bumper_holding_count)
+			end
+			right_bumper_click_count = 1
+			right_bumper_click_while_left_bumper_holding_count = 1
+		end
+		local DeltaTime = GetTime() - left_bumper_click_gap_time
+		if DeltaTime > 0.3 then
+			if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+				-- Do Something while Multi Click And Holding Left Bumper
+				if left_bumper_click_count >= 2 then
+					left_bumper_click_count_final = left_bumper_click_count
+				end
+				if left_bumper_click_while_right_bumper_holding_count >= 2 then
+					left_bumper_click_while_right_bumper_holding_count_final = left_bumper_click_while_right_bumper_holding_count
+				end
+			else
+				-- Do Something while Multi Click Left Bumper
+					-- Param1: Click Count With Right Bumper NOT Holding
+					-- Param2: Click Count With Right Bumper Holding
+				self:DoControllerLeftBumperMultiClickAction(left_bumper_click_count, left_bumper_click_while_right_bumper_holding_count)
+			end
+			left_bumper_click_count = 1
+			left_bumper_click_while_right_bumper_holding_count = 1
+		end
 	end
 
 	local ToggleController_Old = self.ToggleController
@@ -1727,4 +1831,35 @@ AddComponentPostInit("playercontroller", function(self)
 		return false
 	end
 
+	self.DoControllerRightBumperMultiClickAction = function (self, rb_count, lb_rb_count)
+		local EquipmentMappingTable = {
+			[2] = EQUIPSLOTS.HANDS,
+			[3] = EQUIPSLOTS.BODY,
+			[4] = EQUIPSLOTS.HEAD,
+		}
+		if rb_count >= 2 and rb_count <= 4 then
+			local inventory = self.inst.replica.inventory
+			if inventory ~= nil then
+				local equipment = inventory:GetEquippedItem(EquipmentMappingTable[rb_count])
+				if equipment ~= nil then
+					inventory:ControllerUseItemOnSceneFromInvTile(equipment)
+				end
+			end
+		end
+		if rb_count >= 2 then
+			-- print("click RB :", rb_count)
+		end
+		if lb_rb_count >= 2 then
+			-- print("click RB while holding rb :", lb_rb_count)
+		end
+	end
+
+	self.DoControllerLeftBumperMultiClickAction = function (self, lb_count, rb_lb_count)
+		if lb_count >= 2 then
+			-- print("click LB :", lb_count)
+		end
+		if rb_lb_count >= 2 then
+			-- print("click LB while holding rb :", rb_lb_count)
+		end
+	end
 end)

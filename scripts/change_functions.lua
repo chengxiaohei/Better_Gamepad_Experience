@@ -201,8 +201,22 @@ function GetQuickUseString(inv_slot, act)
             string = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_LEFT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT).."+"..TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INSPECT)
         }
     }
+    local EquipmentQuickUseIcon = {
+        [EQUIPSLOTS.HANDS]= TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT)..
+                            TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT),
+        [EQUIPSLOTS.BODY] = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT)..
+                            TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT)..
+                            TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT),
+        [EQUIPSLOTS.HEAD] = TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT)..
+                            TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT)..
+                            TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT)..
+                            TheInput:GetLocalizedControl(TheInput:GetControllerID(), CHANGE_CONTROL_RIGHT),
+    }
     local t = {}
     if inv_slot ~= nil and act ~= nil then
+        if inv_slot == EQUIPSLOTS.HANDS or inv_slot == EQUIPSLOTS.BODY or inv_slot == EQUIPSLOTS.HEAD then
+            table.insert(t, EquipmentQuickUseIcon[inv_slot].." "..STRINGS.UI.COOKBOOK.PERISH_QUICKLY.." "..act:GetActionString())
+        end
         for _, v in pairs(CHANGE_MAPPING_TABLE) do
             if type(inv_slot) == "number" then
                 if v.slot == inv_slot then
@@ -246,4 +260,20 @@ function LoadGeometricPlacementCtrlOption()
             end
         end
     end
+end
+
+-- EQUIPSLOTS.HANDS
+-- EQUIPSLOTS.BODY
+-- EQUIPSLOTS.HEAD
+function QuickEquipEquipment(player, slot)
+    local inventory = player.replica.inventory
+    local invobject = inventory and inventory:FindItem(function(item)
+        if item.replica.inventoryitem and item.replica.inventoryitem:IsGrandOwner(player) and
+            item.replica.equippable and item.replica.equippable:EquipSlot() == slot and not item.replica.equippable:IsRestricted(player) then
+            return true
+        end
+		return false
+	end)
+
+    player.replica.inventory:ControllerUseItemOnSelfFromInvTile(invobject)
 end

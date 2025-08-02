@@ -405,18 +405,11 @@ AddClassPostConstruct("widgets/redux/craftingmenu_pinslot", function(self)
         end
     end
 
-    local RefreshControllers_Old = self.RefreshControllers
-    self.RefreshControllers = function (self, controller_mode, for_open_crafting_menu, ...)
-        local result = RefreshControllers_Old(self, controller_mode, for_open_crafting_menu, ...)
-        if controller_mode and not for_open_crafting_menu and not self.craftingmenu:IsCraftingOpen() then
-            self.recipe_popup.openhint:SetString("        " .. TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_DROP) .. " " .. self.craft_button.help_message)
-        end
-        return result
-    end
-
     -- remove pinslot black help message on the bottom of screen
-    self.craft_button.GetHelpText = function (_self, ...)
-        return ""
+    local Refresh_Old = self.Refresh
+    self.Refresh = function (self, ...)
+        Refresh_Old(self, ...)
+        self.craft_button.GetHelpText = function (_self, ...) return "" end
     end
 end)
 

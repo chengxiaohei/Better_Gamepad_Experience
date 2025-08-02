@@ -29,8 +29,10 @@ AddComponentPostInit("reticule", function(self)
 
     local OnCameraUpdate_Old = self.OnCameraUpdate
     self.OnCameraUpdate = function (self, dt, ...)
+        local controller = ThePlayer and ThePlayer.components and ThePlayer.components.playercontroller
+        local isplacer = controller ~= nil and (controller.deployplacer ~= nil or controller.placer ~= nil)
         if not (self.inst:HasTag("boat") or self.inst:HasTag("boatcannon") or self.inst.prefab == "winona") then
-            if self.clear_memory_flag == false and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+            if self.clear_memory_flag == false and (TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) or isplacer) then
                 self.twinstickmode = 1
                 self.twinstickrange = self.twinstickrange or 8  -- default is 8
             else

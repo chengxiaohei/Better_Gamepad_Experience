@@ -40,6 +40,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
+		if self.owner.components.playercontroller.deployplacer ~= nil or
+			self.owner.components.playercontroller.placer ~= nil then
+			return true
+		end
+
 		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
 			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
 			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
@@ -68,6 +73,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			return true
 		end
 
+		if self.owner.components.playercontroller.deployplacer ~= nil or
+			self.owner.components.playercontroller.placer ~= nil then
+			return true
+		end
+
 		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
 			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
 			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
@@ -91,6 +101,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 	self.CursorUp = function (self, ...)
 		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+			return true
+		end
+
+		if self.owner.components.playercontroller.deployplacer ~= nil or
+			self.owner.components.playercontroller.placer ~= nil then
 			return true
 		end
 
@@ -124,6 +139,11 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 	self.CursorDown = function (self, ...)
 		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+			return true
+		end
+
+		if self.owner.components.playercontroller.deployplacer ~= nil or
+			self.owner.components.playercontroller.placer ~= nil then
 			return true
 		end
 

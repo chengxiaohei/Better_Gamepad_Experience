@@ -470,13 +470,19 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					end
 				else
 					local self_action = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
-					if self_action ~= nil and self_action.action ~= ACTIONS.UNEQUIP then
+					if self_action ~= nil and self_action.action ~= ACTIONS.UNEQUIP and self_action.action ~= ACTIONS.DROP then
 						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. self_action:GetActionString()
 						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 					end
-					if #self.inv > 0 and not (inv_item:HasTag("heavy") or GetGameModeProperty("non_item_equips")) then
-						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.UNEQUIP
-						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
+					local equippable = inv_item.replica.equippable
+					if not (equippable and equippable:ShouldPreventUnequipping()) then
+						if #self.inv > 0 and not (inv_item:HasTag("heavy") or GetGameModeProperty("non_item_equips")) then
+							help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.UNEQUIP
+							table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
+						end
+					elseif self_action and self_action.action == ACTIONS.DROP then
+						--V2C: special case handling for how to drop playerfloaters
+						--Change: we do nothing here
 					end
 				end
 				if help_string ~= "" then

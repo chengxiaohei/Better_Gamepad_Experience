@@ -103,6 +103,11 @@ AddComponentPostInit("placer", function(self)
                 if target_pos then
                     x, y, z = target_pos:Get()
                 end
+
+                if self:IsAxisAlignedPlacement() then
+                    axisalignedhelpers_visible = true
+                    x, y, z = self:GetAxisAlignedPlacementTransform(x, y, z)
+                end
             end
             -- ================================================================================================================================ --
             self.inst.Transform:SetPosition(x, y, z)

@@ -263,10 +263,16 @@ configuration_options = {
 							or  "允许在建造栏打开的情况下，角色仍然可以与世界交互。",
 		options = {
 			{
-				description = "Yes (Default)",
-				data = true,
-				hover = Language_En and "Use "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." to Interact with Crafting Menu Instead."
-									or "使用 "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." 与建造栏交互",
+				description = "Scheme1 (Default)",
+				data = "scheme1",
+				hover = Language_En and "Use "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." to Interact with Crafting Menu Instead, Use"..GamepadButtons.Right_Trigger.."to Comfirm."
+									or "使用 "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." 与建造栏交互, 使用"..GamepadButtons.Right_Trigger.."确认",
+			},
+			{
+				description = "Scheme2",
+				data = "scheme2",
+				hover = Language_En and "Use "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." to Interact with Crafting Menu Instead, Use"..GamepadButtons.DPad_Down.."to Comfirm."
+									or "使用 "..GamepadButtons.DPad_Up.." "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Left.." "..GamepadButtons.DPad_Right.." 与建造栏交互, 使用"..GamepadButtons.DPad_Down.."确认",
 			},
 			{
 				description = "No",
@@ -276,7 +282,7 @@ configuration_options = {
 			},
 
 		},
-		default = true
+		default = "scheme1"
 	},
 	{
 		name = "change_wheel",
@@ -285,8 +291,14 @@ configuration_options = {
 							or  "允许在角色技能轮盘打开的情况下，角色仍然可以与世界交互。",
 		options = {
 			{
-				description = "Yes (Default)",
-				data = true,
+				description = "Scheme1 (Default)",
+				data = "scheme1",
+				hover = Language_En and "Use "..GamepadButtons.Right_Trigger.." "..GamepadButtons.Left_Trigger.." to Interact with Skill Wheel Instead."
+									or "使用 "..GamepadButtons.Right_Trigger.." "..GamepadButtons.Left_Trigger.. "与角色技能轮盘交互",
+			},
+			{
+				description = "Scheme2",
+				data = "scheme2",
 				hover = Language_En and "Use "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Right.." to Interact with Skill Wheel Instead."
 									or "使用 "..GamepadButtons.DPad_Down.." "..GamepadButtons.DPad_Right.. "与角色技能轮盘交互",
 			},
@@ -297,7 +309,7 @@ configuration_options = {
 									or "使用 "..GamepadButtons.Button_A.." "..GamepadButtons.Button_B.." 与角色技能轮盘交互",
 			},
 		},
-		default = true
+		default = "scheme1"
 	},
 	{
 		name = "forbid_inspect_self",

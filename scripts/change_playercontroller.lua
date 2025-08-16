@@ -1534,9 +1534,11 @@ AddComponentPostInit("playercontroller", function(self)
 						isspecial = true
 					else
 						-- [[AOETargeting or AOECharging]]
-						if self:TryAOETargeting() or
-							(self.TryAOECharging and self:TryAOECharging(nil, true)) then
-							-- do nothing
+						if self.inst.replica.inventory:GetActiveItem() == nil then
+							if self:TryAOETargeting() or
+								(self.TryAOECharging and self:TryAOECharging(nil, true)) then
+								-- do nothing
+							end
 						end
 						return
 					end

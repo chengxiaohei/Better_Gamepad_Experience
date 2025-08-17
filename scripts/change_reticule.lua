@@ -24,10 +24,11 @@ AddPrefabPostInitAny(function(inst)
     end
 end)
 
+local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
+
 AddComponentPostInit("reticule", function(self)
     self.clear_memory_flag = false
 
-    local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
     local OnCameraUpdate_Old = self.OnCameraUpdate
     self.OnCameraUpdate = function (self, dt, ...)
         local controller = ThePlayer and ThePlayer.components and ThePlayer.components.playercontroller

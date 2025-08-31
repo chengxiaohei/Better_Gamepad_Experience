@@ -332,4 +332,10 @@ AddClassPostConstruct("screens/playerhud", function(self)
     self.RefreshControllers = function (self, ...)
         RefreshControllers_New(self)
     end
+
+    -- Fix the problem that PlayerStatusScreen can not be closed (Klei's Bug)
+    local ShowPlayerStatusScreen_Old = self.ShowPlayerStatusScreen
+    self.ShowPlayerStatusScreen = function (self, _, ...)
+        return ShowPlayerStatusScreen_Old(self, true, ...)
+    end
 end)

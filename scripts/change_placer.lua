@@ -41,7 +41,7 @@ AddComponentPostInit("placer", function(self)
                     hide_if_cannot_build = true
                 end
             else
-                self.axisalignedplacementtoggle = TheInput:IsControlPressed(CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD)
+                self.axisalignedplacementtoggle = self.axisalignedplacementallowedbyitem and TheInput:IsControlPressed(CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD)
                 if self:IsAxisAlignedPlacement() then
                     axisalignedhelpers_visible = true
                     self.inst.Transform:SetPosition(self:GetAxisAlignedPlacementTransform(pt.x, 0, pt.z))

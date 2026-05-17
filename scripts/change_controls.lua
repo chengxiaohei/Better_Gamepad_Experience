@@ -423,7 +423,7 @@ AddClassPostConstruct("widgets/controls", function(self)
                 end
             end
             
-            if not A_shown and controller_action_is_step_forward_and_drop then
+            if not A_shown and controller_action_is_step_forward_and_drop and not self.owner.replica.inventory:IsFloaterHeld() then
                 local active_item = self.owner.replica.inventory:GetActiveItem()
                 if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
                     table.insert(forward_cmds, TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION))

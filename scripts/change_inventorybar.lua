@@ -365,7 +365,9 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					quick_act = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
 					quick_act_string = GetQuickUseString(is_equip_slot, quick_act)
 				end
-				if quick_act ~= nil and quick_act.action.id ~= "TOGGLE_DEPLOY_MODE" and quick_act.action ~= ACTIONS.UNEQUIP and quick_act_string ~= "" then
+				if quick_act ~= nil and quick_act.action.id ~= "TOGGLE_DEPLOY_MODE" and
+					quick_act.action ~= ACTIONS.UNEQUIP and quick_act.action ~= ACTIONS.DROP and
+					quick_act_string ~= "" then
 					quick_use_flag = true
 				end
 				if not changebox_flag then
@@ -528,7 +530,9 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					quick_act = self.owner.components.playercontroller:GetItemSelfAction(inv_item)
 					quick_act_string = GetQuickUseString(is_equip_slot, quick_act)
 				end
-				if quick_act ~= nil and quick_act.action.id ~= "TOGGLE_DEPLOY_MODE" and quick_act.action ~= ACTIONS.UNEQUIP and quick_act_string ~= "" then
+				if quick_act ~= nil and quick_act.action.id ~= "TOGGLE_DEPLOY_MODE" and
+					quick_act.action ~= ACTIONS.UNEQUIP and quick_act.action ~= ACTIONS.DROP and
+					quick_act_string ~= "" then
 					table.insert(str, quick_act_string)
 					table.insert(icon, "\n" .. quick_act_string)
 				end

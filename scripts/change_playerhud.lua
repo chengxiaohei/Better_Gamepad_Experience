@@ -4,6 +4,29 @@ local ChatInputScreen = require "screens/chatinputscreen"
 local ContainerWidget = require("widgets/containerwidget")
 
 AddClassPostConstruct("screens/playerhud", function(self)
+    local StatusShown = false
+    local OnUpdate_Old = self.OnUpdate
+    self.OnUpdate = function (self, dt, ...)
+        if TheInput:ControllerAttached() then
+            OnUpdate_Old(self, dt, ...)
+            local inventory = self.owner and self.owner.replica.inventory
+            local controller = ThePlayer and ThePlayer.components and ThePlayer.components.playercontroller
+            if (inventory ~= nil and inventory:IsVisible() and inventory:GetNumSlots() > 0) then
+                local active_item = inventory:GetActiveItem()
+                if controller.inst:HasTag("upgrademoduleowner") and active_item ~= nil and
+                    (active_item:HasActionComponent("upgrademoduleremover") or active_item:HasActionComponent("upgrademodule")) then
+                    if not StatusShown then
+                        self.controls:ShowStatusNumbers()
+                        StatusShown = true
+                    end
+                else
+                    self.controls:HideStatusNumbers()
+                    StatusShown = false
+                end
+            end
+        end
+    end
+
     local OnControl_Old = self.OnControl
     local OnControl_New = function (self, control, down, ...)
         if PlayerHud._base.OnControl(self, control, down) then
@@ -42,8 +65,17 @@ AddClassPostConstruct("screens/playerhud", function(self)
                         return true
                     end
                 end
-            elseif control == CONTROL_INSPECT_SELF and self:InspectSelf() then
-                return true
+            elseif control == CONTROL_INSPECT_SELF then
+                if self:InspectSelf() then
+                    return true
+                end
+            elseif control == CONTROL_SECONDARY then
+                if self.dronezapover.shown and self.dronezapover:TryClose() then
+                    return true
+                end
+                if self:TryStopInspectingModules(true) then
+                    return true
+                end
             elseif control == CONTROL_MAP then
                 if not TryTriggerMappingKey(self.owner, CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, true) then
                     TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_BACK, CHANGE_MAPPING_RB_BACK, CHANGE_MAPPING_LB_RB_BACK, down, true)
@@ -143,6 +175,10 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 elseif self:IsControllerInventoryOpen() then
                     self:CloseControllerInventory()
                     return true
+                elseif self.dronezapover.shown and self.dronezapover:TryClose() then
+                    return true
+                elseif self:TryStopInspectingModules() then
+                    return true
                 end
             elseif control == CONTROL_TOGGLE_SAY then
                 TheFrontEnd:PushScreen(ChatInputScreen(false))
@@ -208,12 +244,14 @@ AddClassPostConstruct("screens/playerhud", function(self)
             parent = self.controls.containerroot_side
         else
             local _container = container.replica.container
-            local _type = _container and _container.type or nil
+            local _type = _container and (_container.typefn and _container.typefn(container, self.owner) or _container.type)
             parent =
+                (_type == "inv" and self.controls.inv.toprow_inv) or
                 (_type == "hand_inv" and self.controls.inv.hand_inv) or
                 (_type == "side_inv" and self.controls.secondary_status.side_inv) or
                 (_type == "side_inv_behind" and self.controls.containerroot_side_behind) or
                 (_type == "top_rack" and self.controls.containerroot_under) or
+                (_type == "chest_addon" and self.controls.containerroot_over) or
                 self.controls.containerroot
         end
 

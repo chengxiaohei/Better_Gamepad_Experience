@@ -22,10 +22,21 @@ AddClassPostConstruct("screens/mapscreen", function(self)
         table.insert(t,  rotate_right_bumper .. " " .. STRINGS.UI.HELP.ROTATE_RIGHT)
         table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MAP_ZOOM_IN) .. " " .. STRINGS.UI.HELP.ZOOM_IN)
         table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_MAP_ZOOM_OUT) .. " " .. STRINGS.UI.HELP.ZOOM_OUT)
-        table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
-        local playercontroller = ThePlayer and ThePlayer.components.playercontroller or nil
-        if playercontroller and playercontroller.RMBaction then
-            table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. playercontroller.RMBaction:GetActionString())
+
+        local playercontroller = self.owner and self.owner.components.playercontroller or nil
+        if playercontroller and playercontroller.LMBaction and self.maptarget then
+            table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.CANCEL)
+        else
+            table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
+        end
+
+        if playercontroller then
+            if playercontroller.LMBaction then
+                table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ACTION) .. " " .. playercontroller.LMBaction:GetActionString())
+            end
+            if playercontroller.RMBaction then
+                table.insert(t,  TheInput:GetLocalizedControl(controller_id, CONTROL_CONTROLLER_ATTACK) .. " " .. playercontroller.RMBaction:GetActionString())
+            end
         end
 
         return table.concat(t, "  ")

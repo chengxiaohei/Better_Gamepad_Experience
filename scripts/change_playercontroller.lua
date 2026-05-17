@@ -669,7 +669,9 @@ AddComponentPostInit("playercontroller", function(self)
 	local CHANGE_ROT_REPEAT = .25
 	local CHANGE_ZOOM_REPEAT = .1
 	local DoCameraControl_New = function(self, ...)
-		if not TheCamera:CanControl() then
+		local canzoom = TheCamera:CanControl()
+		--V2C: exception for drone cam: zoom disabled, but rotate allowed
+		if not (canzoom or self.inst:HasTag("using_drone_remote")) then
 			return
 		end
 
@@ -698,7 +700,7 @@ AddComponentPostInit("playercontroller", function(self)
 					self:RotLeft(speed)
 				end
 				self.lastrottime = time
-			elseif absydir > deadzone then
+			elseif canzoom and absydir > deadzone then
 				local delta = Remap(math.min(1, absydir), deadzone, 1, 0, 0.65)
 				TheCamera:ContinuousZoomDelta(ydir > 0 and -delta or delta)
 				self.lastzoomtime = time
@@ -706,7 +708,7 @@ AddComponentPostInit("playercontroller", function(self)
 			return
 		end
 
-		if self.lastrottime == nil or time - self.lastrottime > CHANGE_ROT_REPEAT then
+		if canzoom and (self.lastrottime == nil or time - self.lastrottime > CHANGE_ROT_REPEAT) then
 			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (self.reticule == nil or not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
 				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD and CONTROL_INVENTORY_LEFT or CONTROL_INVENTORY_RIGHT) then
 					self:RotLeft()
@@ -718,7 +720,7 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
-		if self.lastzoomtime == nil or time - self.lastzoomtime > CHANGE_ZOOM_REPEAT then
+		if canzoom and (self.lastzoomtime == nil or time - self.lastzoomtime > CHANGE_ZOOM_REPEAT) then
 			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (self.reticule == nil or not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
 				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ZOOM and CONTROL_INVENTORY_DOWN or CONTROL_INVENTORY_UP) then
 					TheCamera:ZoomIn()
@@ -749,7 +751,8 @@ AddComponentPostInit("playercontroller", function(self)
 			if TheFrontEnd.textProcessorWidget ~= nil then
 				return false
 			end
-			if not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU and self.inst.HUD:IsCraftingOpen() then
+			if (not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU and self.inst.HUD:IsCraftingOpen()) or
+				self.inst.HUD:IsUpgradeModuleWidgetInputFocus() then
 				return isenabled, ishudblocking
 			end
 			return true
@@ -1539,6 +1542,12 @@ AddComponentPostInit("playercontroller", function(self)
 								(self.TryAOECharging and self:TryAOECharging(nil, true)) then
 								-- do nothing
 							end
+						else
+							--Still need to let the server know our controller alt action button is down
+							if self.remote_controls[CONTROL_CONTROLLER_ALTACTION] == nil then
+								self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
+								SendRPCToServer(RPC.ControllerAltActionButton)
+							end
 						end
 						return
 					end
@@ -1558,7 +1567,8 @@ AddComponentPostInit("playercontroller", function(self)
 
 		local maptarget = self:GetMapTarget(act)
 		if maptarget ~= nil then
-			self:PullUpMap(maptarget)
+			local forced_actiondef = act.action.map_only and act.action or nil
+			self:PullUpMap(maptarget, forced_actiondef)
 			return
 		end
 
@@ -1570,11 +1580,18 @@ AddComponentPostInit("playercontroller", function(self)
 					self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
 					SendRPCToServer(RPC.ControllerAltActionButton, act.action.code, obj, nil, act.action.canforce, act.action.mod_name)
 				end
-			elseif self:CanLocomote() then
-				act.preview_cb = function()
+			else
+				--Still need to let the server know our controller alt action button is down
+				if self.remote_controls[CONTROL_CONTROLLER_ALTACTION] == nil then
 					self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
-					local isreleased = not TheInput:IsControlPressed(CONTROL_CONTROLLER_ALTACTION)
-					SendRPCToServer(RPC.ControllerAltActionButton, act.action.code, obj, isreleased, nil, act.action.mod_name)
+					SendRPCToServer(RPC.ControllerAltActionButton)
+				end
+				if self:CanLocomote() then
+					act.preview_cb = function()
+						local isreleased = not TheInput:IsControlPressed(CONTROL_CONTROLLER_ALTACTION)
+						self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = not isreleased and 0 or nil
+						SendRPCToServer(RPC.ControllerAltActionButton, act.action.code, obj, isreleased, nil, act.action.mod_name)
+					end
 				end
 			end
 		elseif self.locomotor == nil then
@@ -1582,11 +1599,18 @@ AddComponentPostInit("playercontroller", function(self)
 				self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
 				SendRPCToServer(RPC.ControllerAltActionButtonPoint, act.action.code, act.pos.local_pt.x, act.pos.local_pt.z, nil, act.action.canforce, isspecial, act.action.mod_name, act.pos.walkable_platform, act.pos.walkable_platform ~= nil)
 			end
-		elseif self:CanLocomote() then
-			act.preview_cb = function()
+		else
+			--Still need to let the server know our controller alt action button is down
+			if self.remote_controls[CONTROL_CONTROLLER_ALTACTION] == nil then
 				self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = 0
-				local isreleased = not TheInput:IsControlPressed(CONTROL_CONTROLLER_ALTACTION)
-				SendRPCToServer(RPC.ControllerAltActionButtonPoint, act.action.code, act.pos.local_pt.x, act.pos.local_pt.z, isreleased, nil, isspecial, act.action.mod_name, act.pos.walkable_platform, act.pos.walkable_platform ~= nil)
+				SendRPCToServer(RPC.ControllerAltActionButton)
+			end
+			if self:CanLocomote() then
+				act.preview_cb = function()
+					local isreleased = not TheInput:IsControlPressed(CONTROL_CONTROLLER_ALTACTION)
+					self.remote_controls[CONTROL_CONTROLLER_ALTACTION] = not isreleased and 0 or nil
+					SendRPCToServer(RPC.ControllerAltActionButtonPoint, act.action.code, act.pos.local_pt.x, act.pos.local_pt.z, isreleased, nil, isspecial, act.action.mod_name, act.pos.walkable_platform, act.pos.walkable_platform ~= nil)
+				end
 			end
 		end
 

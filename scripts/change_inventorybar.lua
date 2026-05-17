@@ -330,7 +330,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
 				if not is_equip_slot then
 					local can_take_active_item = active_item ~= nil and self.active_slot.container ~= nil and self.active_slot.container:CanTakeItemInSlot(active_item, self.active_slot.num)
-					if active_item.replica.stackable ~= nil and inv_item.prefab == active_item.prefab and active_item.skinname == active_item.skinname then
+					if active_item.replica.stackable ~= nil and active_item.replica.stackable:CanStackWith(inv_item) then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.ACTIONS.COMBINESTACK
 						if left and active_item.replica.stackable:IsStack() then
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
@@ -412,7 +412,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 						table.insert(icon_below, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 						table.insert(icon_below, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					end
-					if drop_inv_flag then
+					if drop_inv_flag and not inv_item.replica.inventoryitem:IsLockedInSlot() then
 						help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
 						if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
@@ -476,7 +476,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					else
-						if not inv_item.replica.inventoryitem:IsGrandOwner(self.owner) then
+						if not (inv_item.replica.inventoryitem:IsGrandOwner(self.owner) or inv_item.replica.inventoryitem:IsLockedInSlot()) then
 							help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.TAKE
 							table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 						else
@@ -514,12 +514,14 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					table.insert(str, help_string)
 				end
 				
-				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
-				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP))
-				if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
-					help_string = help_string .. (Language_En and " (One)" or " (一个)")
+				if not inv_item.replica.inventoryitem:IsLockedInSlot() then
+					help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
+					table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP))
+					if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
+						help_string = help_string .. (Language_En and " (One)" or " (一个)")
+					end
+					table.insert(str, help_string)
 				end
-				table.insert(str, help_string)
 
 				local quick_act = nil
 				local quick_act_string = ""

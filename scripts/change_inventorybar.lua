@@ -6,17 +6,8 @@ local Widget = require "widgets/widget"
 local EquipSlot = require "widgets/equipslot"
 local ItemTile = require "widgets/itemtile"
 local Text = require "widgets/text"
-local HudCompass = require "widgets/hudcompass"
-
-local TEMPLATES = require "widgets/templates"
 
 local HUD_ATLAS = "images/hud.xml"
-local HUD2_ATLAS = "images/hud2.xml"
-
-local HUD_CHARACTERS = 
-{
-    ["wanda"] = HUD2_ATLAS,
-}
 
 local W = 68
 local SEP = 12
@@ -35,123 +26,45 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		OpenHint_SetString_Old(_self, "")
 	end
 
+	local CursorLeft_Old = self.CursorLeft
 	self.CursorLeft = function (self, ...)
-		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
-			return true
+		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+			return
 		end
-
-		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
-			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
-			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
-			return true
-		end
-
-		if self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned then
-			local k, slot = next(self.current_list or {})
-			if slot == nil or not slot.inst:IsValid() then
-				self.current_list = self.equip
-			end
-		end
-
-		local active_item = self.owner.replica.inventory:GetActiveItem()
-
-		if self:CursorNav(Vector3(-1,0,0)) then
-			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-		elseif not self.open and not active_item and not self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned and
-			self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, -1, 0)) then
-			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-		end
+		CursorLeft_Old(self, ...)
 	end
 
+	local CursorRight_Old = self.CursorRight
 	self.CursorRight = function (self, ...)
-		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
-			return true
+		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+			return
 		end
-
-		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
-			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
-			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
-			return true
-		end
-
-		if self.pin_nav and self.owner.HUD.controls.craftingmenu.is_left_aligned then
-			local k, slot = next(self.current_list or {})
-			if slot == nil or not slot.inst:IsValid() then
-				self.current_list = self.inv
-			end
-		end
-
-		if self:CursorNav(Vector3(1,0,0)) then
-			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-		elseif not self.open and not self.pin_nav and not self.owner.HUD.controls.craftingmenu.is_left_aligned and
-			self:PinBarNav(self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 1, 0)) then
-			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-		end
+		CursorRight_Old(self, ...)
 	end
 
+	local CursorUp_Old = self.CursorUp
 	self.CursorUp = function (self, ...)
-		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
-			return true
+		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+			return
 		end
-
-		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
-			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
-			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
-			return true
-		end
-
-		if self.pin_nav then
-			if self:PinBarNav(self.active_slot:FindPinUp()) and self.active_slot:FindPinUp() ~= self.active_slot then
-				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-			end
-		else
-			local active_item = self.owner.replica.inventory:GetActiveItem()
-			if self:CursorNav(Vector3(0,1,0)) then
-				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-			elseif not self.open and not active_item and (self.current_list == self.inv or self.current_list == self.equip) then
-				-- go into the pin bar if there are no other open containers above the inventory bar
-				local target_slot = self.owner.HUD.controls.craftingmenu:InvNavToPin(self.active_slot, 0, 1)
-				while target_slot and target_slot.in_pinbar and target_slot:FindPinDown() and target_slot ~= target_slot:FindPinDown() do
-					target_slot = target_slot:FindPinDown()
-				end
-				if self:PinBarNav(target_slot) then
-					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-				end
-			end
-		end
+		CursorUp_Old(self, ...)
 	end
 
-
+	local CursorDown_Old = self.CursorDown
 	self.CursorDown = function (self, ...)
-		if TheInput:GetActiveControlScheme(CONTROL_SCHEME_CAM_AND_INV) == 1 and TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
-			return true
+		if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) then
+			return
 		end
+		CursorDown_Old(self, ...)
+	end
 
-		if ((IsOtherModEnabled("Gesture Wheel") and GetOtherModConfig("Gesture Wheel", "RIGHTSTICK")) or
-			(IsOtherModEnabled("Gesture Wheel (Chinese)") and GetOtherModConfig("Gesture Wheel (Chinese)", "RIGHTSTICK"))) and
-			TheInput:IsControlPressed(CONTROL_MENU_MISC_3) then
-			return true
-		end
-
-		local pin_nav = self.pin_nav
-		if pin_nav then
-			local next_pin = self.active_slot:FindPinDown()
-			if next_pin then
-				if self:PinBarNav(next_pin) then
-					TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-				end
-			else
-				self:SelectDefaultSlot()
-				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
-			end
-		end
-		
-		if not pin_nav and self:CursorNav(Vector3(0,-1,0)) then
-			TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+	self.GetCursorSlot = function (self, ...)
+		if self.active_slot ~= nil then
+			return self.active_slot.num, self.active_slot.container
 		end
 	end
 
-	self.GetClosestWidget = function (self, lists, pos, dir, ...)
+	self.GetClosestWidget1 = function (self, lists, pos, dir, ...)
 		local closest = nil
 		local closest_score = nil
 		local closest_list = nil
@@ -188,7 +101,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	-- Not Changed
 	local function BackpackGet(inst, data)
 		local owner = ThePlayer
-		if owner ~= nil and owner.HUD ~= nil and owner.replica.inventory:IsHolding(inst) then
+		if owner ~= nil and owner.HUD ~= nil and owner.components.inventory:IsHolding(inst) then
 			local inv = owner.HUD.controls.inv
 			if inv ~= nil then
 				inv:OnItemGet(data.item, inv.backpackinv[data.slot], data.src_pos, data.ignore_stacksize_anim)
@@ -199,7 +112,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	-- Not Changed
 	local function BackpackLose(inst, data)
 		local owner = ThePlayer
-		if owner ~= nil and owner.HUD ~= nil and owner.replica.inventory:IsHolding(inst) then
+		if owner ~= nil and owner.HUD ~= nil and owner.components.inventory:IsHolding(inst) then
 			local inv = owner.HUD.controls.inv
 			if inv ~= nil then
 				inv:OnItemLose(inv.backpackinv[data.slot])
@@ -207,243 +120,19 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		end
 	end
 
-	-- Not Changed
-	local function BackpackRefresh(inst)
-		local owner = ThePlayer
-		local inventory = owner and owner.HUD and owner.replica.inventory or nil
-		local overflow = inventory and inventory:GetOverflowContainer() or nil
-		if overflow and overflow.inst == inst then
-			local inv = owner.HUD.controls.inv
-			if inv then
-				inv:RefreshIntegratedContainer()
-			end
-		end
-	end
-
-	-- Not Changed
-	local function RebuildLayout_Quagmire(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
-		local inv_scale = 1
-		local inv_w = 68 * inv_scale
-		local inv_sep = 10 * inv_scale
-		local inv_y = -77
-		local inv_tip_y = inv_w + inv_sep + (30 * inv_scale)
-
-		local num_slots = inventory:GetNumSlots()
-		local x = -165
-		for k = 1, num_slots do
-			self.inv[k] = InvSlot(k, HUD_ATLAS, "inv_slot.tex", self.owner, self.owner.replica.inventory)
-			local slot = self.toprow:AddChild(Widget("slot_scaler"..k))
-			slot:AddChild(self.inv[k])
-			slot:SetPosition(x, inv_y)
-			slot:SetScale(inv_scale)
-			slot.top_align_tip = inv_w + inv_sep + 30 -- tooltip text offset when using cursors
-
-			local item = inventory:GetItemInSlot(k)
-			if item ~= nil then
-				self.inv[k]:SetTile(ItemTile(item))
-			end
-
-			x = x + 83
-		end
-
-		local equip_scale = 0.8
-		local equip_y = -74
-
-		local hand_slot = self.equipslotinfo[1]
-		local slot = EquipSlot(hand_slot.slot, hand_slot.atlas, hand_slot.image, self.owner)
-		slot:SetPosition(x, equip_y)
-		slot.highlight_scale = 1
-		slot.base_scale = equip_scale
-		slot:SetScale(equip_scale)
-
-
-		self.equip[hand_slot.slot] = self.toprow:AddChild(slot)
-
-		local item = inventory:GetEquippedItem(hand_slot.slot)
-		if item ~= nil then
-			slot:SetTile(ItemTile(item))
-		end
-
-
-		self.toprow:SetPosition(0, 75)
-		self.bg:SetPosition(0, 15)
-
-		self.root:SetPosition(self.in_pos)
-		self:UpdatePosition()
-	end
-
-	-- Not Changed
-	local function RebuildLayout(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
-		local y = overflow ~= nil and ((W + YSEP) / 2) or 0
-		local eslot_order = {}
-
-		local num_slots = inventory:GetNumSlots()
-		local num_equip = #self.equipslotinfo
-		local num_buttons = do_self_inspect and 1 or 0
-		local num_slotintersep = math.ceil(num_slots / 5)
-		local num_equipintersep = num_buttons > 0 and 1 or 0
-		local total_w = (num_slots + num_equip + num_buttons) * W + (num_slots + num_equip + num_buttons - num_slotintersep - num_equipintersep - 1) * SEP + (num_slotintersep + num_equipintersep) * INTERSEP
-
-		local x = (W - total_w) * .5 + num_slots * W + (num_slots - num_slotintersep) * SEP + num_slotintersep * INTERSEP
-		for k, v in ipairs(self.equipslotinfo) do
-			local slot = EquipSlot(v.slot, v.atlas, v.image, self.owner)
-			self.equip[v.slot] = self.toprow:AddChild(slot)
-			slot:SetPosition(x, 0, 0)
-			table.insert(eslot_order, slot)
-
-			local item = inventory:GetEquippedItem(v.slot)
-			if item ~= nil then
-				slot:SetTile(ItemTile(item))
-			end
-
-			if v.slot == EQUIPSLOTS.HANDS then
-				self.hudcompass:SetPosition(x, do_integrated_backpack and 80 or 40, 0)
-				self.hand_inv:SetPosition(x, do_integrated_backpack and 80 or 40, 0)
-			end
-
-			x = x + W + SEP
-		end
-
-		x = (W - total_w) * .5
-		for k = 1, num_slots do
-			local slot = InvSlot(k, HUD_ATLAS, "inv_slot.tex", self.owner, self.owner.replica.inventory)
-			self.inv[k] = self.toprow:AddChild(slot)
-			slot:SetPosition(x, 0, 0)
-			slot.top_align_tip = W * .5 + YSEP
-
-			local item = inventory:GetItemInSlot(k)
-			if item ~= nil then
-				slot:SetTile(ItemTile(item))
-			end
-
-			x = x + W + (k % 5 == 0 and INTERSEP or SEP)
-		end
-
-		local owner_prefab = self.owner.prefab
-		local image_name = "self_inspect_".. owner_prefab ..".tex"
-		local atlas_name = "images/avatars/self_inspect_".. owner_prefab.. ".xml"
-		if softresolvefilepath(atlas_name) == nil then
-			atlas_name = HUD_CHARACTERS[owner_prefab] or HUD_ATLAS
-		end
-
-		if do_self_inspect then
-			self.bg:SetScale(1.22, 1, 1)
-			self.bgcover:SetScale(1.22, 1, 1)
-
-			self.inspectcontrol = self.toprow:AddChild(TEMPLATES.IconButton(atlas_name, image_name, STRINGS.UI.HUD.INSPECT_SELF, false, false, function() self.owner.HUD:InspectSelf() end, nil, "self_inspect_mod.tex"))
-			self.inspectcontrol.icon:SetScale(.7)
-			self.inspectcontrol.icon:SetPosition(-4, 6)
-			self.inspectcontrol:SetScale(1.25)
-			self.inspectcontrol:SetPosition((total_w - W) * .5 + 3, -7, 0)
-		else
-			self.bg:SetScale(1.15, 1, 1)
-			self.bgcover:SetScale(1.15, 1, 1)
-
-			if self.inspectcontrol ~= nil then
-				self.inspectcontrol:Kill()
-				self.inspectcontrol = nil
-			end
-		end
-
-		local hadbackpack = self.backpack ~= nil
-		if hadbackpack then
-			self.inst:RemoveEventCallback("itemget", BackpackGet, self.backpack)
-			self.inst:RemoveEventCallback("itemlose", BackpackLose, self.backpack)
-			self.inst:RemoveEventCallback("refresh", BackpackRefresh, self.backpack)
-			self.backpack = nil
-		end
-
-		if do_integrated_backpack then
-			local num = overflow:GetNumSlots()
-
-			local x = - (num * (W+SEP) / 2)
-			--local offset = #self.inv >= num and 1 or 0 --math.ceil((#self.inv - num)/2)
-			local offset = 1 + #self.inv - num
-
-			self.integrated_arrow = self.bottomrow:AddChild(Image(HUD_ATLAS, "inventory_bg_arrow.tex"))
-			self.integrated_arrow:SetPosition(self.inv[#self.inv]:GetPosition().x + W * 0.5 + INTERSEP + 61, 8)
-
-			for k = 1, num do
-				local slot = InvSlot(k, HUD_ATLAS, "inv_slot.tex", self.owner, overflow)
-				self.backpackinv[k] = self.bottomrow:AddChild(slot)
-
-				slot.top_align_tip = W*1.5 + YSEP*2
-
-				if offset > 0 then
-					slot:SetPosition(self.inv[offset+k-1]:GetPosition().x,0,0)
-				else
-					slot:SetPosition(x,0,0)
-					x = x + W + SEP
-				end
-
-				local item = overflow:GetItemInSlot(k)
-				if item ~= nil then
-					slot:SetTile(ItemTile(item))
-				end
-			end
-
-			self.backpack = overflow.inst
-			self.inst:ListenForEvent("itemget", BackpackGet, self.backpack)
-			self.inst:ListenForEvent("itemlose", BackpackLose, self.backpack)
-			self.inst:ListenForEvent("refresh", BackpackRefresh, self.backpack)
-		end
-
-		if hadbackpack and self.backpack == nil then
-			self:SelectDefaultSlot()
-		end
-
-		if self.bg.Flow ~= nil then
-			-- note: Flow is a 3-slice function
-			self.bg:Flow(total_w + 60, 256, true)
-		end
-
-		if TheNet:GetServerGameMode() == "lavaarena" then
-			self.bg:SetPosition(15, 0)
-			self.bg:SetScale(1)
-			self.toprow:SetPosition(0, 3)
-			self.root:SetPosition(self.in_pos)
-		elseif do_integrated_backpack then
-			self.bg:SetPosition(0, -24)
-			self.bgcover:SetPosition(0, -135)
-			self.toprow:SetPosition(0, .5 * (W + YSEP))
-			self.bottomrow:SetPosition(0, -.5 * (W + YSEP))
-
-			if self.rebuild_snapping then
-				self.root:CancelMoveTo()
-				self.root:SetPosition(self.in_pos)
-				self:UpdatePosition()
-			else
-				self.root:MoveTo(self.out_pos, self.in_pos, .5)
-			end
-		else
-			self.bg:SetPosition(0, -64)
-			self.bgcover:SetPosition(0, -100)
-			self.toprow:SetPosition(0, 0)
-			self.bottomrow:SetPosition(0, 0)
-
-			if do_integrated_backpack and not self.rebuild_snapping then
-				self.root:MoveTo(self.in_pos, self.out_pos, .2)
-			else
-				self.root:CancelMoveTo()
-				self.root:SetPosition(self.out_pos)
-				self:UpdatePosition()
-			end
-		end
-	end
-
 	local Rebuild_Old = self.Rebuild
 	local Rebuild_New = function (self, ...)
-		if self.cursor ~= nil then
+
+		if self.cursor then
 			self.cursor:Kill()
 			self.cursor = nil
 		end
-
-		if self.toprow ~= nil then
+		
+		if self.toprow then
 			self.toprow:Kill()
-			self.inspectcontrol = nil
 		end
 
-		if self.bottomrow ~= nil then
+		if self.bottomrow then
 			self.bottomrow:Kill()
 		end
 
@@ -454,42 +143,145 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 		self.equip = {}
 		self.backpackinv = {}
 
+		local y = self.owner.components.inventory.overflow and (W/2+YSEP/2) or 0
+		local eslot_order = {}
+
+		local num_slots = self.owner.components.inventory:GetNumSlots()
+		local num_equip = #self.equipslotinfo
+		local num_intersep = math.floor(num_slots / 5) + 1 
+		local total_w = (num_slots + num_equip)*(W) + (num_slots + num_equip - 2 - num_intersep) *(SEP) + INTERSEP*num_intersep
+		
+		for k, v in ipairs(self.equipslotinfo) do
+			local slot = EquipSlot(v.slot, v.atlas, v.image, self.owner)
+			self.equip[v.slot] = self.toprow:AddChild(slot)
+			local x = -total_w/2 + (num_slots)*(W)+num_intersep*(INTERSEP - SEP) + (num_slots-1)*SEP + INTERSEP + W*(k-1) + SEP*(k-1)
+			slot:SetPosition(x,0,0)
+			table.insert(eslot_order, slot)
+			
+			local item = self.owner.components.inventory:GetEquippedItem(v.slot)
+			if item then
+				slot:SetTile(ItemTile(item))
+			end
+
+		end    
+
+		for k = 1,num_slots do
+			local slot = InvSlot(k, HUD_ATLAS, "inv_slot.tex", self.owner, self.owner.components.inventory)
+			self.inv[k] = self.toprow:AddChild(slot)
+			local interseps = math.floor((k-1) / 5)
+			local x = -total_w/2 + W/2 + interseps*(INTERSEP - SEP) + (k-1)*W + (k-1)*SEP
+			slot:SetPosition(x,0,0)
+			
+			slot.top_align_tip = W*0.5 + YSEP
+
+			local item = self.owner.components.inventory:GetItemInSlot(k)
+			if item then
+				slot:SetTile(ItemTile(item))
+			end
+			
+		end
+
+
+		local old_backpack = self.backpack
+		if self.backpack then
+			self.inst:RemoveEventCallback("itemget", BackpackGet, self.backpack)
+			self.inst:ListenForEvent("itemlose", BackpackLose, self.backpack)
+			self.backpack = nil
+		end
+
 		local controller_attached = TheInput:ControllerAttached()
 		self.controller_build = controller_attached
-		-- =============================================================================== --
+		-- ============================================================================ --
 		-- self.integrated_backpack = controller_attached or Profile:GetIntegratedBackpack()
 		self.integrated_backpack = Profile:GetIntegratedBackpack()
-		-- =============================================================================== --
+		-- ============================================================================ --
 
-		local inventory = self.owner.replica.inventory
-
-		local overflow = inventory:GetOverflowContainer()
+		local overflow = self.owner.components.inventory.overflow and self.owner.components.inventory.overflow.components.container
 		overflow = (overflow ~= nil and overflow:IsOpenedBy(self.owner)) and overflow or nil
 
 		local do_integrated_backpack = overflow ~= nil and self.integrated_backpack
-		-- =============================================================================== --
-		-- local do_self_inspect = not (self.controller_build or GetGameModeProperty("no_avatar_popup"))
-		local do_self_inspect = CHANGE_SHOW_SELF_INSPECT_BUTTON and not (GetGameModeProperty("no_avatar_popup"))
-		-- =============================================================================== --
 
-		if TheNet:GetServerGameMode() == "quagmire" then
-			RebuildLayout_Quagmire(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
-		else
-			RebuildLayout(self, inventory, overflow, do_integrated_backpack, do_self_inspect)
+		local new_backpack = self.owner.components.inventory.overflow
+
+		if do_integrated_backpack then
+			local num = new_backpack.components.container.numslots
+
+			local x = - (num * (W+SEP) / 2)
+			--local offset = #self.inv >= num and 1 or 0 --math.ceil((#self.inv - num)/2)
+			local offset = 1 + #self.inv - num
+
+			for k = 1, num do
+				local slot = InvSlot(k, HUD_ATLAS, "inv_slot.tex", self.owner, new_backpack.components.container)
+				self.backpackinv[k] = self.bottomrow:AddChild(slot)
+
+				slot.top_align_tip = W*1.5 + YSEP*2
+				
+				if offset > 0 then
+					slot:SetPosition(self.inv[offset+k-1]:GetPosition().x,0,0)
+				else
+					slot:SetPosition(x,0,0)
+					x = x + W + SEP
+				end
+				
+				local item = new_backpack.components.container:GetItemInSlot(k)
+				if item then
+					slot:SetTile(ItemTile(item))
+				end
+				
+			end
+			
+			self.backpack = self.owner.components.inventory.overflow
+			self.inst:ListenForEvent("itemget", BackpackGet, self.backpack)
+			self.inst:ListenForEvent("itemlose", BackpackLose, self.backpack)
 		end
 
+
+
+		if old_backpack	and not self.backpack then
+			self:SelectSlot(self.inv[1])
+			self.current_list = self.inv
+		end
+
+		--self.bg:Flow(total_w+60, 256, true)
+		
+		if do_integrated_backpack then
+			self.bg:SetPosition(Vector3(0,-24,0))
+			self.bgcover:SetPosition(Vector3(0, -135, 0))
+			self.toprow:SetPosition(Vector3(0,W/2 + YSEP/2,0))
+			self.bottomrow:SetPosition(Vector3(0,-W/2 - YSEP/2,0))
+
+			if self.rebuild_snapping then
+				self.root:SetPosition(self.in_pos)
+			else
+				self.root:MoveTo(self.out_pos, self.in_pos, .5)
+			end
+		else
+			self.bg:SetPosition(Vector3(0, -64, 0))
+			self.bgcover:SetPosition(Vector3(0, -100, 0))
+			self.toprow:SetPosition(Vector3(0,0,0))
+			self.bottomrow:SetPosition(0,0,0)
+			
+			if do_integrated_backpack and not self.rebuild_snapping then
+				self.root:MoveTo(self.in_pos, self.out_pos, .2)
+			else
+				self.root:SetPosition(self.out_pos)
+			end
+		end
+		
 		self.actionstring:MoveToFront()
-
-		self:SelectDefaultSlot()
+		
+		self:SelectSlot(self.inv[1])
+		self.current_list = self.inv
 		self:UpdateCursor()
-
-		if self.cursor ~= nil then
+		
+		if self.cursor then
 			self.cursor:MoveToFront()
 		end
 
-		self.rebuild_pending = nil
-		self.rebuild_snapping = nil
+		self.rebuild_pending = false
+		self.rebuild_snapping = false
 	end
+
 
 	self.Rebuild = function(self, ...)
 		if TheInput:ControllerAttached() then
@@ -502,97 +294,81 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 	STRINGS.UI.HUD.TAKEHALF = STRINGS.UI.CONTROLSSCREEN.CONTROLS[36]
 	STRINGS.UI.HUD.CHANGEBOX = STRINGS.UI.CONTROLSSCREEN.CONTROLS[37]
 	STRINGS.UI.HUD.CHANGEBOXHALF = STRINGS.UI.CONTROLSSCREEN.CONTROLS[38]
+	TITLE_TEXT_COLOUR = {204/255, 180/255, 154/255, 1}
 
 	-- Not Changed
 	local function GetDropActionString(doer, item)
 		return BufferedAction(doer, nil, ACTIONS.DROP, item, doer:GetPosition()):GetActionString()
 	end
 
-	local SetActionStringSize = function(obj, size, hud)
-		obj:SetSize(size * TheFrontEnd:GetHUDScale())
-		obj.inst:ListenForEvent("continuefrompause", function() obj:SetSize(size * TheFrontEnd:GetHUDScale()) end, hud)
-		obj.inst:ListenForEvent("refreshhudsize", function(hud, scale) obj:SetSize(size * scale) end, hud)
-	end
+	-- local SetActionStringSize = function(obj, size, hud)
+	-- 	obj:SetSize(size * TheFrontEnd:GetHUDScale())
+	-- 	obj.inst:ListenForEvent("continuefrompause", function() obj:SetSize(size * TheFrontEnd:GetHUDScale()) end, hud)
+	-- 	obj.inst:ListenForEvent("refreshhudsize", function(hud, scale) obj:SetSize(size * scale) end, hud)
+	-- end
 
-	self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 24))
+	self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 35))
     self.actionstringtitle_below:SetColour(204/255, 180/255, 154/255, 1)
-	self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 18))
+	self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 25))
 	self.actionstringbody_below:EnableWordWrap(true)
 
-	if IsOtherModEnabled("Insight (Show Me+)") then
-		if CHANGE_LANGUAGE_ENGLISH then
-			self.actionstringtitle:SetSize(25)
-			self.actionstringbody:SetSize(20)
-			self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 25))
-			self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 20))
-			self.fake_text = self.actionstring:AddChild(Text(TALKINGFONT, 20))
-		else
-			self.actionstringtitle:SetSize(31)
-			self.actionstringbody:SetSize(23)
-			self.actionstringtitle_below = self.actionstring:AddChild(Text(TALKINGFONT, 31))
-			self.actionstringbody_below = self.actionstring:AddChild(Text(TALKINGFONT, 23))
-			self.fake_text = self.actionstring:AddChild(Text(TALKINGFONT, 23))
-		end
-	else
-		SetActionStringSize(self.actionstringtitle, 24, self.owner.HUD.inst)
-		SetActionStringSize(self.actionstringbody, 18, self.owner.HUD.inst)
-		SetActionStringSize(self.actionstringtitle_below, 24, self.owner.HUD.inst)
-		SetActionStringSize(self.actionstringbody_below, 18, self.owner.HUD.inst)
-	end
+	-- SetActionStringSize(self.actionstringtitle, 24, self.owner.HUD.inst)
+	-- SetActionStringSize(self.actionstringbody, 18, self.owner.HUD.inst)
+	-- SetActionStringSize(self.actionstringtitle_below, 24, self.owner.HUD.inst)
+	-- SetActionStringSize(self.actionstringbody_below, 18, self.owner.HUD.inst)
 
-	SetTooltipColour_Old = self.SetTooltipColour
+	local SetTooltipColour_Old = self.SetTooltipColour
 	self.SetTooltipColour = function (self, ...)
 		SetTooltipColour_Old(self, ...)
 		self.actionstringtitle_below:SetColour(...)
 	end
 
-	-- Numerous changes
+	-- Almost Rewrite
 	self.UpdateCursorText = function (self, ...)
 		local Language_En = CHANGE_LANGUAGE_ENGLISH
 		local inv_item = self:GetCursorItem()
 		local slot_num, container = self:GetCursorSlot()
-		local isreadonlycontainer = container and container.IsReadOnlyContainer and container:IsReadOnlyContainer()
 		local active_item = self.cursortile ~= nil and self.cursortile.item or nil
-		if inv_item ~= nil and inv_item.replica.inventoryitem == nil then
+		if inv_item ~= nil and inv_item.components.inventoryitem == nil then
 			inv_item = nil
 		end
-		if active_item ~= nil and active_item.replica.inventoryitem == nil then
+		if active_item ~= nil and active_item.components.inventoryitem == nil then
 			active_item = nil
 		end
-		if active_item ~= nil or inv_item ~= nil and CHANGE_HIDE_INVENTORY_BAR_HINT ~= "all" then
+		if (active_item ~= nil or inv_item ~= nil) and CHANGE_HIDE_INVENTORY_BAR_HINT ~= "all" then
 			local controller_id = TheInput:GetControllerID()
 
 			if active_item ~= nil and inv_item ~= nil then
 				local itemname = self:GetDescriptionString(active_item)
 				self.actionstringtitle:SetString(itemname)
-				if active_item:GetIsWet() then
-					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
+				if self:IsWet(active_item) then
+					self:SetTooltipColour(WET_TEXT_COLOUR[1], WET_TEXT_COLOUR[2], WET_TEXT_COLOUR[3], WET_TEXT_COLOUR[4])
 				else
-					self:SetTooltipColour(unpack(RGB(204, 180, 154)))
+					self:SetTooltipColour(TITLE_TEXT_COLOUR[1], TITLE_TEXT_COLOUR[2], TITLE_TEXT_COLOUR[3], TITLE_TEXT_COLOUR[4])
 				end
 				itemname = self:GetDescriptionString(inv_item)
 				self.actionstringtitle_below:SetString(itemname)
-				if inv_item:GetIsWet() then
-					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
+				if self:IsWet(inv_item) then
+					self:SetTooltipColour(WET_TEXT_COLOUR[1], WET_TEXT_COLOUR[2], WET_TEXT_COLOUR[3], WET_TEXT_COLOUR[4])
 				else
-					self:SetTooltipColour(unpack(RGB(204, 180, 154)))
+					self:SetTooltipColour(TITLE_TEXT_COLOUR[1], TITLE_TEXT_COLOUR[2], TITLE_TEXT_COLOUR[3], TITLE_TEXT_COLOUR[4])
 				end
 			elseif active_item ~= nil then
 				local itemname = self:GetDescriptionString(active_item)
 				self.actionstringtitle:SetString(itemname)
-				if active_item:GetIsWet() then
-					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
+				if self:IsWet(active_item) then
+					self:SetTooltipColour(WET_TEXT_COLOUR[1], WET_TEXT_COLOUR[2], WET_TEXT_COLOUR[3], WET_TEXT_COLOUR[4])
 				else
-					self:SetTooltipColour(unpack(RGB(204, 180, 154)))
+					self:SetTooltipColour(TITLE_TEXT_COLOUR[1], TITLE_TEXT_COLOUR[2], TITLE_TEXT_COLOUR[3], TITLE_TEXT_COLOUR[4])
 				end
 				self.actionstringtitle_below:SetString("")
 			elseif inv_item ~= nil then
 				local itemname = self:GetDescriptionString(inv_item)
 				self.actionstringtitle:SetString(itemname)
-				if inv_item:GetIsWet() then
-					self:SetTooltipColour(unpack(WET_TEXT_COLOUR))
+				if self:IsWet(inv_item) then
+					self:SetTooltipColour(WET_TEXT_COLOUR[1], WET_TEXT_COLOUR[2], WET_TEXT_COLOUR[3], WET_TEXT_COLOUR[4])
 				else
-					self:SetTooltipColour(unpack(RGB(204, 180, 154)))
+					self:SetTooltipColour(TITLE_TEXT_COLOUR[1], TITLE_TEXT_COLOUR[2], TITLE_TEXT_COLOUR[3], TITLE_TEXT_COLOUR[4])
 				end
 				self.actionstringtitle_below:SetString("")
 			else
@@ -613,15 +389,15 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
 				if not is_equip_slot then
 					local can_take_active_item = active_item ~= nil and self.active_slot.container ~= nil and self.active_slot.container:CanTakeItemInSlot(active_item, self.active_slot.num)
-					if active_item.replica.stackable ~= nil and inv_item.prefab == active_item.prefab and active_item.skinname == active_item.skinname then
+					if active_item.components.stackable ~= nil and inv_item.prefab == active_item.prefab and active_item.skinname == active_item.skinname then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.ACTIONS.COMBINESTACK
-						if left and active_item.replica.stackable:IsStack() then
+						if left and active_item.components.stackable:IsStack() then
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
 					elseif can_take_active_item then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.SWAP
 					end
-				elseif active_item.replica.equippable ~= nil and active_item.replica.equippable:EquipSlot() == self.active_slot.equipslot and not active_item.replica.equippable:IsRestricted(self.owner) then
+				elseif active_item.components.equippable ~= nil and active_item.components.equippable.equipslot == self.active_slot.equipslot then
 					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.EQUIP
 				end
 				table.insert(str, help_string)
@@ -633,7 +409,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				local changebox_flag = false
 				local drop_inv_flag = false
 				local quick_use_flag = false
-				if not is_equip_slot and right and not (left and inv_item.replica.container ~= nil) then
+				if not is_equip_slot and right and not (left and inv_item.components.container ~= nil) then
 					changebox_flag = true
 				end
 				if right then
@@ -659,9 +435,9 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					end
 					local use_action = self.owner.components.playercontroller:GetItemUseAction(active_item, inv_item)
 					local self_action = self.owner.components.playercontroller:GetItemSelfAction(active_item)
-					if left and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.owner) then
+					if left and inv_item.components.container ~= nil and inv_item.components.container:IsOpenedBy(self.owner) then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.ACTIONS.STORE.GENERIC
-						if active_item.replica.stackable ~= nil and active_item.replica.stackable:IsStack() then
+						if active_item.components.stackable ~= nil and active_item.components.stackable:IsStack() then
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
 						table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
@@ -678,7 +454,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 				if not drop_inv_flag then
 					help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
-					if left and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
+					if left and active_item.components.stackable and active_item.components.stackable:IsStack() then
 						help_string = help_string .. (Language_En and " (One)" or " (一个)")
 					end
 					table.insert(str, help_string)
@@ -695,7 +471,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					end
 					if drop_inv_flag then
 						help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
-						if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
+						if left and inv_item.components.stackable and inv_item.components.stackable:IsStack() then
 							help_string = help_string .. (Language_En and " (One)" or " (一个)")
 						end
 						table.insert(str_below, help_string)
@@ -711,8 +487,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
 				if not is_equip_slot then
 					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.PUT
-					help_string = help_string .. (left and active_item.replica.stackable and active_item.replica.stackable:IsStack() and (Language_En and " (One)" or " (一个)") or "")
-				elseif active_item.replica.equippable ~= nil and active_item.replica.equippable:EquipSlot() == self.active_slot.equipslot and not active_item.replica.equippable:IsRestricted(self.owner) then
+					help_string = help_string .. (left and active_item.components.stackable and active_item.components.stackable:IsStack() and (Language_En and " (One)" or " (一个)") or "")
+				elseif active_item.components.equippable ~= nil and active_item.components.equippable.equipslot == self.active_slot.equipslot then
 					help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.EQUIP
 				end
 				table.insert(str, help_string)
@@ -736,7 +512,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, active_item)
 				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP))
-				if left and active_item.replica.stackable and active_item.replica.stackable:IsStack() then
+				if left and active_item.components.stackable and active_item.components.stackable:IsStack() then
 					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
 				table.insert(str, help_string)
@@ -744,7 +520,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 			elseif inv_item ~= nil then
 				local help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE) .. " " .. STRINGS.UI.HUD.INSPECT
 				help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER) .. " " .. STRINGS.UI.HUD.SELECT
-				help_string = help_string .. (left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() and (Language_En and " (Half)" or " (一半)") or "")
+				help_string = help_string .. (left and inv_item.components.stackable and inv_item.components.stackable:IsStack() and (Language_En and " (Half)" or " (一半)") or "")
 				table.insert(str, help_string)
 				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_EXAMINE))
 				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CHANGE_CONTROL_HOVER))
@@ -757,7 +533,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					else
-						if not inv_item.replica.inventoryitem:IsGrandOwner(self.owner) then
+						if not inv_item.components.inventoryitem:IsGrandOwner(self.owner) then
 							help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. STRINGS.UI.HUD.TAKE
 							table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 						else
@@ -780,7 +556,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 						help_string = help_string .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE) .. " " .. self_action:GetActionString()
 						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSCENE))
 					end
-					if #self.inv > 0 and not (inv_item:HasTag("heavy") or GetGameModeProperty("non_item_equips")) then
+					if #self.inv > 0 then
 						help_string = help_string .. "  " .. TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF) .. " " .. STRINGS.UI.HUD.UNEQUIP
 						table.insert(icon,  TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_USEONSELF))
 					end
@@ -791,7 +567,7 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				
 				help_string = TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP) .. " " .. GetDropActionString(self.owner, inv_item)
 				table.insert(icon, TheInput:GetLocalizedControl(controller_id, CONTROL_INVENTORY_DROP))
-				if left and inv_item.replica.stackable and inv_item.replica.stackable:IsStack() then
+				if left and inv_item.components.stackable and inv_item.components.stackable:IsStack() then
 					help_string = help_string .. (Language_En and " (One)" or " (一个)")
 				end
 				table.insert(str, help_string)
@@ -811,22 +587,12 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				end
 			end
 
-			local hide_above = false
-			local hide_blow = false
-			if isreadonlycontainer then
-				if active_item ~= nil then
-					hide_blow = true
-				else
-					hide_above = true
-				end
-			end
-
 			local was_shown = self.actionstring.shown
 			local old = self.actionstringbody:GetString()
 			local old_below = self.actionstringbody_below:GetString()
 			if CHANGE_INVENTORY_BAR_HINT_REMOVE_ACTION_TEXT then
-				local new_icon = hide_above and " " or table.concat(icon, " ")
-				local new_icon_below = hide_blow and " " or table.concat(icon_below, " ")
+				local new_icon = table.concat(icon, " ")
+				local new_icon_below = table.concat(icon_below, " ")
 				if old ~= new_icon or old_below ~= new_icon_below then
 					self.actionstringbody:SetString(new_icon)
 					self.actionstringbody_below:SetString(new_icon_below)
@@ -834,8 +600,8 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 					self.actionstring:Show()
 				end
 			else
-				local new_string = hide_above and " " or table.concat(str, '\n')
-				local new_string_below = hide_blow and " " or table.concat(str_below, '\n')
+				local new_string = table.concat(str, '\n')
+				local new_string_below = table.concat(str_below, '\n')
 				if old ~= new_string or old_below ~= new_string_below then
 					self.actionstringbody:SetString(new_string)
 					self.actionstringbody_below:SetString(new_string_below)
@@ -875,30 +641,13 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 
 			local xscale, yscale, zscale = self.root:GetScale():Get()
 
-			if self.active_slot.container ~= nil and self.active_slot.container.issidewidget and not Profile:GetIntegratedBackpack() then
+			if self.active_slot.container ~= nil and self.active_slot.container.side_widget and not Profile:GetIntegratedBackpack() then
 				-- backpack
 				self.actionstringtitle:SetPosition(-wmax/2, h0/2)
 				self.actionstringbody:SetPosition(-wmax/2, -h1/2)
 				self.actionstringtitle_below:SetPosition(-wmax/2, -h2/2 - h1 + below_text_offset)
 				self.actionstringbody_below:SetPosition(-wmax/2, -h3/2 - h2 - h1 + below_text_offset)
-				dest_pos.x = dest_pos.x + ((-240) - self.active_slot.container.widget.slotpos[self.active_slot.num].x) * xscale
-
-			elseif self.active_slot.container ~= nil and self.active_slot.container.type == "side_inv_behind" then
-				-- beard
-				self.actionstringtitle:SetPosition(-wmax/2, h0/2)
-				self.actionstringbody:SetPosition(-wmax/2, -h1/2)
-				self.actionstringtitle_below:SetPosition(-wmax/2, -h2/2 - h1 + below_text_offset)
-				self.actionstringbody_below:SetPosition(-wmax/2, -h3/2 - h2 - h1 + below_text_offset)
-				local degree_dist = (#self.active_slot.container.widget.slotpos - 1) * 20
-				dest_pos.x = dest_pos.x + ((-100) - degree_dist - self.active_slot.container.widget.slotpos[self.active_slot.num].x) * xscale
-			
-			elseif self.active_slot.container ~= nil and self.active_slot.container.type == "hand_inv" then
-				-- oceanfishrod, slingshot, etc.
-				self.actionstringtitle:SetPosition(wmax/2, h0/2)
-				self.actionstringbody:SetPosition(wmax/2, -h1/2)
-				self.actionstringtitle_below:SetPosition(wmax/2, -h2/2 - h1 + below_text_offset)
-				self.actionstringbody_below:SetPosition(wmax/2, -h3/2 - h2 - h1 + below_text_offset)
-				dest_pos.x = dest_pos.x + 100 * xscale
+				dest_pos.x = dest_pos.x + ((-240) - self.active_slot.container.widgetslotpos[self.active_slot.num].x) * xscale
 
 			elseif self.active_slot.side_align_tip then
 				-- in-game containers, chests, fridge
@@ -915,13 +664,6 @@ AddClassPostConstruct("widgets/inventorybar", function(self)
 				self.actionstringtitle_below:SetPosition(0, h2/2 + h3 + below_text_offset)
 				self.actionstringbody_below:SetPosition(0, h3/2 + below_text_offset)
 				dest_pos.y = dest_pos.y + (self.active_slot.top_align_tip + TIP_YFUDGE) * yscale
-
-			elseif self.active_slot.bottom_align_tip then
-				self.actionstringtitle:SetPosition(0, -h0/2)
-				self.actionstringbody:SetPosition(0, -(h1/2 + h0))
-				self.actionstringtitle_below:SetPosition(0, -(h2/2 + h0 + h1) + below_text_offset)
-				self.actionstringbody_below:SetPosition(0, -(h3/2 + h0 + h1 + h2) + below_text_offset)
-				dest_pos.y = dest_pos.y + (self.active_slot.bottom_align_tip + TIP_YFUDGE) * yscale
 
 			else
 				-- old default as fallback ?

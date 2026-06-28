@@ -5,112 +5,112 @@ AddClassPostConstruct("widgets/controls", function(self)
     -- Help Klei Fix Bug: Actived Item Under Backpack Widget
     self.containerroot_side.parent:MoveToBack()
 
-    -- self.playeractionhint
-    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-        self.playeractionhint:SetOffset(Vector3(0, 100, 0))
-    else
-        self.playeractionhint:SetOffset(Vector3(0, 120, 0))
-    end
+    -- -- self.playeractionhint
+    -- if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+    --     self.playeractionhint:SetOffset(Vector3(0, 100, 0))
+    -- else
+    --     self.playeractionhint:SetOffset(Vector3(0, 120, 0))
+    -- end
 
-    -- self.playeractionhint_itemhighlight
-    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-        self.playeractionhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
-    else
-        self.playeractionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
-    end
+    -- -- self.playeractionhint_itemhighlight
+    -- if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+    --     self.playeractionhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
+    -- else
+    --     self.playeractionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    -- end
     
-    self.playeraltactionhint = self:AddChild(FollowText(TALKINGFONT, 28))
-    self.playeraltactionhint:SetHUD(self.owner.HUD.inst)
-    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-        self.playeraltactionhint:SetOffset(Vector3(0, 100, 0))
-    else
-        self.playeraltactionhint:SetOffset(Vector3(0, 120, 0))
-    end
-    self.playeraltactionhint:Hide()
+    -- self.playeraltactionhint = self:AddChild(FollowText(TALKINGFONT, 28))
+    -- -- self.playeraltactionhint:SetHUD(self.owner.HUD.inst)
+    -- if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+    --     self.playeraltactionhint:SetOffset(Vector3(0, 100, 0))
+    -- else
+    --     self.playeraltactionhint:SetOffset(Vector3(0, 120, 0))
+    -- end
+    -- self.playeraltactionhint:Hide()
 
-    self.playeraltactionhint_itemhighlight = self:AddChild(FollowText(TALKINGFONT, 28))
-    self.playeraltactionhint_itemhighlight:SetHUD(self.owner.HUD.inst)
-    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-        self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
-    else
-        self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
-    end
-    self.playeraltactionhint_itemhighlight:Hide()
+    -- self.playeraltactionhint_itemhighlight = self:AddChild(FollowText(TALKINGFONT, 28))
+    -- -- self.playeraltactionhint_itemhighlight:SetHUD(self.owner.HUD.inst)
+    -- if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+    --     self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
+    -- else
+    --     self.playeraltactionhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    -- end
+    -- self.playeraltactionhint_itemhighlight:Hide()
 
-    -- self.attackhint
-    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-        self.attackhint:SetOffset(Vector3(0, 100, 0))
-    else
-        self.attackhint:SetOffset(Vector3(0, 120, 0))
-    end
+    -- -- self.attackhint
+    -- if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+    --     self.attackhint:SetOffset(Vector3(0, 100, 0))
+    -- else
+    --     self.attackhint:SetOffset(Vector3(0, 120, 0))
+    -- end
 
-    self.attackhint_itemhighlight = self:AddChild(FollowText(TALKINGFONT, 28))
-    self.attackhint_itemhighlight:SetHUD(self.owner.HUD.inst)
-    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-        self.attackhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
-    else
-        self.attackhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
-    end
-    self.attackhint_itemhighlight:Hide()
+    -- self.attackhint_itemhighlight = self:AddChild(FollowText(TALKINGFONT, 28))
+    -- -- self.attackhint_itemhighlight:SetHUD(self.owner.HUD.inst)
+    -- if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+    --     self.attackhint_itemhighlight:SetOffset(Vector3(0, 100, 0))
+    -- else
+    --     self.attackhint_itemhighlight:SetOffset(Vector3(0, 120, 0))
+    -- end
+    -- self.attackhint_itemhighlight:Hide()
 
-    -- self.groundactionhint
-    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-        self.groundactionhint:SetOffset(Vector3(0, 100, 0))
-    else
-        self.groundactionhint:SetOffset(Vector3(0, 120, 0))
-    end
+    -- -- self.groundactionhint
+    -- if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+    --     self.groundactionhint:SetOffset(Vector3(0, 100, 0))
+    -- else
+    --     self.groundactionhint:SetOffset(Vector3(0, 120, 0))
+    -- end
 
-    -- self.forwardactionhint
-    self.forwardactionhint = self:AddChild(FollowText(TALKINGFONT, 28))
-    self.forwardactionhint:SetHUD(self.owner.HUD.inst)
-    if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
-        self.forwardactionhint:SetOffset(Vector3(0, 100, 0))
-    else
-        self.forwardactionhint:SetOffset(Vector3(0, 120, 0))
-    end
-    self.forwardactionhint:Hide()
+    -- -- self.forwardactionhint
+    -- self.forwardactionhint = self:AddChild(FollowText(TALKINGFONT, 28))
+    -- -- self.forwardactionhint:SetHUD(self.owner.HUD.inst)
+    -- if CHANGE_THEWORLD_ITEM_HINT_REMOVE_ACTION_TEXT then
+    --     self.forwardactionhint:SetOffset(Vector3(0, 100, 0))
+    -- else
+    --     self.forwardactionhint:SetOffset(Vector3(0, 120, 0))
+    -- end
+    -- self.forwardactionhint:Hide()
 
-    local HighlightSceneItem = function(target, followerWidget, itemhighlight)
-        if target ~= nil and followerWidget.text.string ~= nil then
-            itemhighlight:Show()
-            local offsetx, offsety = followerWidget:GetScreenOffset()
-            itemhighlight:SetScreenOffset(offsetx, offsety)
-            itemhighlight:SetTarget(followerWidget.target)
+    -- local HighlightSceneItem = function(target, followerWidget, itemhighlight)
+    --     if target ~= nil and followerWidget.text.string ~= nil then
+    --         itemhighlight:Show()
+    --         local offsetx, offsety = followerWidget:GetScreenOffset()
+    --         itemhighlight:SetScreenOffset(offsetx, offsety)
+    --         itemhighlight:SetTarget(followerWidget.target)
 
-            local str = followerWidget.text.string
-            local itemlines = {}
-            local commandlines = {}
-            for idx,line in ipairs(string.split(str, "\n")) do
-                if idx==1 then
-                    itemlines[#itemlines+1] = line
-                    commandlines[#commandlines+1]= " "
-                else
-                    itemlines[#itemlines+1] = " "
-                    commandlines[#commandlines+1] = line
-                end
-            end
-            followerWidget.text:SetString(table.concat(commandlines,"\n"))
+    --         local str = followerWidget.text.string
+    --         local itemlines = {}
+    --         local commandlines = {}
+    --         for idx,line in ipairs(string.split(str, "\n")) do
+    --             if idx==1 then
+    --                 itemlines[#itemlines+1] = line
+    --                 commandlines[#commandlines+1]= " "
+    --             else
+    --                 itemlines[#itemlines+1] = " "
+    --                 commandlines[#commandlines+1] = line
+    --             end
+    --         end
+    --         followerWidget.text:SetString(table.concat(commandlines,"\n"))
 
-            itemhighlight.text:SetString(table.concat(itemlines,"\n"))
-            if target:GetIsWet() then
-                itemhighlight.text:SetColour(unpack(WET_TEXT_COLOUR))
-            else
-                itemhighlight.text:SetColour(unpack(NORMAL_TEXT_COLOUR))
-            end
-        else
-            itemhighlight:Hide()
-        end
-    end
+    --         itemhighlight.text:SetString(table.concat(itemlines,"\n"))
+    --         if target:GetIsWet() then
+    --             itemhighlight.text:SetColour(unpack(WET_TEXT_COLOUR))
+    --         else
+    --             itemhighlight.text:SetColour(unpack(NORMAL_TEXT_COLOUR))
+    --         end
+    --     else
+    --         itemhighlight:Hide()
+    --     end
+    -- end
 
-    self.mapcontrols.rotleft2 = self.mapcontrols:AddChild(Text(UIFONT, 30))
-    self.mapcontrols.rotleft2:SetPosition(-40, -40, 0)
-    self.mapcontrols.rotleft2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_LEFT))
-    self.mapcontrols.rotleft2:Hide()
+    -- self.mapcontrols.rotleft2 = self.mapcontrols:AddChild(Text(UIFONT, 30))
+    -- self.mapcontrols.rotleft2:SetPosition(-40, -40, 0)
+    -- self.mapcontrols.rotleft2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_LEFT))
+    -- self.mapcontrols.rotleft2:Hide()
 
-    self.mapcontrols.rotright2 = self.mapcontrols:AddChild(Text(UIFONT, 30))
-    self.mapcontrols.rotright2:SetPosition(40, -40, 0)
-    self.mapcontrols.rotright2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_RIGHT))
-    self.mapcontrols.rotright2:Hide()
+    -- self.mapcontrols.rotright2 = self.mapcontrols:AddChild(Text(UIFONT, 30))
+    -- self.mapcontrols.rotright2:SetPosition(40, -40, 0)
+    -- self.mapcontrols.rotright2:SetString(TheInput:GetLocalizedControl(TheInput:GetControllerID(), CONTROL_INVENTORY_RIGHT))
+    -- self.mapcontrols.rotright2:Hide()
 
     local OnUpdate_Old = self.OnUpdate
 
@@ -812,31 +812,31 @@ AddClassPostConstruct("widgets/controls", function(self)
     end
 
     self.OnUpdate = function (self, dt, ...)
-        if TheInput:ControllerAttached() then
-            return OnUpdate_New(self, dt, ...)
-        else
-            self.playeractionhint:Hide()
-            self.playeractionhint:SetTarget(nil)
-            self.playeractionhint_itemhighlight:Hide()
-            self.playeractionhint_itemhighlight:SetTarget(nil)
+        -- if TheInput:ControllerAttached() then
+        --     return OnUpdate_New(self, dt, ...)
+        -- else
+        --     self.playeractionhint:Hide()
+        --     self.playeractionhint:SetTarget(nil)
+        --     self.playeractionhint_itemhighlight:Hide()
+        --     self.playeractionhint_itemhighlight:SetTarget(nil)
 
-            self.playeraltactionhint:Hide()
-            self.playeraltactionhint:SetTarget(nil)
-            self.playeraltactionhint_itemhighlight:Hide()
-            self.playeraltactionhint_itemhighlight:SetTarget(nil)
+        --     self.playeraltactionhint:Hide()
+        --     self.playeraltactionhint:SetTarget(nil)
+        --     self.playeraltactionhint_itemhighlight:Hide()
+        --     self.playeraltactionhint_itemhighlight:SetTarget(nil)
 
-            self.attackhint:Hide()
-            self.attackhint:SetTarget(nil)
-            self.attackhint_itemhighlight:Hide()
-            self.attackhint_itemhighlight:SetTarget(nil)
+        --     self.attackhint:Hide()
+        --     self.attackhint:SetTarget(nil)
+        --     self.attackhint_itemhighlight:Hide()
+        --     self.attackhint_itemhighlight:SetTarget(nil)
 
-            self.groundactionhint:Hide()
-            self.groundactionhint:SetTarget(nil)
+        --     self.groundactionhint:Hide()
+        --     self.groundactionhint:SetTarget(nil)
 
-            self.forwardactionhint:Hide()
-            self.forwardactionhint:SetTarget(nil)
+        --     self.forwardactionhint:Hide()
+        --     self.forwardactionhint:SetTarget(nil)
             return OnUpdate_Old(self, dt, ...)
-        end
+        -- end
     end
 
 end)

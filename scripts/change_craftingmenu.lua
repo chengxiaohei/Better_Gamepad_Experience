@@ -3,23 +3,6 @@ AddClassPostConstruct("widgets/redux/craftingmenu_hud", function(self)
     local Status_Announce_Time = GetTime()
     local OnControl_Old = self.OnControl
     self.OnControl = function(self, control, down, ...)
-        if down and control == CONTROL_MENU_MISC_2 then
-            local DeltaTime = GetTime() - Double_Click_Gap_Time
-            local Should_Announce = DeltaTime > 0 and DeltaTime < 0.3 and GetTime() - Status_Announce_Time > 1
-            if Should_Announce and self:IsCraftingOpen() then
-                local exist, StatusAnnouncerModule = pcall(require, "statusannouncer")
-                if exist then
-                    local StatusAnnouncer = StatusAnnouncerModule()
-                    local details = self.craftingmenu.details_root
-                    if StatusAnnouncer and details and details.data and details.data.recipe then
-                        StatusAnnouncer:AnnounceRecipe(details.data.recipe)
-                        Status_Announce_Time = GetTime()
-                    end
-                end
-            end
-            Double_Click_Gap_Time = GetTime()
-        end
-
         if TheInput:ControllerAttached() and CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU then
             if control == CONTROL_MENU_MISC_1 then return false end
             if control == CONTROL_MENU_MISC_2 then return false end

@@ -206,11 +206,11 @@ function GetQuickUseString(inv_slot, act)
         for _, v in pairs(CHANGE_MAPPING_TABLE) do
             if type(inv_slot) == "number" then
                 if v.slot == inv_slot then
-                    table.insert(t, v.string.." "..STRINGS.UI.COOKBOOK.PERISH_QUICKLY.." "..act:GetActionString())
+                    table.insert(t, v.string.." "..--[[STRINGS.UI.COOKBOOK.PERISH_QUICKLY.." "..]]act:GetActionString())
                 end
             else
                 if EquipmentMappingTable[v.slot] == inv_slot then
-                    table.insert(t, v.string.." "..STRINGS.UI.COOKBOOK.PERISH_QUICKLY.." "..act:GetActionString())
+                    table.insert(t, v.string.." "..--[[STRINGS.UI.COOKBOOK.PERISH_QUICKLY.." "..]]act:GetActionString())
                 end
             end
         end

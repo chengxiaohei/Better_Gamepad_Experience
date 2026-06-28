@@ -2,7 +2,7 @@
 AddComponentPostInit("playercontroller", function(self)
 	-- New Added
 	local QueryContainerType = function(self, inst) 
-		local container = inst.replica.container
+		local container = inst.components.container
 		local type = nil
 		if inst == self.inst then
 			type = "inv"
@@ -23,7 +23,7 @@ AddComponentPostInit("playercontroller", function(self)
 	
 	-- New Added
 	self.GetAllTypeContainers = function (self)
-		local opened_containers = self.inst.replica.inventory:GetOpenContainers()
+		local opened_containers = self.inst.components.inventory:GetOpenContainers()
 		local h,p,b,l,r
 		for c, _ in pairs(opened_containers) do
 			local type = QueryContainerType(self, c)
@@ -46,21 +46,21 @@ AddComponentPostInit("playercontroller", function(self)
 		local filtered_container = nil
 		if targetitem ~= nil then
 			for _, container in ipairs(checklist) do
-				if container ~= nil and container.replica.container ~= nil then
-					for islot = 1, container.replica.container:GetNumSlots() do
-						local iitem = container.replica.container:GetItemInSlot(islot)
-						if iitem ~= nil and container.replica.container:CanTakeItemInSlot(targetitem, islot) and
+				if container ~= nil and container.components.container ~= nil then
+					for islot = 1, container.components.container:GetNumSlots() do
+						local iitem = container.components.container:GetItemInSlot(islot)
+						if iitem ~= nil and container.components.container:CanTakeItemInSlot(targetitem, islot) and
 							iitem.prefab == targetitem.prefab and iitem.AnimState:GetSkinBuild() == targetitem.AnimState:GetSkinBuild() and
-							iitem.replica.stackable ~= nil and not iitem.replica.stackable:IsFull() and container.replica.container:AcceptsStacks() then
+							iitem.components.stackable ~= nil and not iitem.components.stackable:IsFull() and container.components.container:AcceptsStacks() then
 							find = true
 							filtered_container = container
 							break
 						end
 					end
-					if not (find or container.replica.container:IsFull()) then
-						for islot = 1, container.replica.container:GetNumSlots() do
-							local iitem = container.replica.container:GetItemInSlot(islot)
-							if iitem == nil and container.replica.container:CanTakeItemInSlot(targetitem, islot) then
+					if not (find or container.components.container:IsFull()) then
+						for islot = 1, container.components.container:GetNumSlots() do
+							local iitem = container.components.container:GetItemInSlot(islot)
+							if iitem == nil and container.components.container:CanTakeItemInSlot(targetitem, islot) then
 								find = true
 								filtered_container = container
 								break
@@ -69,21 +69,21 @@ AddComponentPostInit("playercontroller", function(self)
 					end
 				end
 
-				if not find and container ~= nil and container.replica.inventory ~= nil then
-					for islot = 1, container.replica.inventory:GetNumSlots() do
-						local iitem = container.replica.inventory:GetItemInSlot(islot)
-						if iitem ~= nil and container.replica.inventory:CanTakeItemInSlot(targetitem, islot) and
+				if not find and container ~= nil and container.components.inventory ~= nil then
+					for islot = 1, container.components.inventory:GetNumSlots() do
+						local iitem = container.components.inventory:GetItemInSlot(islot)
+						if iitem ~= nil and container.components.inventory:CanTakeItemInSlot(targetitem, islot) and
 							iitem.prefab == targetitem.prefab and iitem.AnimState:GetSkinBuild() == targetitem.AnimState:GetSkinBuild() and
-							iitem.replica.stackable ~= nil and not iitem.replica.stackable:IsFull() and container.replica.inventory:AcceptsStacks() then
+							iitem.components.stackable ~= nil and not iitem.components.stackable:IsFull() and container.components.inventory:AcceptsStacks() then
 							find = true
 							filtered_container = container
 							break
 						end
 					end
-					if not (find or container.replica.inventory:IsFull()) then
-						for islot = 1, container.replica.inventory:GetNumSlots() do
-							local iitem = container.replica.inventory:GetItemInSlot(islot)
-							if iitem == nil and container.replica.inventory:CanTakeItemInSlot(targetitem, islot) then
+					if not (find or container.components.inventory:IsFull()) then
+						for islot = 1, container.components.inventory:GetNumSlots() do
+							local iitem = container.components.inventory:GetItemInSlot(islot)
+							if iitem == nil and container.components.inventory:CanTakeItemInSlot(targetitem, islot) then
 								find = true
 								filtered_container = container
 								break
@@ -104,40 +104,40 @@ AddComponentPostInit("playercontroller", function(self)
 
 	local PutActiveItemInContainer = function (self, active_item, container, single)
 		local store_success = false
-		if container ~= nil and active_item ~= nil and container.replica.container ~= nil then
-			for islot = 1, container.replica.container:GetNumSlots() do
-				local iitem = container.replica.container:GetItemInSlot(islot)
+		if container ~= nil and active_item ~= nil and container.components.container ~= nil then
+			for islot = 1, container.components.container:GetNumSlots() do
+				local iitem = container.components.container:GetItemInSlot(islot)
 				--Add active item to slot stack
-				if iitem ~= nil and container.replica.container:CanTakeItemInSlot(active_item, islot) and
+				if iitem ~= nil and container.components.container:CanTakeItemInSlot(active_item, islot) and
 					iitem.prefab == active_item.prefab and iitem.AnimState:GetSkinBuild() == active_item.AnimState:GetSkinBuild() and
-					iitem.replica.stackable ~= nil and container.replica.container:AcceptsStacks() then
+					iitem.components.stackable ~= nil and container.components.container:AcceptsStacks() then
 					if single and
-						active_item.replica.stackable ~= nil and
-						active_item.replica.stackable:IsStack() and
-						not iitem.replica.stackable:IsFull() then
+						active_item.components.stackable ~= nil and
+						active_item.components.stackable:IsStack() and
+						not iitem.components.stackable:IsFull() then
 						--Add only one
-						container.replica.container:AddOneOfActiveItemToSlot(islot)
+						container.components.container:AddOneOfActiveItemToSlot(islot)
 					else
 						--Add entire stack
-						container.replica.container:AddAllOfActiveItemToSlot(islot)
+						container.components.container:AddAllOfActiveItemToSlot(islot)
 					end
 					store_success = true
 					break
 				end
 			end
-			if not (store_success or container.replica.container:IsFull()) then
-				for islot = 1, container.replica.container:GetNumSlots() do
-					local iitem = container.replica.container:GetItemInSlot(islot)
+			if not (store_success or container.components.container:IsFull()) then
+				for islot = 1, container.components.container:GetNumSlots() do
+					local iitem = container.components.container:GetItemInSlot(islot)
 					--Put active item into empty slot
-					if iitem == nil and container.replica.container:CanTakeItemInSlot(active_item, islot) then
-						if active_item.replica.stackable ~= nil and
-							active_item.replica.stackable:IsStack() and
-							(single or not container.replica.container:AcceptsStacks()) then
+					if iitem == nil and container.components.container:CanTakeItemInSlot(active_item, islot) then
+						if active_item.components.stackable ~= nil and
+							active_item.components.stackable:IsStack() and
+							(single or not container.components.container:AcceptsStacks()) then
 							--Put one only
-							container.replica.container:PutOneOfActiveItemInSlot(islot)
+							container.components.container:PutOneOfActiveItemInSlot(islot)
 						else
 							--Put entire stack
-							container.replica.container:PutAllOfActiveItemInSlot(islot)
+							container.components.container:PutAllOfActiveItemInSlot(islot)
 						end
 						store_success = true
 						break
@@ -181,46 +181,34 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 	end
 
-	local Double_Click_Gap_Time = GetTime()
-	local Status_Announce_Time = GetTime()
 	-- New Added
 	local ChangePlayerController = function (self, control, inv_item, active_item, slot, container, target, left, right)
 		self:ClearActionHold()
+		local is_equipped = inv_item and inv_item.components.equippable and inv_item.components.equippable:IsEquipped()
 		if control == CONTROL_INVENTORY_DROP then
 			if right and active_item ~= nil and inv_item ~= nil then
-				self:DoControllerDropItemFromInvTile(inv_item, left)
+				self.inst.components.inventory:DropItem(inv_item, not left)
 			else
-				if active_item ~= nil and active_item.replica.inventoryitem then
-					self:DoControllerDropItemFromInvTile(active_item, left)
-				elseif inv_item ~= nil and inv_item.replica.inventoryitem then
-					self:DoControllerDropItemFromInvTile(inv_item, left)
+				if active_item ~= nil and active_item.components.inventoryitem then
+					self.inst.components.inventory:DropItem(active_item, not left)
+				elseif inv_item ~= nil and inv_item.components.inventoryitem then
+					self.inst.components.inventory:DropItem(inv_item, not left)
 				end
 			end
 		elseif control == CONTROL_INVENTORY_EXAMINE then
-			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) and
-				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true, false) and
-				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false, false) then
-				if active_item ~= nil and active_item.replica.inventoryitem then
-					self:DoControllerInspectItemFromInvTile(active_item)
-				elseif inv_item ~= nil and inv_item.replica.inventoryitem then
-					self:DoControllerInspectItemFromInvTile(inv_item)
+			-- if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false) and
+			-- 	not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, true, false) and
+			-- 	not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_UP, CHANGE_MAPPING_RB_UP, CHANGE_MAPPING_LB_RB_UP, false, false) then
+				if active_item ~= nil and active_item.components.inventoryitem then
+					self.inst.components.locomotor:PushAction(BufferedAction(self.inst, active_item, ACTIONS.LOOKAT))
+				elseif inv_item ~= nil and inv_item.components.inventoryitem then
+					self.inst.components.locomotor:PushAction(BufferedAction(self.inst, inv_item, ACTIONS.LOOKAT))
 				end
-				local DeltaTime = GetTime() - Double_Click_Gap_Time
-				local Should_Announce = DeltaTime > 0 and DeltaTime < 0.3 and GetTime() - Status_Announce_Time > 1
-				if Should_Announce and inv_item then
-					local exist, StatusAnnouncerModule = pcall(require, "statusannouncer")
-					if exist then
-						local StatusAnnouncer = StatusAnnouncerModule and StatusAnnouncerModule()
-						StatusAnnouncer:AnnounceItem(self.inst.HUD.controls.inv.active_slot)
-						Status_Announce_Time = GetTime()
-					end
-				end
-				Double_Click_Gap_Time = GetTime()
-			end
+			-- end
 		elseif control == CONTROL_INVENTORY_USEONSELF then
-			if left and active_item ~= nil and inv_item ~= nil and inv_item.replica.container ~= nil and inv_item.replica.container:IsOpenedBy(self.inst) then
-				PutActiveItemInContainer(self, active_item, inv_item, true)
-			elseif right and container ~= nil and slot ~= nil and inv_item ~= nil then
+			-- if left and active_item ~= nil and inv_item ~= nil and inv_item.components.container ~= nil and inv_item.components.container:IsOpenedBy(self.inst) then
+			-- 	PutActiveItemInContainer(self, active_item, inv_item, true)
+			if right and container ~= nil and slot ~= nil and inv_item ~= nil and not is_equipped then
 				local cursor_container_type = QueryContainerType(self, container.inst)
 				local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()
 				local container_list = {}
@@ -263,19 +251,35 @@ AddComponentPostInit("playercontroller", function(self)
 					if filtered_container then container:MoveItemFromAllOfSlot(slot, filtered_container) end
 				end
 			else
-				if inv_item ~= nil and active_item ~= nil and active_item.replica.inventoryitem and self:GetItemUseAction(active_item, inv_item) ~= nil then
-					self.inst.replica.inventory:ControllerUseItemOnItemFromInvTile(inv_item, active_item)
+				if inv_item ~= nil and active_item ~= nil and active_item.components.inventoryitem and self:GetItemUseAction(active_item, inv_item) ~= nil then
+					self:DoAction(self:GetItemUseAction(active_item, inv_item))
 				else
-					if active_item ~= nil and active_item.replica.inventoryitem then
-						self:DoControllerUseItemOnSelfFromInvTile(active_item)
-					elseif inv_item ~= nil and inv_item.replica.inventoryitem then
-						self:DoControllerUseItemOnSelfFromInvTile(inv_item)
+					if active_item ~= nil and active_item.components.inventoryitem then
+						if active_item.components.deployable and not self.deploy_mode and inv_item.components.inventoryitem:GetGrandOwner() == self.inst then
+							self.deploy_mode = true
+						else
+							if not self.inst.sg:HasStateTag("busy") then
+								self.inst.components.locomotor:PushAction(self:GetItemSelfAction(active_item), true)
+							end
+						end
+					elseif inv_item ~= nil and inv_item.components.inventoryitem then
+						if is_equipped then
+							self.inst.components.locomotor:PushAction(BufferedAction(self.inst, nil, ACTIONS.UNEQUIP, inv_item))
+						else
+							if inv_item.components.deployable and not self.deploy_mode and inv_item.components.inventoryitem:GetGrandOwner() == self.inst then
+								self.deploy_mode = true
+							else
+								if not self.inst.sg:HasStateTag("busy") then
+									self.inst.components.locomotor:PushAction(self:GetItemSelfAction(inv_item), true)
+								end
+							end
+						end
 					end
 				end
 			end
 
 		elseif control == CONTROL_INVENTORY_USEONSCENE then
-			if right and container ~= nil and slot ~= nil and inv_item ~= nil then
+			if right and container ~= nil and slot ~= nil and inv_item ~= nil and not is_equipped then
 				local cursor_container_type = QueryContainerType(self, container.inst)
 				local iv,hc,pc,bc,lc,rc = self:GetAllTypeContainers()
 				local container_list = {}
@@ -318,22 +322,33 @@ AddComponentPostInit("playercontroller", function(self)
 					if filtered_container then container:MoveItemFromAllOfSlot(slot, filtered_container) end
 				end
 			else
-				if active_item ~= nil and active_item.replica.inventoryitem then
-					self:DoControllerUseItemOnSceneFromInvTile(active_item)
-				elseif inv_item ~= nil and inv_item.replica.inventoryitem then
-					self:DoControllerUseItemOnSceneFromInvTile(inv_item)
+				if active_item ~= nil and active_item.components.inventoryitem then
+					self.inst.components.locomotor:PushAction(self:GetItemSelfAction(active_item))
+				elseif inv_item ~= nil and inv_item.components.inventoryitem then
+					if is_equipped then
+						local action = self:GetItemSelfAction(inv_item)
+						if action.action ~= ACTIONS.UNEQUIP then
+							self.inst.components.locomotor:PushAction(action)
+						end
+					else
+						if inv_item.components.inventoryitem:GetGrandOwner() ~= self.inst then
+							self.inst.components.inventory:GiveItem(inv_item)
+						else
+							self:DoAction(self:GetItemUseAction(inv_item))
+						end
+					end
 				end
 			end
 		elseif control == CONTROL_OPEN_INVENTORY then
-			if not TryTriggerMappingKey(self.inst, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) and
-				not TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true, false) and
-				not TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false, false) then
+			-- if not TryTriggerMappingKey(self.inst, false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false) and
+			-- 	not TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, true, false) and
+			-- 	not TryTriggerKeyboardMappingKey(false, CHANGE_MAPPING_RB_RT, CHANGE_MAPPING_LB_RB_RT, false, false) then
 				if inv_item ~= nil or active_item ~= nil then
 					if self.inst.HUD.controls.inv.active_slot ~= nil then
 						self.inst.HUD.controls.inv.active_slot:Click(left)
 					end
 				end
-			end
+			-- end
 		end
 	end
 
@@ -368,7 +383,13 @@ AddComponentPostInit("playercontroller", function(self)
 		return false
 	end
 
-	local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
+	self.GetCursorInventorySlotAndContainer = function (self, ...)
+		if self.inst.HUD ~= nil and TheInput:ControllerAttached() then
+			return self.inst.HUD.controls.inv:GetCursorSlot()
+		end
+	end
+
+	-- local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
 	local right_bumper_double_click_gap_time = GetTime()
 	local right_bumper_click_count = 1
 
@@ -379,268 +400,305 @@ AddComponentPostInit("playercontroller", function(self)
 	self.Click_Left_Bumper_While_Holding_Right_Bumper = false
 
 	local OnControl_Old = self.OnControl
-	local OnControl_New = function (self, control, down, ...)
+	self.OnControl = function (self, control, down, ...)
+		if not self:IsEnabled() then return end
+		if not IsPaused() then
 
-		if IsPaused() then
-			return
-		end
+			if control == CONTROL_PRIMARY then
+				self:OnLeftClick(down)
+				return
+			elseif control == CONTROL_SECONDARY then
+				self:OnRightClick(down)
+				return
+			end
 
-		local isenabled, ishudblocking = self:IsEnabled()
-		if not isenabled and not ishudblocking then
-			return
-		end
-
-		if down and self._hack_ignore_held_controls then
-			self._hack_ignore_ups_for[control] = true
-			return true
-		end
-		if not down and self._hack_ignore_ups_for and self._hack_ignore_ups_for[control] then
-			self._hack_ignore_ups_for[control] = nil
-			return true
-		end
-
-		-- Use Double/Triple/Quadruple/... Click Right Bumper to slow down reticule move speed
-		if control == CHANGE_CONTROL_RIGHT then
-			if down then
-				local DeltaTime = GetTime() - right_bumper_double_click_gap_time
-				if DeltaTime > 0 and DeltaTime < 0.3 then
-					right_bumper_click_count = right_bumper_click_count + 1
-					TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED / right_bumper_click_count
-					if right_bumper_click_count == 2 then
-						self.Double_Click_Right_Bumper_And_Holding = true
+			-- Use Double/Triple/Quadruple/... Click Right Bumper to slow down reticule move speed
+			if control == CHANGE_CONTROL_RIGHT then
+				if down then
+					local DeltaTime = GetTime() - right_bumper_double_click_gap_time
+					if DeltaTime > 0 and DeltaTime < 0.3 then
+						right_bumper_click_count = right_bumper_click_count + 1
+						-- TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED / right_bumper_click_count
+						if right_bumper_click_count == 2 then
+							self.Double_Click_Right_Bumper_And_Holding = true
+						end
 					end
-				end
-				right_bumper_double_click_gap_time = GetTime()
-			else
-				local DeltaTime = GetTime() - right_bumper_double_click_gap_time
-				if DeltaTime > 0.3 then
-					right_bumper_click_count = 1
-					TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED
-					self.Double_Click_Right_Bumper_And_Holding = false
-				end
-			end
-		end
-
-		if control == CHANGE_CONTROL_LEFT then
-			if down then
-				local DeltaTime = GetTime() - left_bumper_double_click_gap_time
-				if DeltaTime > 0 and DeltaTime < 0.3 then
-					left_bumper_click_count = left_bumper_click_count + 1
-					if left_bumper_click_count == 2 then
-						self.Double_Click_Left_Bumper_And_Holding = true
-					end
-				end
-				left_bumper_double_click_gap_time = GetTime()
-			else
-				local DeltaTime = GetTime() - left_bumper_double_click_gap_time
-				if DeltaTime > 0.3 then
-					left_bumper_click_count = 1
-					self.Double_Click_Left_Bumper_And_Holding = false
-				end
-			end
-		end
-
-		-- Indicate Left Bumper State and Right Bumper State
-		if control == CHANGE_CONTROL_RIGHT then
-			if down then
-				if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
-					self.Click_Right_Bumper_While_Holding_Left_Bumper = true
-				end
-			else
-				self.Click_Right_Bumper_While_Holding_Left_Bumper = false
-			end
-		end
-
-		if control == CHANGE_CONTROL_LEFT then
-			if down then
-				if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-					self.Click_Left_Bumper_While_Holding_Right_Bumper = true
-				end
-			else
-				self.Click_Left_Bumper_While_Holding_Right_Bumper = false
-			end
-		end
-
-		if control == CONTROL_MENU_MISC_3 then
-			if down then
-				if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-					self.Click_Left_Stick_While_Holding_Left_Right_Bumper = true
+					right_bumper_double_click_gap_time = GetTime()
 				else
+					local DeltaTime = GetTime() - right_bumper_double_click_gap_time
+					if DeltaTime > 0.3 then
+						right_bumper_click_count = 1
+						-- TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED
+						self.Double_Click_Right_Bumper_And_Holding = false
+					end
+				end
+			end
+
+			if control == CHANGE_CONTROL_LEFT then
+				if down then
+					local DeltaTime = GetTime() - left_bumper_double_click_gap_time
+					if DeltaTime > 0 and DeltaTime < 0.3 then
+						left_bumper_click_count = left_bumper_click_count + 1
+						if left_bumper_click_count == 2 then
+							self.Double_Click_Left_Bumper_And_Holding = true
+						end
+					end
+					left_bumper_double_click_gap_time = GetTime()
+				else
+					local DeltaTime = GetTime() - left_bumper_double_click_gap_time
+					if DeltaTime > 0.3 then
+						left_bumper_click_count = 1
+						self.Double_Click_Left_Bumper_And_Holding = false
+					end
+				end
+			end
+
+			-- Indicate Left Bumper State and Right Bumper State
+			if control == CHANGE_CONTROL_RIGHT then
+				if down then
 					if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
-						self.Click_Left_Stick_While_Holding_Left_Bumper = true
+						self.Click_Right_Bumper_While_Holding_Left_Bumper = true
 					end
-					if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-						self.Click_Left_Stick_While_Holding_Right_Bumper = true
-					end
-				end
-			else
-				self.Click_Left_Stick_While_Holding_Left_Right_Bumper = false
-				self.Click_Left_Stick_While_Holding_Left_Bumper = false
-				self.Click_Left_Stick_While_Holding_Right_Bumper = false
-			end
-		end
-
-		if control == CONTROL_MENU_MISC_4 then
-			if down then
-				if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-					self.Click_Right_Stick_While_Holding_Left_Right_Bumper = true
 				else
-					if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
-						self.Click_Right_Stick_While_Holding_Left_Bumper = true
-					end
+					self.Click_Right_Bumper_While_Holding_Left_Bumper = false
+				end
+			end
+
+			if control == CHANGE_CONTROL_LEFT then
+				if down then
 					if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
-						self.Click_Right_Stick_While_Holding_Right_Bumper = true
+						self.Click_Left_Bumper_While_Holding_Right_Bumper = true
 					end
-				end
-			else
-				self.Click_Right_Stick_While_Holding_Left_Right_Bumper = false
-				self.Click_Right_Stick_While_Holding_Left_Bumper = false
-				self.Click_Right_Stick_While_Holding_Right_Bumper = false
-			end
-		end
-
-		--V2C: control up happens here now
-		if not down and control ~= CONTROL_PRIMARY and control ~= CONTROL_SECONDARY then
-			if not self.ismastersim then
-				self:RemoteStopControl(control)
-			end
-			return
-		end
-
-		-- actions that can be done while the crafting menu is open go in here
-		if isenabled or ishudblocking then
-			if control == CONTROL_ACTION then
-				self:DoActionButton()
-				return
-			elseif control == CONTROL_ATTACK then
-				if self.ismastersim then
-					self.attack_buffer = CONTROL_ATTACK
 				else
-					self:DoAttackButton()
+					self.Click_Left_Bumper_While_Holding_Right_Bumper = false
 				end
-				return
-			elseif control == CONTROL_MENU_MISC_4 then
-				if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
-					self:DoCharacterCommandWheelButton()
-				end
-				return
-			elseif down and control == CONTROL_TARGET_LOCK then
-				if self:IsControllerTargetLockEnabled() then
-					if self:IsTargetCanBeLock(self.controller_target) and self.controller_target ~= self.controller_attack_target then
-						self.controller_attack_target = self.controller_target
-					elseif self:IsTargetCanBeLock(self.controller_alt_target) and self.controller_target ~= self.controller_attack_target then
-						self.controller_attack_target = self.controller_alt_target
+			end
+
+			if control == CONTROL_MENU_MISC_3 then
+				if down then
+					if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+						self.Click_Left_Stick_While_Holding_Left_Right_Bumper = true
 					else
-						self:ControllerTargetLock(false)
+						if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+							self.Click_Left_Stick_While_Holding_Left_Bumper = true
+						end
+						if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+							self.Click_Left_Stick_While_Holding_Right_Bumper = true
+						end
 					end
 				else
-					self:ControllerTargetLock(true)
+					self.Click_Left_Stick_While_Holding_Left_Right_Bumper = false
+					self.Click_Left_Stick_While_Holding_Left_Bumper = false
+					self.Click_Left_Stick_While_Holding_Right_Bumper = false
 				end
-				return
 			end
-		end
 
-		if not isenabled then
-			return
-		end
-
-		if control == CONTROL_PRIMARY then
-			self:OnLeftClick(down)
-		elseif control == CONTROL_SECONDARY then
-			self:OnRightClick(down)
-			--V2C: see above for control up handling
-			--elseif not down then
-			--    if not self.ismastersim then
-			--        self:RemoteStopControl(control)
-			--    end
-		elseif control == CONTROL_CANCEL then
-			self:CancelPlacement()
-		elseif control == CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID and self:IsAxisAlignedPlacement() then
-			CycleAxisAlignmentValues()
-		elseif control == CONTROL_INSPECT then
-			if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false) and
-				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, true, false) and
-				not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false, false) then
-				self:DoInspectButton()
-			end
-		elseif control == CONTROL_CONTROLLER_ALTACTION then
-			self:DoControllerAltActionButton()
-		elseif control == CONTROL_CONTROLLER_ACTION then
-			self:DoControllerActionButton()
-		elseif control == CONTROL_CONTROLLER_ATTACK then
-			local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-			local attack_target = self:GetControllerAttackTarget()
-			local _, attack_target_alt_action = self:GetSceneItemControllerAction(attack_target)
-			if equiped_item and equiped_item.controller_should_use_attack_target and attack_target and attack_target_alt_action
-				and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) and not IsOtherModEnabled("Snapping tills") then
-				self:DoControllerAltActionButton(attack_target)
-			else
-				if self.ismastersim then
-					self.attack_buffer = CONTROL_CONTROLLER_ATTACK
+			if control == CONTROL_MENU_MISC_4 then
+				if down then
+					if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) and TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+						self.Click_Right_Stick_While_Holding_Left_Right_Bumper = true
+					else
+						if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+							self.Click_Right_Stick_While_Holding_Left_Bumper = true
+						end
+						if TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT) then
+							self.Click_Right_Stick_While_Holding_Right_Bumper = true
+						end
+					end
 				else
-					self:DoControllerAttackButton()
+					self.Click_Right_Stick_While_Holding_Left_Right_Bumper = false
+					self.Click_Right_Stick_While_Holding_Left_Bumper = false
+					self.Click_Right_Stick_While_Holding_Right_Bumper = false
 				end
 			end
-		elseif self.inst.replica.inventory:IsVisible() then
-			local inv_obj = self:GetCursorInventoryObject()
-			local active_obj = self.inst.replica.inventory:GetActiveItem()
-			local slot, container = self:GetCursorInventorySlotAndContainer() ---------------------------------------
-			local target = self:GetControllerTarget()
-			ChangePlayerController(self, control, inv_obj, active_obj, slot, container, target, TheInput:IsControlPressed(CHANGE_CONTROL_LEFT), TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT))
+
+
+			if down then
+				if self.placer_recipe and control == CONTROL_CANCEL then
+					self:CancelPlacement()
+				else
+					if control == CONTROL_INSPECT then
+						self:DoInspectButton()
+					elseif control == CONTROL_ACTION then
+						self:DoActionButton()
+					elseif control == CONTROL_ATTACK then
+						self:DoAttackButton()
+					elseif control == CONTROL_CONTROLLER_ALTACTION then
+						self:DoControllerAltAction()
+					elseif control == CONTROL_CONTROLLER_ACTION then
+						self:DoControllerAction()
+					elseif control == CONTROL_CONTROLLER_ATTACK then
+						self:DoControllerAttack()
+					end
+
+					local inv_obj = self:GetCursorInventoryObject()
+					local active_obj = self.inst.components.inventory:GetActiveItem()
+					local slot, container = self:GetCursorInventorySlotAndContainer()
+					local target = nil
+					ChangePlayerController(self, control, inv_obj, active_obj, slot, container, target,
+										    TheInput:IsControlPressed(CHANGE_CONTROL_LEFT), TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT))
+
+					-- if inv_obj then
+
+					-- 	if control == CONTROL_INVENTORY_DROP then
+					-- 		self.inst.components.inventory:DropItem(inv_obj, true)
+					-- 	elseif control == CONTROL_INVENTORY_EXAMINE then
+					-- 		self.inst.components.locomotor:PushAction( BufferedAction(self.inst, inv_obj, ACTIONS.LOOKAT))
+					-- 	elseif control == CONTROL_INVENTORY_USEONSELF and is_equipped then
+					-- 		self.inst.components.locomotor:PushAction( BufferedAction(self.inst, nil, ACTIONS.UNEQUIP, inv_obj))
+					-- 	elseif control == CONTROL_INVENTORY_USEONSELF and not is_equipped then
+					-- 		if inv_obj.components.deployable and not self.deploy_mode and inv_obj.components.inventoryitem:GetGrandOwner() == self.inst then
+					-- 			self.deploy_mode = true
+					-- 		else
+					-- 			if not self.inst.sg:HasStateTag("busy") then
+					-- 				self.inst.components.locomotor:PushAction(self:GetItemSelfAction(inv_obj), true)
+					-- 			end
+					-- 		end
+					-- 	elseif control == CONTROL_INVENTORY_USEONSCENE and not is_equipped then
+					-- 		if inv_obj.components.inventoryitem:GetGrandOwner() ~= self.inst then
+					-- 			self.inst.components.inventory:GiveItem(inv_obj)
+					-- 		else
+					-- 			self:DoAction(self:GetItemUseAction(inv_obj))
+					-- 		end
+					-- 	elseif control == CONTROL_INVENTORY_USEONSCENE and is_equipped then
+					-- 		local action = self:GetItemSelfAction(inv_obj)
+					-- 		if action.action ~= ACTIONS.UNEQUIP then
+					-- 			self.inst.components.locomotor:PushAction(action)
+					-- 		end
+					-- 	end
+					-- end
+				end
+			end
 		end
 	end
+	-- local OnControl_New = function (self, control, down, ...)
 
-	self.OnControl = function(self, control, down, ...)
-		if TheInput:ControllerAttached() then
-			return OnControl_New(self, control, down, ...)
-		else
-			return OnControl_Old(self, control, down, ...)
-		end
-	end
+	-- 	if IsPaused() then
+	-- 		return
+	-- 	end
 
-	-- Used for change the way your camera control ----------------------------------------------------------------------
+	-- 	local isenabled, ishudblocking = self:IsEnabled()
+	-- 	if not isenabled and not ishudblocking then
+	-- 		return
+	-- 	end
+
+	-- 	if down and self._hack_ignore_held_controls then
+	-- 		self._hack_ignore_ups_for[control] = true
+	-- 		return true
+	-- 	end
+	-- 	if not down and self._hack_ignore_ups_for and self._hack_ignore_ups_for[control] then
+	-- 		self._hack_ignore_ups_for[control] = nil
+	-- 		return true
+	-- 	end
+
+	-- 	--V2C: control up happens here now
+	-- 	if not down and control ~= CONTROL_PRIMARY and control ~= CONTROL_SECONDARY then
+	-- 		if not self.ismastersim then
+	-- 			self:RemoteStopControl(control)
+	-- 		end
+	-- 		return
+	-- 	end
+
+	-- 	-- actions that can be done while the crafting menu is open go in here
+	-- 	if isenabled or ishudblocking then
+	-- 		if control == CONTROL_ACTION then
+	-- 			self:DoActionButton()
+	-- 			return
+	-- 		elseif control == CONTROL_ATTACK then
+	-- 			if self.ismastersim then
+	-- 				self.attack_buffer = CONTROL_ATTACK
+	-- 			else
+	-- 				self:DoAttackButton()
+	-- 			end
+	-- 			return
+	-- 		elseif control == CONTROL_MENU_MISC_4 then
+	-- 			if TheInput:IsControlPressed(CHANGE_CONTROL_LEFT) then
+	-- 				self:DoCharacterCommandWheelButton()
+	-- 			end
+	-- 			return
+	-- 		elseif down and control == CONTROL_TARGET_LOCK then
+	-- 			if self:IsControllerTargetLockEnabled() then
+	-- 				if self:IsTargetCanBeLock(self.controller_target) and self.controller_target ~= self.controller_attack_target then
+	-- 					self.controller_attack_target = self.controller_target
+	-- 				elseif self:IsTargetCanBeLock(self.controller_alt_target) and self.controller_target ~= self.controller_attack_target then
+	-- 					self.controller_attack_target = self.controller_alt_target
+	-- 				else
+	-- 					self:ControllerTargetLock(false)
+	-- 				end
+	-- 			else
+	-- 				self:ControllerTargetLock(true)
+	-- 			end
+	-- 			return
+	-- 		end
+	-- 	end
+
+	-- 	if not isenabled then
+	-- 		return
+	-- 	end
+
+	-- 	if control == CONTROL_PRIMARY then
+	-- 		self:OnLeftClick(down)
+	-- 	elseif control == CONTROL_SECONDARY then
+	-- 		self:OnRightClick(down)
+	-- 		--V2C: see above for control up handling
+	-- 		--elseif not down then
+	-- 		--    if not self.ismastersim then
+	-- 		--        self:RemoteStopControl(control)
+	-- 		--    end
+	-- 	elseif control == CONTROL_CANCEL then
+	-- 		self:CancelPlacement()
+	-- 	elseif control == CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID and self:IsAxisAlignedPlacement() then
+	-- 		CycleAxisAlignmentValues()
+	-- 	elseif control == CONTROL_INSPECT then
+	-- 		if not TryTriggerMappingKey(self.inst, CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false) and
+	-- 			not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, true, false) and
+	-- 			not TryTriggerKeyboardMappingKey(CHANGE_MAPPING_LB_Y, CHANGE_MAPPING_RB_Y, CHANGE_MAPPING_LB_RB_Y, false, false) then
+	-- 			self:DoInspectButton()
+	-- 		end
+	-- 	elseif control == CONTROL_CONTROLLER_ALTACTION then
+	-- 		self:DoControllerAltActionButton()
+	-- 	elseif control == CONTROL_CONTROLLER_ACTION then
+	-- 		self:DoControllerActionButton()
+	-- 	elseif control == CONTROL_CONTROLLER_ATTACK then
+	-- 		local equiped_item = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+	-- 		local attack_target = self:GetControllerAttackTarget()
+	-- 		local _, attack_target_alt_action = self:GetSceneItemControllerAction(attack_target)
+	-- 		if equiped_item and equiped_item.controller_should_use_attack_target and attack_target and attack_target_alt_action
+	-- 			and TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) and not IsOtherModEnabled("Snapping tills") then
+	-- 			self:DoControllerAltActionButton(attack_target)
+	-- 		else
+	-- 			if self.ismastersim then
+	-- 				self.attack_buffer = CONTROL_CONTROLLER_ATTACK
+	-- 			else
+	-- 				self:DoControllerAttackButton()
+	-- 			end
+	-- 		end
+	-- 	elseif self.inst.components.inventory:IsVisible() then
+	-- 		local inv_obj = self:GetCursorInventoryObject()
+	-- 		local active_obj = self.inst.components.inventory:GetActiveItem()
+	-- 		local slot, container = self:GetCursorInventorySlotAndContainer() ---------------------------------------
+	-- 		local target = self:GetControllerTarget()
+	-- 		ChangePlayerController(self, control, inv_obj, active_obj, slot, container, target, TheInput:IsControlPressed(CHANGE_CONTROL_LEFT), TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT))
+	-- 	end
+	-- end
+
+	-- self.OnControl = function(self, control, down, ...)
+	-- 	if TheInput:ControllerAttached() then
+	-- 		return OnControl_New(self, control, down, ...)
+	-- 	else
+	-- 		return OnControl_Old(self, control, down, ...)
+	-- 	end
+	-- end
+
 	local DoCameraControl_Old = self.DoCameraControl
-	local CHANGE_ROT_REPEAT = .25
-	local CHANGE_ZOOM_REPEAT = .1
-	local DoCameraControl_New = function(self, ...)
-		if not TheCamera:CanControl() then
-			return
-		end
+	local DoCameraControl_New = function (self, ...)
+		--camera controls
+		local time = GetTime()
 
-		local isenabled, ishudblocking = self:IsEnabled()
-		if not isenabled and not ishudblocking then
-			return
-		end
+		local ROT_REPEAT = .25
+		local ZOOM_REPEAT = .1
 
-		local time = GetStaticTime()
-
-		if TheInput:SupportsControllerFreeCamera() then
-			local xdir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ROTATE_RIGHT) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ROTATE_LEFT)
-			local ydir = TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ZOOM_IN) - TheInput:GetAnalogControlValue(VIRTUAL_CONTROL_CAMERA_ZOOM_OUT)
-			local absxdir = math.abs(xdir)
-			local absydir = math.abs(ydir)
-			local deadzone = TUNING.CONTROLLER_DEADZONE_RADIUS
-			if absxdir >= deadzone and absxdir > absydir * 1.3 then --favour zoom a bit more at diagonals
-				local right = xdir > 0
-				if not CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD then
-					right = not right
-				end
-				local speed = Remap(math.min(1, absxdir), deadzone, 1, 2, 3)
-				if right then
-					self:RotRight(speed)
-				else
-					self:RotLeft(speed)
-				end
-				self.lastrottime = time
-			elseif absydir > deadzone then
-				local delta = Remap(math.min(1, absydir), deadzone, 1, 0, 0.65)
-				TheCamera:ContinuousZoomDelta(ydir > 0 and -delta or delta)
-				self.lastzoomtime = time
-			end
-			return
-		end
-
-		if self.lastrottime == nil or time - self.lastrottime > CHANGE_ROT_REPEAT then
+		if not self.lastrottime or time - self.lastrottime > ROT_REPEAT then
 			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (self.reticule == nil or not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
 				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ROTATION_HUD and CONTROL_INVENTORY_LEFT or CONTROL_INVENTORY_RIGHT) then
 					self:RotLeft()
@@ -652,7 +710,15 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 
-		if self.lastzoomtime == nil or time - self.lastzoomtime > CHANGE_ZOOM_REPEAT then
+		if not TheCamera:CanControl()
+			or (self.inst.HUD ~= nil and
+				self.inst.HUD:IsCraftingOpen()) then
+			--Check crafting again because this time
+			--we block even with mouse crafting open
+			return
+		end
+
+		if not self.lastzoomtime or time - self.lastzoomtime > ZOOM_REPEAT then
 			if TheInput:IsControlPressed(CHANGE_CONTROL_CAMERA) and (self.reticule == nil or not TheInput:IsControlPressed(CHANGE_CONTROL_RIGHT)) then
 				if TheInput:IsControlPressed(CHANGE_IS_REVERSE_CAMERA_ZOOM and CONTROL_INVENTORY_DOWN or CONTROL_INVENTORY_UP) then
 					TheCamera:ZoomIn()
@@ -664,6 +730,7 @@ AddComponentPostInit("playercontroller", function(self)
 			end
 		end
 	end
+
 	self.DoCameraControl = function(self, ...)
 		if TheInput:ControllerAttached() then
 			return DoCameraControl_New(self, ...)
@@ -672,32 +739,32 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 	end
 
-	local IsEnabled_Old = self.IsEnabled
-	self.IsEnabled = function (self, ...)
-		local isenabled, ishudblocking = IsEnabled_Old(self, ...)
-		if not isenabled and ishudblocking ~= nil then
-			local active_screen = TheFrontEnd:GetActiveScreen()
-			if active_screen ~= nil and active_screen ~= self.inst.HUD then
-				return false
-			end
-			if TheFrontEnd.textProcessorWidget ~= nil then
-				return false
-			end
-			if not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU and self.inst.HUD:IsCraftingOpen() then
-				return isenabled, ishudblocking
-			end
-			return true
-		end
-		return isenabled, ishudblocking
-	end
+	-- local IsEnabled_Old = self.IsEnabled
+	-- self.IsEnabled = function (self, ...)
+	-- 	local isenabled, ishudblocking = IsEnabled_Old(self, ...)
+	-- 	if not isenabled and ishudblocking ~= nil then
+	-- 		local active_screen = TheFrontEnd:GetActiveScreen()
+	-- 		if active_screen ~= nil and active_screen ~= self.inst.HUD then
+	-- 			return false
+	-- 		end
+	-- 		if TheFrontEnd.textProcessorWidget ~= nil then
+	-- 			return false
+	-- 		end
+	-- 		if not CHANGE_IS_USE_DPAD_SELECT_CRAFTING_MENU and self.inst.HUD:IsCraftingOpen() then
+	-- 			return isenabled, ishudblocking
+	-- 		end
+	-- 		return true
+	-- 	end
+	-- 	return isenabled, ishudblocking
+	-- end
 
 	self.controller_alt_target = nil
     self.controller_alt_target_age = math.huge
 
-	local TARGET_EXCLUDE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "stealth"}
-	local REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS = TheSim:RegisterFindTags({ "_combat" }, TARGET_EXCLUDE_TAGS)
+	-- local TARGET_EXCLUDE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "stealth"}
+	-- local REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS = TheSim:RegisterFindTags({ "_combat" }, TARGET_EXCLUDE_TAGS)
 
-	local function UpdateControllerInteractionTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
+	local function UpdateControllerInteractionTarget1(self, dt, x, y, z, dirx, dirz, heading_angle)
 		if self.placer ~= nil or (self.deployplacer ~= nil and self.deploy_mode) or self.inst:HasTag("usingmagiciantool") then
 			self.controller_target = nil
 			self.controller_target_action = nil
@@ -721,13 +788,13 @@ AddComponentPostInit("playercontroller", function(self)
 			return
 		end
 
-		local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		local equiped_item = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
 		--Fishing targets may have large radius, making it hard to target with normal priority
 		local fishing = equiped_item ~= nil and equiped_item:HasTag("fishingrod")
 
 		-- we want to never target our fishing hook, but others can
-		local ocean_fishing_target = (equiped_item ~= nil and equiped_item.replica.oceanfishingrod ~= nil) and equiped_item.replica.oceanfishingrod:GetTarget() or nil
+		local ocean_fishing_target = (equiped_item ~= nil and equiped_item.components.oceanfishingrod ~= nil) and equiped_item.components.oceanfishingrod:GetTarget() or nil
 
 		local min_rad = 1.5
 		local max_rad = CHANGE_INTERACTION_TARGET_DETECT_RADIUS  -- default: 6
@@ -802,7 +869,7 @@ AddComponentPostInit("playercontroller", function(self)
 							-- Get Action Status
 							local lmb, _ = self:GetSceneItemControllerAction(v)
 							local inv_obj = self:GetCursorInventoryObject()
-							local inv_act = inv_obj ~= nil and inv_obj.replica.inventoryitem and self:GetItemUseAction(inv_obj, v) or nil
+							local inv_act = inv_obj ~= nil and inv_obj.components.inventoryitem and self:GetItemUseAction(inv_obj, v) or nil
 
 							-- Incorporate the y component after we've performed the inclusion radius test.
 							-- We wait until now because we might disqualify our controller_target if its transform has a y component,
@@ -827,7 +894,7 @@ AddComponentPostInit("playercontroller", function(self)
 								not v:HasTag("wall") and 1.5 or 1
 
 							--select the item that can do action on it.
-							if (lmb ~= nil or (inv_obj and inv_obj.replica.inventoryitem and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil) or self:IsTargetCanBeLock(v)) and
+							if (lmb ~= nil or (inv_obj and inv_obj.components.inventoryitem and inv_obj.components.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil) or self:IsTargetCanBeLock(v)) and
 								not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 								mult = mult * 10
 							end
@@ -852,32 +919,32 @@ AddComponentPostInit("playercontroller", function(self)
 
 							if not skip_target and (v:HasTag("walkingplank") or v:HasTag("boatbumper") or v:HasTag("boat")) then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
-								if inv_obj ~= nil and inv_obj.replica.inventoryitem and inv_obj.replica.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil and
-									self.inst.replica.inventory:GetActiveItem() == nil then
+								if inv_obj ~= nil and inv_obj.components.inventoryitem and inv_obj.components.inventoryitem:IsGrandOwner(self.inst) and inv_act ~= nil and
+									self.inst.components.inventory:GetActiveItem() == nil then
 									skip_target = false
 								end
 								if lmb ~= nil and lmb.action == ACTIONS.DROP and
-									self.inst.replica.inventory:GetActiveItem() ~= nil then
+									self.inst.components.inventory:GetActiveItem() ~= nil then
 									skip_target = true
 								end
 							end
 
 							if not skip_target and CHANGE_WOBY_ACTION_MUST_PRESS_RB and
 								(v.prefab == "wobysmall" or v.prefab =="wobybig") and
-								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
+								v.components.follower and v.components.follower:GetLeader() == self.inst then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
-								if lmb ~= nil and self.inst.replica.inventory:GetActiveItem() ~= nil then
+								if lmb ~= nil and self.inst.components.inventory:GetActiveItem() ~= nil then
 									skip_target = false
 								end
-								if self.inst.HUD:IsSpellWheelOpen() or v.replica.container:IsOpenedBy(self.inst) then
+								if self.inst.HUD:IsSpellWheelOpen() or v.components.container:IsOpenedBy(self.inst) then
 									skip_target = false
 								end
 							end
 
 							if not skip_target and ((v:HasTag("critter") and v.prefab ~= "wobysmall") or v:HasTag("kitcoon") or v:HasTag("ticoon")) and
-								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
+								v.components.follower and v.components.follower:GetLeader() == self.inst then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
-								if lmb ~= nil and self.inst.replica.inventory:GetActiveItem() ~= nil then
+								if lmb ~= nil and self.inst.components.inventory:GetActiveItem() ~= nil then
 									skip_target = false
 								end
 							end
@@ -925,7 +992,7 @@ AddComponentPostInit("playercontroller", function(self)
 		end
 	end
 
-	local function UpdateControllerInteractionAltTarget(self, dt, x, y, z, dirx, dirz, heading_angle)
+	local function UpdateControllerInteractionAltTarget1(self, dt, x, y, z, dirx, dirz, heading_angle)
 		if self.placer ~= nil or (self.deployplacer ~= nil and self.deploy_mode) or self.inst:HasTag("usingmagiciantool") then
 			self.controller_alt_target = nil
 			self.controller_alt_target_age = 0
@@ -948,13 +1015,13 @@ AddComponentPostInit("playercontroller", function(self)
 			return
 		end
 
-		local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		local equiped_item = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
 		--Fishing targets may have large radius, making it hard to target with normal priority
 		local fishing = equiped_item ~= nil and equiped_item:HasTag("fishingrod")
 
 		-- we want to never target our fishing hook, but others can
-		local ocean_fishing_target = (equiped_item ~= nil and equiped_item.replica.oceanfishingrod ~= nil) and equiped_item.replica.oceanfishingrod:GetTarget() or nil
+		local ocean_fishing_target = (equiped_item ~= nil and equiped_item.components.oceanfishingrod ~= nil) and equiped_item.components.oceanfishingrod:GetTarget() or nil
 
 		local min_rad = 1.5
 		local max_rad = CHANGE_INTERACTION_TARGET_DETECT_RADIUS  -- default: 6
@@ -1072,17 +1139,17 @@ AddComponentPostInit("playercontroller", function(self)
 
 							if not skip_target and CHANGE_WOBY_ACTION_MUST_PRESS_RB and
 								(v.prefab == "wobysmall" or v.prefab =="wobybig") and
-								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
+								v.components.follower and v.components.follower:GetLeader() == self.inst then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
-								if self.inst.HUD:IsSpellWheelOpen() or v.replica.container:IsOpenedBy(self.inst) then
+								if self.inst.HUD:IsSpellWheelOpen() or v.components.container:IsOpenedBy(self.inst) then
 									skip_target = false
 								end
 							end
 
 							if not skip_target and ((v:HasTag("critter") and v.prefab ~= "wobysmall") or v:HasTag("kitcoon") or v:HasTag("ticoon")) and
-								v.replica.follower and v.replica.follower:GetLeader() == self.inst then
+								v.components.follower and v.components.follower:GetLeader() == self.inst then
 								skip_target = not TheInput:IsControlPressed(CHANGE_CONTROL_OPTION)
-								if rmb ~= nil and self.inst.replica.inventory:GetActiveItem() ~= nil then
+								if rmb ~= nil and self.inst.components.inventory:GetActiveItem() ~= nil then
 									skip_target = false
 								end
 							end
@@ -1142,12 +1209,12 @@ AddComponentPostInit("playercontroller", function(self)
 	-- New Added
 	self.IsNeedForceAttack = function (self, target)
 		return not TargetIsHostile(self.inst, target) and
-			target ~= self.inst.replica.combat:GetTarget() and
-			self.inst ~= target.replica.combat:GetTarget()
+			target ~= self.inst.components.combat:GetTarget() and
+			self.inst ~= target.components.combat:GetTarget()
 	end
 	-- changed a little
-	local function UpdateControllerAttackTarget(self, dt, x, y, z, dirx, dirz)
-		if self.inst:HasTag("playerghost") or self.inst.replica.inventory:IsHeavyLifting() then
+	local function UpdateControllerAttackTarget1(self, dt, x, y, z, dirx, dirz)
+		if self.inst:HasTag("playerghost") or self.inst.components.inventory:IsHeavyLifting() then
 			self.controller_attack_target = nil
 
 			-- we can't target right now; disable target locking
@@ -1155,7 +1222,7 @@ AddComponentPostInit("playercontroller", function(self)
 			return
 		end
 
-		local combat = self.inst.replica.combat
+		local combat = self.inst.components.combat
 
 
 		if self.controller_attack_target ~= nil and
@@ -1168,14 +1235,14 @@ AddComponentPostInit("playercontroller", function(self)
 			--it went invalid, but we're not resetting the age yet
 		end
 
-		local equipped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		local equipped_item = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 		local forced_rad = equipped_item ~= nil and equipped_item.controller_use_attack_distance or CHANGE_ADD_ATTACKABLE_TARGET_DETECT_RADIUS
 
 		local min_rad = 3
 		local max_rad = math.max(forced_rad, combat:GetAttackRangeWithWeapon()) + 3.5
 		local max_rad_sq = max_rad * max_rad
 
-		--see entity_replica.lua for "_combat" tag
+		--see entity_components.lua for "_combat" tag
 
 		local nearby_ents = TheSim:FindEntities_Registered(x, y, z, max_rad + 3, REGISTERED_CONTROLLER_ATTACK_TARGET_TAGS)
 		if self.controller_attack_target ~= nil then
@@ -1231,7 +1298,7 @@ AddComponentPostInit("playercontroller", function(self)
 
 								if CHANGE_IS_ATTACK_ALL_DIRECTION or TheInput:IsControlPressed(CHANGE_CONTROL_OPTION) then
 									-- do nothing
-								elseif v.replica.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
+								elseif v.components.combat:GetTarget() == self.inst or FunctionOrValue(v.controller_priority_override_is_targeting_player) then
 									score = score * 6
 								end
 
@@ -1316,7 +1383,7 @@ AddComponentPostInit("playercontroller", function(self)
 	-- Numerous Changed, 
 	-- 1. apply local function UpdateControllerInteractionTarget
 	-- 2. Update attack target while AOETargeting
-	self.UpdateControllerTargets = function (self, dt, ...)
+	self.UpdateControllerTargets1 = function (self, dt, ...)
 		local x, y, z = self.inst.Transform:GetWorldPosition()
 		local heading_angle = -self.inst.Transform:GetRotation()
 		local dirx = math.cos(heading_angle * DEGREES)
@@ -1345,8 +1412,8 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	local DoControllerActionButton_Old = self.DoControllerActionButton
-	self.DoControllerActionButton = function (self, ...)
-		local active_obj = self.inst.replica.inventory:GetActiveItem()
+	self.DoControllerActionButton1 = function (self, ...)
+		local active_obj = self.inst.components.inventory:GetActiveItem()
 		if (self.controller_target_action == nil or (CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON))) and active_obj ~= nil and
 			self.placer == nil and self.placer_recipe == nil and self.deployplacer == nil and self:IsEnabled() and not self:IsAOETargeting() and
 			(CHANGE_IS_USE_DPAD_SELECT_SPELLWHEEL_ITEM or not self.inst.HUD:IsSpellWheelOpen()) and
@@ -1358,9 +1425,9 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	local GetGroundUseAction_Old = self.GetGroundUseAction
-	self.GetGroundUseAction = function (self, ...)
+	self.GetGroundUseAction1 = function (self, ...)
 		local lmb, rmb = GetGroundUseAction_Old(self, ...)
-		if self.inst.replica.inventory:GetActiveItem() then
+		if self.inst.components.inventory:GetActiveItem() then
 			rmb = nil
 		end
 		return lmb, rmb
@@ -1404,9 +1471,9 @@ AddComponentPostInit("playercontroller", function(self)
 				-- [[stop using magician tool]] -> act ~= nil and obj ~= nil
 
 			if act == nil or (is_reticule and not_force) then
-				local rider = self.inst.replica.rider
+				local rider = self.inst.components.rider
 				local mount = rider and rider:GetMount() or nil
-				local container = mount and mount.replica.container or nil
+				local container = mount and mount.components.container or nil
 				if container and container:IsOpenedBy(self.inst) then
 					-- [[close woby's bag container]]
 					obj = self.inst
@@ -1429,7 +1496,7 @@ AddComponentPostInit("playercontroller", function(self)
 							obj = alt_obj
 							lmb, act = self:GetSceneItemControllerAction(obj)
 							if act ~= nil and act.action == ACTIONS.APPLYCONSTRUCTION then
-								local container = act.target ~= nil and act.target.replica.container
+								local container = act.target ~= nil and act.target.components.container
 								if container ~= nil and
 									container.widget ~= nil and
 									container.widget.overrideactionfn ~= nil and
@@ -1450,7 +1517,7 @@ AddComponentPostInit("playercontroller", function(self)
 						obj = alt_obj
 						lmb, act = self:GetSceneItemControllerAction(obj)
 						if act ~= nil and act.action == ACTIONS.APPLYCONSTRUCTION then
-							local container = act.target ~= nil and act.target.replica.container
+							local container = act.target ~= nil and act.target.components.container
 							if container ~= nil and
 								container.widget ~= nil and
 								container.widget.overrideactionfn ~= nil and
@@ -1527,10 +1594,10 @@ AddComponentPostInit("playercontroller", function(self)
 	self.TryWidgetButtonFunction = function (self, call, ...)
 		local _, _, _, _, _, cooker_type_container = self:GetAllTypeContainers()
 		if cooker_type_container ~= nil then
-			local isreadonlycontainer = cooker_type_container.replica.container ~= nil and
-										cooker_type_container.replica.container.IsReadOnlyContainer and
-										cooker_type_container.replica.container:IsReadOnlyContainer()
-			local widget = cooker_type_container.replica.container ~= nil and cooker_type_container.replica.container:GetWidget() or nil
+			local isreadonlycontainer = cooker_type_container.components.container ~= nil and
+										cooker_type_container.components.container.IsReadOnlyContainer and
+										cooker_type_container.components.container:IsReadOnlyContainer()
+			local widget = cooker_type_container.components.container ~= nil and cooker_type_container.components.container:GetWidget() or nil
 			if not isreadonlycontainer and widget ~= nil and widget.buttoninfo ~= nil and widget.buttoninfo.fn ~= nil then
 				if self.inst:HasTag("busy") then
 					return
@@ -1548,7 +1615,7 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	local DoControllerAltActionButton_New_Old = DoControllerAltActionButton_New
-	self.DoControllerAltActionButton = function (self, ...)
+	self.DoControllerAltActionButton1 = function (self, ...)
 		if CHANGE_FORCE_BUTTON and TheInput:IsControlPressed(CHANGE_FORCE_BUTTON) and self:TryWidgetButtonFunction(true) then
 			return
 		end
@@ -1556,7 +1623,7 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	local DoControllerAttackButton_Old = self.DoControllerAttackButton
-	self.DoControllerAttackButton = function (self, target, ...)
+	self.DoControllerAttackButton1 = function (self, target, ...)
 		local IsAOETargeting_Old = self.IsAOETargeting
 		self.IsAOETargeting = function(self, ...) return false end
 		local IsSittingOnChair = self.inst:HasTag("sitting_on_chair")
@@ -1571,7 +1638,7 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	local CancelPlacement_Old = self.CancelPlacement
-	self.CancelPlacement = function (self, cache, ...)
+	self.CancelPlacement1 = function (self, cache, ...)
 		CancelPlacement_Old(self, cache, ...)
 		if TheInput:ControllerAttached() then
 			if self.fake_placer ~= nil then
@@ -1587,7 +1654,7 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	local CancelDeployPlacement_Old = self.CancelDeployPlacement
-	self.CancelDeployPlacement = function (self, ...)
+	self.CancelDeployPlacement1 = function (self, ...)
 		CancelDeployPlacement_Old(self, ...)
 		if TheInput:ControllerAttached() then
 			if self.fake_deployplacer ~= nil then
@@ -1607,7 +1674,7 @@ AddComponentPostInit("playercontroller", function(self)
 	end
 
 	local StartBuildPlacementMode_Old = self.StartBuildPlacementMode
-	self.StartBuildPlacementMode = function (self, recipe, skin, ...)
+	self.StartBuildPlacementMode1 = function (self, recipe, skin, ...)
 		StartBuildPlacementMode_Old(self, recipe, skin, ...)
 		if TheInput:ControllerAttached() then
 			if self.fake_placer ~= nil then
@@ -1646,84 +1713,74 @@ AddComponentPostInit("playercontroller", function(self)
 
 	-- Only for query correct "placer_item" value in OnUpdate Function 
 	local GetCursorInventoryObject_Old = self.GetCursorInventoryObject
-	self.GetCursorInventoryObject = function(self, ...)
+	self.GetCursorInventoryObject1 = function(self, ...)
 		local result = GetCursorInventoryObject_Old(self, ...)
 		if self.deploy_mode then
-			result = self.inst.replica.inventory:GetActiveItem() or result
+			result = self.inst.components.inventory:GetActiveItem() or result
 		end
 		return result
 	end
 
-	local OnUpdate_Old = self.OnUpdate
-	self.OnUpdate = function (self, dt, ...)
-		if TheInput:ControllerAttached() then
-			local isenabled, _ = self:IsEnabled()
-			if isenabled then
-				if self.handler ~= nil then
-					local controller_mode = TheInput:ControllerAttached()
-					local placer_item = controller_mode and self:GetCursorInventoryObject() or self.inst.replica.inventory:GetActiveItem()
-					if self.deploy_mode and
-						self.placer == nil and
-						placer_item ~= nil and
-						placer_item.replica.inventoryitem ~= nil and
-						placer_item.replica.inventoryitem:IsDeployable(self.inst) then
+	-- local OnUpdate_Old = self.OnUpdate
+	-- self.OnUpdate = function (self, dt, ...)
+	-- 	if TheInput:ControllerAttached() then
+	-- 		local isenabled, _ = self:IsEnabled()
+	-- 		if isenabled then
+	-- 			if self.handler ~= nil then
+	-- 				local controller_mode = TheInput:ControllerAttached()
+	-- 				local placer_item = controller_mode and self:GetCursorInventoryObject() or self.inst.components.inventory:GetActiveItem()
+	-- 				if self.deploy_mode and
+	-- 					self.placer == nil and
+	-- 					placer_item ~= nil and
+	-- 					placer_item.components.inventoryitem ~= nil and
+	-- 					placer_item.components.inventoryitem:IsDeployable(self.inst) then
 
-						local placer_name = placer_item.replica.inventoryitem:GetDeployPlacerName()
-						local placer_skin = placer_item.AnimState:GetSkinBuild() --hack that relies on the build name to match the linked skinname
-						if placer_skin == "" then
-							placer_skin = nil
-						end
+	-- 					local placer_name = placer_item.components.inventoryitem:GetDeployPlacerName()
+	-- 					local placer_skin = placer_item.AnimState:GetSkinBuild() --hack that relies on the build name to match the linked skinname
+	-- 					if placer_skin == "" then
+	-- 						placer_skin = nil
+	-- 					end
 
-						if self.fake_deployplacer == nil then
-							self.fake_deployplacer = SpawnPrefab(placer_name, placer_skin, nil, self.inst.userid )
-							if self.fake_deployplacer ~= nil then
-								self.fake_deployplacer.components.placer.offset_old = self.fake_deployplacer.components.placer.offset
-								self.fake_deployplacer.components.placer.offset = 0
-								self.fake_deployplacer.components.placer.fake = true
-								self.fake_deployplacer.components.placer:SetBuilder(self.inst, nil, placer_item)
-								self.fake_deployplacer:Hide()
+	-- 					if self.fake_deployplacer == nil then
+	-- 						self.fake_deployplacer = SpawnPrefab(placer_name, placer_skin, nil, self.inst.userid )
+	-- 						if self.fake_deployplacer ~= nil then
+	-- 							self.fake_deployplacer.components.placer.offset_old = self.fake_deployplacer.components.placer.offset
+	-- 							self.fake_deployplacer.components.placer.offset = 0
+	-- 							self.fake_deployplacer.components.placer.fake = true
+	-- 							self.fake_deployplacer.components.placer:SetBuilder(self.inst, nil, placer_item)
+	-- 							self.fake_deployplacer:Hide()
 
-								self.fake_deployplacer:AddComponent("reticule")
-								self.fake_deployplacer.components.reticule.targetfn = ReticuleTargetFn
-								self.fake_deployplacer.components.reticule.ease = true
+	-- 							self.fake_deployplacer:AddComponent("reticule")
+	-- 							self.fake_deployplacer.components.reticule.targetfn = ReticuleTargetFn
+	-- 							self.fake_deployplacer.components.reticule.ease = true
 
-								local newreticule = self.fake_deployplacer.components.reticule
-								if newreticule ~= self.reticule then
-									if self.reticule ~= nil then
-										self.reticule:DestroyReticule()
-									end
-									self.reticule = newreticule
-									if newreticule ~= nil and newreticule.reticule == nil and (newreticule.mouseenabled or TheInput:ControllerAttached()) then
-										newreticule:CreateReticule()
-										if newreticule.reticule ~= nil and (not self:IsEnabled() or newreticule:ShouldHide()) then
-											newreticule.reticule:Hide()
-										end
-									end
-								end
-								self.fake_deployplacer.components.placer:OnUpdate(0) --so that our position is accurate on the first frame
-							end
-							LoadGeometricPlacementCtrlOption()
-						end
-					end
-				end
-			end
-		end
-		OnUpdate_Old(self, dt, ...)
-	end
+	-- 							local newreticule = self.fake_deployplacer.components.reticule
+	-- 							if newreticule ~= self.reticule then
+	-- 								if self.reticule ~= nil then
+	-- 									self.reticule:DestroyReticule()
+	-- 								end
+	-- 								self.reticule = newreticule
+	-- 								if newreticule ~= nil and newreticule.reticule == nil and (newreticule.mouseenabled or TheInput:ControllerAttached()) then
+	-- 									newreticule:CreateReticule()
+	-- 									if newreticule.reticule ~= nil and (not self:IsEnabled() or newreticule:ShouldHide()) then
+	-- 										newreticule.reticule:Hide()
+	-- 									end
+	-- 								end
+	-- 							end
+	-- 							self.fake_deployplacer.components.placer:OnUpdate(0) --so that our position is accurate on the first frame
+	-- 						end
+	-- 						LoadGeometricPlacementCtrlOption()
+	-- 					end
+	-- 				end
+	-- 			end
+	-- 		end
+	-- 	end
+	-- 	OnUpdate_Old(self, dt, ...)
+	-- end
 
 	local ToggleController_Old = self.ToggleController
 	self.ToggleController = function (self, val, ...)
 		ToggleController_Old(self, val, ...)
 		self.inst.HUD.controls.inv.rebuild_pending = true
 	end
-
-	self.ShouldPlayerHUDControlBeIgnored = function (self, control, down, ...)
-		if self:IsAxisAlignedPlacement() and
-			control ~= CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID and
-			TheInput:ControlsHaveSameMapping(TheInput:GetControllerID(), control, CONTROL_AXISALIGNEDPLACEMENT_CYCLEGRID) then
-			return true
-		end
-		return false
-	end
-
 end)

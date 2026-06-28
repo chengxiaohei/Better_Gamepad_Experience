@@ -114,13 +114,14 @@ version = "0.1.34"
 forumthread = "https://github.com/chengxiaohei/Better_Gamepad_Experience"
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
-client_only_mod = true
-all_clients_require_mod = false
+api_version = 6
+priority = 100
+
+dst_compatible = false
 dont_starve_compatible = true
 reign_of_giants_compatible = true
-dst_compatible = true
-api_version = 10
-priority = 100
+shipwrecked_compatible = true
+hamlet_compatible = true
 
 configuration_options = {
 	{name = "Title", label = Language_En and "Display Settings" or "显示设置", options = {{description = "", data = ""}}, default = ""},

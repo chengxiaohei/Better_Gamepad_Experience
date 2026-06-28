@@ -1,4 +1,4 @@
-AddClassPostConstruct("screens/redux/optionsscreen", function(self)
+AddClassPostConstruct("screens/optionsscreen", function(self)
     local UpdateMenu_Old = self.UpdateMenu
     self.UpdateMenu = function (self, ...)
         self.integratedbackpackSpinner:Enable()

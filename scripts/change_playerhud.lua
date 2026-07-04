@@ -13,8 +13,10 @@ AddClassPostConstruct("screens/playerhud", function(self)
             local controller = ThePlayer and ThePlayer.components and ThePlayer.components.playercontroller
             if (inventory ~= nil and inventory:IsVisible() and inventory:GetNumSlots() > 0) then
                 local active_item = inventory:GetActiveItem()
-                if controller.inst:HasTag("upgrademoduleowner") and active_item ~= nil and
-                    (active_item:HasActionComponent("upgrademoduleremover") or active_item:HasActionComponent("upgrademodule")) then
+                local inv_item = controller:GetCursorInventoryObject()
+                local target_item = active_item or inv_item
+                if controller.inst:HasTag("upgrademoduleowner") and target_item ~= nil and
+                    (target_item:HasActionComponent("upgrademoduleremover") or target_item:HasActionComponent("upgrademodule")) then
                     if not StatusShown then
                         self.controls:ShowStatusNumbers()
                         StatusShown = true

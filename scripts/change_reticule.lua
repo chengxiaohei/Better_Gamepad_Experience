@@ -24,8 +24,6 @@ AddPrefabPostInitAny(function(inst)
     end
 end)
 
-local origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED = TUNING.CONTROLLER_RETICULE_RSTICK_SPEED
-
 AddComponentPostInit("reticule", function(self)
     self.clear_memory_flag = false
 
@@ -55,7 +53,11 @@ AddComponentPostInit("reticule", function(self)
             self.clear_memory_flag = false
         end
         if controller ~= nil then
-            TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = origin_TUNING_CONTROLLER_RETICULE_RSTICK_SPEED / math.max(controller:GetRightBumperMultClickedCount(true), 1)
+            if controller.placer ~= nil or (controller.deployplacer ~= nil and controller.deploy_mode) then
+                TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = CHANGE_TUNING_CONTROLLER_RETICULE_RSTICK_BUILD_SPEED / math.max(controller:GetRightBumperMultClickedCount(true), 1)
+            else
+                TUNING.CONTROLLER_RETICULE_RSTICK_SPEED = CHANGE_TUNING_CONTROLLER_RETICULE_RSTICK_CAST_SPEED / math.max(controller:GetRightBumperMultClickedCount(true), 1)
+            end
         end
     end
 

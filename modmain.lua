@@ -36,6 +36,8 @@ CHANGE_IS_INTERACT_ALL_DIRECTION = GetModConfigData("interact_all_direction") --
 CHANGE_IS_ATTACK_ALL_DIRECTION = GetModConfigData("attack_all_direction") -- Default: true
 CHANGE_INTERACTION_TARGET_DETECT_RADIUS = GetModConfigData("interaction_target_detect_radius")  --Default: 6
 CHANGE_ADD_ATTACKABLE_TARGET_DETECT_RADIUS = GetModConfigData("add_attackable_target_detect_radius")  -- Default: 0
+CHANGE_TUNING_CONTROLLER_RETICULE_RSTICK_CAST_SPEED  = GetModConfigData("reticule_cast_speed")  -- Default: 2
+CHANGE_TUNING_CONTROLLER_RETICULE_RSTICK_BUILD_SPEED = GetModConfigData("reticule_build_speed")  -- Default: 0.5
 CHANGE_MOUNT_AND_DISMOUNT_MUST_PRESS_RB = GetModConfigData("mount_and_dismount_must_press_RB")  -- Default: true
 CHANGE_WOBY_ACTION_MUST_PRESS_RB = GetModConfigData("woby_action_must_press_RB") -- Default: true
 

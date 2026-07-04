@@ -414,6 +414,62 @@ configuration_options = {
 		default = 0
 	},
 	{
+		name = "reticule_cast_speed",
+		label = Language_En and "Cast Point Move Speed" or "施法点移动速度",
+		hover = Language_En and "Adjust the Base Speed of Cast Point Movement.\
+                              	 You can also dynamically decrease the speed by multi clicking and holding "
+    							..GamepadButtons.Right_Bumper.. " in-game."
+                            or "调整施法点的基础移动速度，你仍然可以在游戏内通过多次点击并按住 "
+    							..GamepadButtons.Right_Bumper.. " 的方式动态减小移动速度",
+		options = {
+			{ description = "0.5",           data = 0.5,  hover = ""},
+			{ description = "1.0",           data = 1.0,  hover = ""},
+			{ description = "1.5",           data = 1.5,  hover = ""},
+			{ description = "1.6",           data = 1.6,  hover = ""},
+			{ description = "1.7",           data = 1.7,  hover = ""},
+			{ description = "1.8",           data = 1.8,  hover = ""},
+			{ description = "1.9",           data = 1.9,  hover = ""},
+			{ description = "2.0 (Default)", data = 2.0,  hover = ""},
+			{ description = "2.1",           data = 2.1,  hover = ""},
+			{ description = "2.2",           data = 2.2,  hover = ""},
+			{ description = "2.3",           data = 2.3,  hover = ""},
+			{ description = "2.4",           data = 2.4,  hover = ""},
+			{ description = "2.5",           data = 2.5,  hover = ""},
+			{ description = "3.0",           data = 3.0,  hover = ""},
+			{ description = "3.5",           data = 3.5,  hover = ""},
+			{ description = "4.0",           data = 4.0,  hover = ""},
+		},
+		default = 2.0
+	},
+	{
+		name = "reticule_build_speed",
+		label = Language_En and "Build Point Move Speed" or "建造点移动速度",
+		hover = Language_En and "Adjust the Base Speed of Build Point Movement.\
+    		                    You can also dynamically decrease the speed by multi clicking and holding "
+    							..GamepadButtons.Right_Bumper.. " in-game."
+							or "调整建造点的基础移动速度，你仍然可以在游戏内通过多次点击并按住 "
+    							..GamepadButtons.Right_Bumper.. " 的方式动态减小移动速度",
+		options = {
+			{ description = "0.1",           data = 0.1,  hover = ""},
+			{ description = "0.2",           data = 0.2,  hover = ""},
+			{ description = "0.3",           data = 0.3,  hover = ""},
+			{ description = "0.4",           data = 0.4,  hover = ""},
+			{ description = "0.5 (Default)", data = 0.5,  hover = ""},
+			{ description = "0.6",           data = 0.6,  hover = ""},
+			{ description = "0.7",           data = 0.7,  hover = ""},
+			{ description = "0.8",           data = 0.8,  hover = ""},
+			{ description = "0.9",           data = 0.9,  hover = ""},
+			{ description = "1.0",           data = 1.0,  hover = ""},
+			{ description = "1.5",           data = 1.5,  hover = ""},
+			{ description = "2.0",           data = 2.0,  hover = ""},
+			{ description = "2.5",           data = 2.5,  hover = ""},
+			{ description = "3.0",           data = 3.0,  hover = ""},
+			{ description = "3.5",           data = 3.5,  hover = ""},
+			{ description = "4.0",           data = 4.0,  hover = ""},
+		},
+		default = 0.5
+	},
+	{
 		name = "mount_and_dismount_must_press_RB",
 		label = Language_En and "Mount/Dismount with RB" or "上下坐骑需按下RB键",
 		hover = Language_En and "Now You Can Only Mount/Dismount By Pressing "..GamepadButtons.Right_Bumper

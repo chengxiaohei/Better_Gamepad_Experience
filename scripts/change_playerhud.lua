@@ -252,6 +252,7 @@ AddClassPostConstruct("screens/playerhud", function(self)
                 (_type == "side_inv_behind" and self.controls.containerroot_side_behind) or
                 (_type == "top_rack" and self.controls.containerroot_under) or
                 (_type == "chest_addon" and self.controls.containerroot_over) or
+                (_type == "boat" and self.controls.inv.toprow_inv) or  -- for Above the Clouds Mod
                 self.controls.containerroot
         end
 

@@ -721,6 +721,19 @@ AddClassPostConstruct("widgets/controls", function(self)
         self.groundactionhint:SetScreenOffset(0,0)
         self.forwardactionhint:SetScreenOffset(0,0)
 
+        -- Move tool tip to be behind player so it doesnt obstruct the reticule.
+        if self.owner.replica.inventory then
+            local handitem = self.owner.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+            local golfclub_reticule = handitem and handitem.components.golfclub_reticule
+            if self.playeractionhint.shown and golfclub_reticule and golfclub_reticule:GetTarget() then
+                local psx, psy = TheSim:GetScreenPos(self.owner.Transform:GetWorldPosition())
+                local sx, sy = TheSim:GetScreenPos(golfclub_reticule:GetTarget().Transform:GetWorldPosition())
+                local theta = math.atan2(sy - psy, psx - sx)
+                local w, h = self.playeractionhint.text:GetRegionSize()
+                self.playeractionhint:SetScreenOffset(math.cos(theta) * w, 100 - math.sin(theta) * h)
+            end
+        end
+
         local AdjustLocation = function(x_axis, first, second)
             if first == nil or second == nil then
                 return

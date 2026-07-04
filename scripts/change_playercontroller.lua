@@ -1019,6 +1019,28 @@ AddComponentPostInit("playercontroller", function(self)
 
 		local equiped_item = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
+		-- Turf entity removal always highest priority.
+		if equiped_item and equiped_item:HasActionComponent("terraformer") then
+			-- Special case for ACTIONS.TERRAFORM_REMOVE via placed turf visuals needing to take highest priority over all other checks due to increased range from entity origin.
+			-- We will use the player's origin to find things with the tag to use the action.
+			local x, y, z = self.inst.Transform:GetWorldPosition()
+			local terraform_remove_target = nil
+			local ents = TheSim:GetEntitiesAtScreenPoint(TheSim:GetScreenPos(x, y, z))
+			for _, ent in ipairs(ents) do
+				if ent:HasTag("terraformerremoveable") then
+					terraform_remove_target = ent
+					break
+				end
+			end
+			if terraform_remove_target then
+				if terraform_remove_target ~= self.controller_alt_target then
+					self.controller_alt_target = terraform_remove_target
+					self.controller_alt_target_age = 0
+				end
+				return
+			end
+		end
+
 		--Fishing targets may have large radius, making it hard to target with normal priority
 		local fishing = equiped_item ~= nil and equiped_item:HasTag("fishingrod")
 

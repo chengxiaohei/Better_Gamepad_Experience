@@ -416,8 +416,7 @@ configuration_options = {
 	{
 		name = "reticule_cast_speed",
 		label = Language_En and "Cast Point Move Speed" or "施法点移动速度",
-		hover = Language_En and "Adjust the Base Speed of Cast Point Movement.\
-                              	 You can also dynamically decrease the speed by multi clicking and holding "
+		hover = Language_En and "Adjust the Base Speed of Cast Point Movement. You can also dynamically decrease the speed by multi clicking and holding "
     							..GamepadButtons.Right_Bumper.. " in-game."
                             or "调整施法点的基础移动速度，你仍然可以在游戏内通过多次点击并按住 "
     							..GamepadButtons.Right_Bumper.. " 的方式动态减小移动速度",
@@ -444,8 +443,7 @@ configuration_options = {
 	{
 		name = "reticule_build_speed",
 		label = Language_En and "Build Point Move Speed" or "建造点移动速度",
-		hover = Language_En and "Adjust the Base Speed of Build Point Movement.\
-    		                    You can also dynamically decrease the speed by multi clicking and holding "
+		hover = Language_En and "Adjust the Base Speed of Build Point Movement. You can also dynamically decrease the speed by multi clicking and holding "
     							..GamepadButtons.Right_Bumper.. " in-game."
 							or "调整建造点的基础移动速度，你仍然可以在游戏内通过多次点击并按住 "
     							..GamepadButtons.Right_Bumper.. " 的方式动态减小移动速度",
